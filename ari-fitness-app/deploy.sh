@@ -34,6 +34,16 @@ else
   exit 1
 fi
 
+# Etapa 2.1: Gerar versão de do .exe com Electron
+echo "- Iniciando criacao do .exe com Electron 👌"
+npm run electron:build
+if [ $? -eq 0 ]; then
+  echo "✅ BUILD DE PRODUÇÃO DO .EXE FEITO COM SUCESSO!"
+else
+  echo "❌ ERRO: FALHA NO BUILD DE PRODUÇÃO DO .EXE."
+  exit 1
+fi
+
 # Etapa 3: Implantar (Deploy) na Vercel/Produção
 echo "- Iniciando DEPLOY para produção 🚀🚀🚀"
 npm run --prefix ../ari-fitness-api deploy

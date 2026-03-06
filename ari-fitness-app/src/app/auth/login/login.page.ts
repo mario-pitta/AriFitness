@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MaskitoOptions,
@@ -21,7 +22,7 @@ export class LoginPage implements OnInit {
   maskPredicate: MaskitoElementPredicate = async (el) =>
     (el as HTMLIonInputElement).getInputElement();
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {}
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -36,13 +37,10 @@ export class LoginPage implements OnInit {
     this.auth.login(this.form.value.cpf, md5(this.form.value.senha)).subscribe({
       next: (user: IUsuario) => {
         if (!user.flagAdmin) {
-          location.href = '/#/home';
-          location.replace('/#/home');
-        }else {
-          location.href = '/#/admin';
-          location.replace('/#/admin');
+          this.router.navigate(['/home']);
+        } else {
+          this.router.navigate(['/admin']);
         }
-        location.reload();
       },
     });
   }

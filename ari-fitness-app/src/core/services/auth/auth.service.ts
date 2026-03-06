@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 import { BehaviorSubject, map, Observable, Subject, take, tap } from 'rxjs';
 import { Usuario, IUsuario } from 'src/core/models/Usuario';
 
@@ -10,7 +11,7 @@ import { Usuario, IUsuario } from 'src/core/models/Usuario';
 export class AuthService {
   user: WritableSignal<IUsuario | null> = signal(null);
   userValue: BehaviorSubject<any> = new BehaviorSubject(null);
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.userValue = new BehaviorSubject<any>(
       JSON.parse(localStorage.getItem('user') as string)
     );
@@ -53,7 +54,7 @@ export class AuthService {
   logout() {
     localStorage.clear();
     this.userValue.next(null);
-    location.href = '#/login';
+    this.router.navigate(['/login']);
   }
 
 

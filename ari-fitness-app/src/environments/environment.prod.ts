@@ -1,6 +1,6 @@
 
 export const environment = {
   production: true,
-  apiUrl: location.origin
+  apiUrl: 'https://mvkgym.vercel.app'
 
 };

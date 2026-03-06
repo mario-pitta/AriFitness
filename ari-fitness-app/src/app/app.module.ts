@@ -48,7 +48,7 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
     MaskitoDirective,
     ExercicioFormModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: !isDevMode() && window.location.protocol !== 'file:',
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
@@ -64,11 +64,11 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: HttpInterceptors, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        // ************************************
+    // ************************************
     { provide: LOCALE_ID, useValue: 'pt' },
     // ************************************
     PageSizeService,
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

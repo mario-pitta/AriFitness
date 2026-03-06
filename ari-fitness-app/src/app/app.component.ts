@@ -50,6 +50,15 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.initializeTheme();
 
+    // Signal Electron that Angular has fully bootstrapped and is ready to show the window
+    // This precise timing prevents the blank screen on startup
+    if (window.require) {
+      try {
+        const { ipcRenderer } = window.require('electron');
+        ipcRenderer.send('app-ready');
+      } catch (e) { /* Not running in Electron */ }
+    }
+
     this.router.events.subscribe((ev: any) => {
       if (ev instanceof NavigationStart) {
         if (ev.navigationTrigger == 'popstate') {

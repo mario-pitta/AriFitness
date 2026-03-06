@@ -1,0 +1,20 @@
+/* Print Styles */
+@media print {
+  ion-header,
+  ion-footer,
+  ion-menu,
+  ion-fab,
+  .no-print {
+    display: none !important;
+  }
+
+  ion-content {
+    --overflow: visible;
+  }
+
+  body {
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+  }
+}
