@@ -3,13 +3,14 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { IonSplitPaneCustomEvent } from '@ionic/core';
-import { tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
+import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 // @ts-ignore
-import packageInfo from'../../../../package.json';
+import packageInfo from '../../../../package.json';
 @Component({
   selector: 'app-admin-home',
   templateUrl: './admin-home.component.html',
@@ -27,14 +28,19 @@ export class AdminHomeComponent implements OnInit {
     href: string;
   }[] = [];
   isMobile: boolean = false;
+  empresa$!: Observable<any>;
 
   constructor(
     private menuCtrl: MenuController,
     private router: Router,
     private pageSize: PageSizeService,
     private dashBoardService: TransacaoFinanceiraDashService,
-    private authService: AuthService
+    private authService: AuthService,
+    private empresaService: EmpresaService
   ) {
+    this.user = this.authService.getUser as Usuario;
+    this.empresa$ = this.empresaService.getEmpresa(this.user.empresa_id as string);
+
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
         const routes = e.url.split('/');
@@ -66,7 +72,7 @@ export class AdminHomeComponent implements OnInit {
   ngOnInit() {
 
     this.isMobile = this.pageSize.getSize().isMobile;
-
+    this.getUserInitials();
   }
 
   toggleMenu() {
@@ -80,5 +86,24 @@ export class AdminHomeComponent implements OnInit {
   onSplitPaneVisible($event: IonSplitPaneCustomEvent<{ visible: boolean }>) {
     this.showSplitPane = $event.detail.visible;
     console.log('this.showSplitPane: ', this.showSplitPane);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
+  }
+
+  getFirstName(): string {
+    if (!this.user?.nome) return '';
+    return this.user.nome.split(' ')[0];
+  }
+
+
+  userInitials: string = ''
+  getUserInitials(): string {
+    const firstName = this.getFirstName();
+
+    this.userInitials = firstName ? firstName.charAt(0).toUpperCase() : '?';
+    return this.userInitials
   }
 }

@@ -339,4 +339,174 @@ export class DashboardService {
       totalMembros: item.count
     })) || [];
   }
+
+  // ─── NOVOS MÉTODOS DE DASHBOARD ────────────────────────────────────────────
+
+  /**
+   * Retorna check-ins realizados hoje para a empresa informada.
+   */
+  async getCheckinsHoje(empresaId: string) {
+    const hoje = new Date().toISOString().split('T')[0];
+    console.log(`[DashboardService] getCheckinsHoje | empresaId=${empresaId} | data=${hoje}`);
+
+    const { data, error, count } = await this.database.supabase
+      .from('checkin_acesso')
+      .select('id, cpf_aluno, nome, hora_checkin', { count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .eq('data_checkin', hoje)
+      .order('hora_checkin', { ascending: true });
+
+    if (error) {
+      console.error(`[DashboardService] getCheckinsHoje ERROR:`, error);
+      throw new Error(`Erro ao obter check-ins de hoje: ${JSON.stringify(error)}`);
+    }
+
+    console.log(`[DashboardService] getCheckinsHoje | total=${count}`);
+    return { total: count ?? 0, checkins: data ?? [] };
+  }
+
+  /**
+   * Retorna alunos cujo plano vence nos próximos N dias (default 7).
+   * Usa o campo data_vencimento (dia do mês) para calcular.
+   */
+  async getAlertasVencimento(empresaId: string, dias = 7) {
+    console.log(`[DashboardService] getAlertasVencimento | empresaId=${empresaId} | dias=${dias}`);
+
+    const { data, error } = await this.database.supabase
+      .from('usuario')
+      .select('id, nome, cpf, whatsapp, data_vencimento, data_ultimo_pagamento, plano:planos(descricao, preco_padrao)')
+      .eq('empresa_id', empresaId)
+      .eq('tipo_usuario', 5)
+      .eq('fl_ativo', true)
+      .not('data_vencimento', 'is', null);
+
+    if (error) {
+      console.error(`[DashboardService] getAlertasVencimento ERROR:`, error);
+      throw new Error(`Erro ao obter alertas de vencimento: ${JSON.stringify(error)}`);
+    }
+
+    const hoje = new Date();
+    const alertas = (data ?? [])
+      .filter((usuario: any) => {
+        const diaVencimento = usuario.data_vencimento as number;
+        const vencimento = new Date(hoje.getFullYear(), hoje.getMonth(), diaVencimento);
+        if (vencimento < hoje) vencimento.setMonth(vencimento.getMonth() + 1);
+        const diffDias = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+        return diffDias >= 0 && diffDias <= dias;
+      })
+      .map((usuario: any) => {
+        const diaVencimento = usuario.data_vencimento as number;
+        const vencimento = new Date(hoje.getFullYear(), hoje.getMonth(), diaVencimento);
+        if (vencimento < hoje) vencimento.setMonth(vencimento.getMonth() + 1);
+        const diffDias = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+        return { ...usuario, dias_para_vencer: diffDias, data_vencimento_calculada: vencimento.toISOString().split('T')[0] };
+      })
+      .sort((a: any, b: any) => a.dias_para_vencer - b.dias_para_vencer);
+
+    console.log(`[DashboardService] getAlertasVencimento | alertas encontrados=${alertas.length}`);
+    return { total: alertas.length, alertas };
+  }
+
+  /**
+   * Retorna alunos ativos sem check-in há N dias (risco de churn, default 14).
+   */
+  async getAlunosSemCheckin(empresaId: string, dias = 14) {
+    console.log(`[DashboardService] getAlunosSemCheckin | empresaId=${empresaId} | dias=${dias}`);
+
+    const dataLimite = new Date();
+    dataLimite.setDate(dataLimite.getDate() - dias);
+    const dataLimiteStr = dataLimite.toISOString().split('T')[0];
+
+    const { data: checkinsRecentes, error: erroCheckin } = await this.database.supabase
+      .from('checkin_acesso')
+      .select('cpf_aluno')
+      .eq('empresa_id', empresaId)
+      .gte('data_checkin', dataLimiteStr);
+
+    if (erroCheckin) {
+      console.error(`[DashboardService] getAlunosSemCheckin ERROR (checkins):`, erroCheckin);
+      throw new Error(`Erro ao buscar check-ins recentes: ${JSON.stringify(erroCheckin)}`);
+    }
+
+    const cpfsAtivos = new Set((checkinsRecentes ?? []).map((c: any) => c.cpf_aluno));
+
+    const { data: alunos, error: erroAlunos } = await this.database.supabase
+      .from('usuario')
+      .select('id, nome, cpf, whatsapp, data_ultimo_pagamento')
+      .eq('empresa_id', empresaId)
+      .eq('tipo_usuario', 5)
+      .eq('fl_ativo', true);
+
+    if (erroAlunos) {
+      console.error(`[DashboardService] getAlunosSemCheckin ERROR (alunos):`, erroAlunos);
+      throw new Error(`Erro ao buscar alunos: ${JSON.stringify(erroAlunos)}`);
+    }
+
+    const alunosSemCheckin = (alunos ?? []).filter((a: any) => !cpfsAtivos.has(a.cpf));
+
+    console.log(`[DashboardService] getAlunosSemCheckin | em risco=${alunosSemCheckin.length}`);
+    return { total: alunosSemCheckin.length, alunos: alunosSemCheckin };
+  }
+
+  /**
+   * Retorna distribuição de check-ins por hora do dia nos últimos 30 dias.
+   */
+  async getPicoCheckins(empresaId: string) {
+    console.log(`[DashboardService] getPicoCheckins | empresaId=${empresaId}`);
+
+    const dataInicio = new Date();
+    dataInicio.setDate(dataInicio.getDate() - 30);
+    const dataInicioStr = dataInicio.toISOString().split('T')[0];
+
+    const { data, error } = await this.database.supabase
+      .from('checkin_acesso')
+      .select('hora_checkin')
+      .eq('empresa_id', empresaId)
+      .gte('data_checkin', dataInicioStr);
+
+    if (error) {
+      console.error(`[DashboardService] getPicoCheckins ERROR:`, error);
+      throw new Error(`Erro ao obter pico de check-ins: ${JSON.stringify(error)}`);
+    }
+
+    const horaCount: Record<string, number> = {};
+    (data ?? []).forEach((c: any) => {
+      const hora = ((c.hora_checkin as string)?.slice(0, 2) ?? 'ND') + 'h';
+      horaCount[hora] = (horaCount[hora] || 0) + 1;
+    });
+
+    const picos = Object.entries(horaCount)
+      .map(([hora, total]) => ({ hora, total }))
+      .sort((a, b) => a.hora.localeCompare(b.hora));
+
+    console.log(`[DashboardService] getPicoCheckins | horas mapeadas=${picos.length}`);
+    return { picos };
+  }
+
+  /**
+   * Retorna total e lista de receitas pendentes (fl_pago = false, tr_tipo_id = 1).
+   */
+  async getReceitasPendentes(empresaId: string) {
+    console.log(`[DashboardService] getReceitasPendentes | empresaId=${empresaId}`);
+
+    const { data, error, count } = await this.database.supabase
+      .from('transacao_financeira')
+      .select('id, descricao, valor_final, data_lancamento, forma_pagamento', { count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .eq('fl_pago', false)
+      .eq('fl_ativo', true)
+      .eq('tr_tipo_id', 1)
+      .order('data_lancamento', { ascending: false });
+
+    if (error) {
+      console.error(`[DashboardService] getReceitasPendentes ERROR:`, error);
+      throw new Error(`Erro ao obter receitas pendentes: ${JSON.stringify(error)}`);
+    }
+
+    const totalValor = (data ?? []).reduce((acc: number, t: any) => acc + (t.valor_final ?? 0), 0);
+
+    console.log(`[DashboardService] getReceitasPendentes | qtd=${count} | total=R$${totalValor.toFixed(2)}`);
+    return { total: count ?? 0, totalValor, transacoes: data ?? [] };
+  }
 }
+

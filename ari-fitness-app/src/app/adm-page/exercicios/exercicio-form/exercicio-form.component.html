@@ -1,37 +1,7 @@
-<ion-content [fullscreen]="true">
-<br><br>
+<div>
+  <br><br>
   <ion-grid class="ion-margin-top"></ion-grid>
-      <ion-card class="ion-padding">
-        <form [formGroup]="form">
-          <div class="form-group">
-            <ion-input label="Nome"  formControlName="nome"  labelPlacement="floating" />
-            <ion-select label="Grupo Muscular" formControlName="grupo_muscular_id" (ionChange)="filterMusculos()">
-              <ion-select-option *ngFor="let a of gruposMusculares$ | async " [value]="a.id"> {{a.nome}}</ion-select-option>
-            </ion-select>
-
-            <ion-select label="Músculo" formControlName="musculo_id">
-              <ion-select-option *ngFor="let a of musculos$ | async" [value]="a.id"> {{a.nome}}</ion-select-option>
-            </ion-select>
-            <ion-select label="Equipamento" formControlName="equipamento_id">
-              <ion-select-option *ngFor="let a of equipamentos$ | async" [value]="a.id"> {{a.nome}}</ion-select-option>
-            </ion-select>
-
-            <ion-input label="Midia URL"  formControlName="midia_url"  labelPlacement="floating" />
-
-            @if(form.value.midia_url){
-              <img [src]="form.value.midia_url" [alt]="'midia do exercicio'" srcset="">
-            }
-          </div>
-        </form>
-
-         <ion-button class="ion-margin-top" shape="round" expand="block" [disabled]="form.invalid" (click)="save()">
-      @if(loading){
-        <ion-spinner></ion-spinner>
-      }@else {
-        <span>
-          SALVAR
-        </span>
-        }
-    </ion-button>
-      </ion-card>
-</ion-content>
+  <ion-card class="ion-padding">
+    ...
+  </ion-card>
+</div>

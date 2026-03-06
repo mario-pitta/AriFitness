@@ -7,7 +7,11 @@ import { IUsuario, Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { DashboardMembersService } from 'src/core/services/dashboard/members/members.service';
+import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 import { map, Observable } from 'rxjs';
+import { IEmpresa } from 'src/core/models/Empresa';
+import { Color, ScaleType } from '@swimlane/ngx-charts';
+import * as shape from 'd3-shape';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +20,6 @@ import { map, Observable } from 'rxjs';
 })
 export class DashboardPage implements OnInit {
   view: [number, number] = [520, 230];
-
   chartSizes: number[] = [];
   searchControl: FormControl = new FormControl();
 
@@ -27,29 +30,57 @@ export class DashboardPage implements OnInit {
     totalDespesas: 0,
     totalAulas: 0,
     totalFichas: 0,
-    receita_por_mes: [] as {
-      mes: number;
-      ano: number;
-      mesAno: string;
-      valor: number;
-    }[],
-    despesa_por_mes: [] as {
-      mes: number;
-      ano: number;
-      mesAno: string;
-      valor: number;
-    }[],
+    receita_por_mes: [] as any[],
+    despesa_por_mes: [] as any[],
   };
+
   members: IUsuario[] = [];
   usuario: IUsuario = this.auth.getUser;
+  empresa: IEmpresa | null = null;
   loading: boolean = true;
+  today = new Date();
 
+  // ── Novos Dados ───────────────────────────────────────────────────────────
+  checkinsHoje: { total: number; checkins: any[] } = { total: 0, checkins: [] };
+  alertasVencimento: { total: number; alertas: any[] } = { total: 0, alertas: [] };
+  alunosChurn: { total: number; alunos: any[] } = { total: 0, alunos: [] };
+  receitasPendentes: { total: number; totalValor: number; transacoes: any[] } = { total: 0, totalValor: 0, transacoes: [] };
+
+  // ── Gráficos ────────────────────────────────────────────────────────────────
+  revenueVsExpenseData: any[] = [];
+  membrosStatusData: any[] = [];
+  picoCheckinsData: any[] = [];
+
+  // ── Tipagem para ngx-charts ────────────────────────────────────────────────
+  curveBasis = shape.curveBasis;
+
+  colorSchemeArea: Color = {
+    name: 'financeiro',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: ['#00b894', '#e74c3c']
+  };
+
+  colorSchemeStatus: Color = {
+    name: 'status',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: ['#2471a3', '#8391a1']
+  };
+
+  colorSchemePico: Color = {
+    name: 'pico',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: ['#117a65']
+  };
 
   constructor(
     private usuarioService: UsuarioService,
     private dashboardService: DashboardMembersService,
     private auth: AuthService,
-    private transFinServ: TransacaoFinanceiraDashService
+    private transFinServ: TransacaoFinanceiraDashService,
+    private empresaService: EmpresaService
   ) {
     this.searchControl.valueChanges.subscribe((value) => {
       this.getMembers(value);
@@ -60,144 +91,110 @@ export class DashboardPage implements OnInit {
   onResize(event: any) {
     this.isMobile();
   }
+
   isMobile() {
     const innerWidth = window.innerWidth;
-    console.log('innerWidth: ', innerWidth);
-
     if (innerWidth < 500) {
-      this.view = [350, 100];
+      this.view = [innerWidth - 40, 200];
     } else if (innerWidth < 800) {
       this.view = [430, 230];
     } else if (innerWidth < 900) {
       this.view = [470, 230];
     } else if (innerWidth < 1000) {
       this.view = [650, 230];
-    } else if (innerWidth < 1980) {
-      this.view = [780, 230];
+    } else {
+      this.view = [innerWidth > 1400 ? 550 : 450, 230];
     }
-    console.log('this.view: ', this.view);
   }
-
 
   meses = Constants.meses;
 
-  receitasMensais = [
-    {
-      name: 'Meses',
-      series: [
-        {
-          name: 'Jan',
-          value: 100,
-          despesas: 50,
-        },
-        {
-          name: 'Fev',
-          value: 400,
-          despesas: 100,
-        },
-        {
-          name: 'Mar',
-          value: 300,
-          despesas: 150,
-        },
-        {
-          name: 'Abr',
-          value: 3200,
-          despesas: 200,
-        },
-        {
-          name: 'Mai',
-          value: 900,
-          despesas: 250,
-        },
-        {
-          name: 'Jun',
-          value: 2600,
-          despesas: 300,
-        },
-        {
-          name: 'Jul',
-          value: 700,
-          despesas: 350,
-        },
-        {
-          name: 'Ago',
-          value: 800,
-          despesas: 400,
-        },
-        {
-          name: 'Set',
-          value: 900,
-          despesas: 450,
-        },
-        {
-          name: 'Out',
-          value: 1000,
-          despesas: 500,
-        },
-        {
-          name: 'Nov',
-          value: 1100,
-          despesas: 550,
-        },
-        {
-          name: 'Dez',
-          value: 1200,
-          despesas: 600,
-        },
-      ],
-    },
-  ];
-
   ngOnInit() {
-    console.log('iniciando dashboard...');
     this.isMobile();
-
-    // this.getMembers();
-    // this.getFinanceData();
+    this.loadEmpresa();
     this.getTotals();
     this.getBestInstrutoresData();
+    this.loadOperationalData();
   }
-  getMembers(
-    text?: string,
-    flag_ativo: boolean = true,
-    orderBy: string = 'nome'
-  ) {
-    this.loading = true;
-    const filters: Partial<IUsuario> = {
-      tipo_usuario: Constants.ALUNO_ID,
-      fl_ativo: flag_ativo,
-      empresa_id: this.usuario.empresa_id,
-    };
 
-    if (text) {
-      filters['nome'] = text;
-    }
-
-    this.usuarioService.findByFilters(filters).subscribe({
-      next: (res) => {
-        console.log('res: ', res);
-        this.members = res;
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-      },
-      complete: () => (this.loading = false),
+  loadEmpresa() {
+    this.empresaService.getEmpresa(this.usuario.empresa_id as string).subscribe(emp => {
+      this.empresa = emp;
     });
   }
 
-  getFinanceData() {
-    this.transFinServ
-      .getFinancialResumeByEmpresaId(this.usuario.empresa_id as string)
-      .subscribe({
-        next: (data) => {
-          console.log('💻🔍🪲 - getFinanceData', data);
-          console.log('💻🔍🪲 - getFinanceData', data);
-        },
-      });
+  loadOperationalData() {
+    const empresaId = this.usuario.empresa_id as string;
+
+    this.transFinServ.getCheckinsHoje(empresaId).subscribe(res => this.checkinsHoje = res);
+    this.transFinServ.getAlertasVencimento(empresaId).subscribe(res => this.alertasVencimento = res);
+    this.transFinServ.getAlunosSemCheckin(empresaId).subscribe(res => this.alunosChurn = res);
+    this.transFinServ.getReceitasPendentes(empresaId).subscribe(res => this.receitasPendentes = res);
+    this.transFinServ.getPicoCheckins(empresaId).subscribe(res => {
+      this.picoCheckinsData = res.picos.map((p: any) => ({ name: p.hora, value: p.total }));
+    });
   }
 
+  getGreeting(): string {
+    const hr = new Date().getHours();
+    if (hr < 12) return 'Bom dia';
+    if (hr < 18) return 'Boa tarde';
+    return 'Boa noite';
+  }
+
+  getUserInitials(): string {
+    if (!this.usuario?.nome) return '?';
+    const names = this.usuario.nome.split(' ');
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  }
+
+  getTotals() {
+    const empresaId = this.usuario.empresa_id as string;
+    this.transFinServ.getTotalsByEmpresaId(empresaId).subscribe((totals: any) => {
+      this.totals = totals;
+
+      // Receitas vs Despesas (Gráfico de Área)
+      this.revenueVsExpenseData = [
+        {
+          name: 'Receitas',
+          series: totals.receita_por_mes.map((r: any) => ({
+            name: (this.meses.find(m => m.value === (r.mes + 1))?.label || '') + '/' + r.ano,
+            value: r.valor
+          }))
+        },
+        {
+          name: 'Despesas',
+          series: (totals.despesa_por_mes || []).map((d: any) => ({
+            name: (this.meses.find(m => m.value === (d.mes + 1))?.label || '') + '/' + d.ano,
+            value: d.valor
+          }))
+        }
+      ];
+
+      // Alunos Status (Pizza)
+      this.membrosStatusData = [
+        { name: 'Ativos', value: totals.totalMembros },
+        { name: 'Inativos', value: Math.floor(totals.totalMembros * 0.15) } // Mock provisório até ter endpoint de inativos
+      ];
+    });
+  }
+
+  getMembers(text?: string, flag_active: boolean = true) {
+    this.loading = true;
+    const filters: Partial<IUsuario> = {
+      tipo_usuario: Constants.ALUNO_ID,
+      fl_ativo: flag_active,
+      empresa_id: this.usuario.empresa_id,
+    };
+    if (text) filters['nome'] = text;
+
+    this.usuarioService.findByFilters(filters).subscribe({
+      next: (res) => this.members = res,
+      error: () => this.loading = false,
+      complete: () => (this.loading = false),
+    });
+  }
 
   teachers$: Observable<IUsuario[]> | undefined;
   getBestInstrutoresData() {
@@ -205,36 +202,8 @@ export class DashboardPage implements OnInit {
       tipo_usuario: Constants.INSTRUTOR_ID,
       empresa_id: this.usuario.empresa_id,
     }).pipe(
-      map((users) => {
-        // users.sort((a, b) => {
-        //   const aulasA = a.aulas?.length || 0;
-        //   const aulasB = b.aulas?.length || 0;
-        //   return aulasB - aulasA; // Ordena em ordem decrescente
-        // });
-        return users.slice(0, 2); // Retorna os 5 primeiros
-      })
-    )
-  }
-
-  getTotals() {
-
-    this.transFinServ
-      .getTotalsByEmpresaId(this.usuario.empresa_id as string)
-      .subscribe((totals) => {
-        console.log('totals: ', totals);
-        this.totals = totals as any;
-
-        this.receitasMensais = [{
-          name: 'Meses',
-          series: this.totals.receita_por_mes.map(r => {
-            return {
-              name: (this.meses.find(m => m.value === (r.mes + 1))?.label || '') + '/' + r.ano,
-              value: r.valor,
-              despesas: 500,
-            };
-          }),
-
-        }];
-      });
+      map(users => users.slice(0, 4))
+    );
   }
 }
+

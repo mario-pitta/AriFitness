@@ -1,176 +1,220 @@
-<ion-grid>
+<div class="dashboard-container">
 
-    <ion-row class="d-flex ion-align-items-center">
-        <ion-col>
-            <h6 class="ms-3">Resumo</h6>
-            <ion-row class="d-flex ion-align-items-center">
-                <ion-col sizeXs="12" sizeSm="12" sizeMd="12" sizeLg="12" sizeXl="6">
-                    <ion-row>
-                        <ion-col>
-                            <ion-card class="info-card">
-                                <ion-card-content>
-                                    <div class="d-flex gap-3 ion-align-items-center">
-                                        <ion-icon name="cash" class="card-icon-medium"></ion-icon>
-                                        <ion-label>
-                                            Receitas
-                                        </ion-label>
-                                    </div>
-                                    <ion-card-title> {{ totals.totalReceitas| currency:'BRL'}}
-                                        <ion-chip color="success"> + 3%</ion-chip>
-                                    </ion-card-title>
-                                    <ion-card-subtitle class="mt-2">Desde de {{totals.receita_por_mes[0]?.mesAno}}</ion-card-subtitle>
-                                </ion-card-content>
-                            </ion-card>
-                        </ion-col>
-                        <ion-col>
-                            <ion-card class="info-card">
-                                <ion-card-content>
-                                    <div class="d-flex gap-3 ion-align-items-center">
-                                        <ion-icon name="warning" class="card-icon-medium"></ion-icon>
-                                        <ion-label>
-                                            Despesas
-                                        </ion-label>
-                                    </div>
-                                    <ion-card-title>{{ totals.totalDespesas | currency:'BRL'}}
-                                        <ion-chip color="success"> + 13%</ion-chip>
-                                    </ion-card-title>
-                                    <ion-card-subtitle class="mt-2">Desde de {{totals.despesa_por_mes[0]?.mesAno}}</ion-card-subtitle>
-                                </ion-card-content>
-                            </ion-card>
-                        </ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <ion-col>
-                            <ion-card class="info-card">
-                                <ion-card-content>
-                                    <div class="d-flex gap-3 ion-align-items-center ">
-                                        <ion-icon name="people" class="card-icon-medium"></ion-icon>
-                                        <ion-label>
-                                            Alunos
-                                        </ion-label>
-                                    </div>
-                                    <ion-card-title>{{ totals.totalMembros }}
-                                        <ion-chip color="danger"> - 5%</ion-chip>
-                                    </ion-card-title>
-                                    <ion-card-subtitle class="mt-2">Alunos Ativos</ion-card-subtitle>
-                                </ion-card-content>
-                            </ion-card>
-                        </ion-col>
-                        <ion-col>
-                            <ion-card class="info-card">
-                                <ion-card-content>
-                                    <div class="d-flex gap-3 ion-align-items-center">
-                                        <ion-icon name="barbell-sharp" class="card-icon-medium"></ion-icon>
-                                        <ion-label>
-                                            Treinadores
-                                        </ion-label>
-                                    </div>
-                                    <ion-card-title>{{ totals.totalInstrutores }}
-                                        <ion-chip color="success"> + 100%</ion-chip>
-                                    </ion-card-title>
-                                    <ion-card-subtitle class="mt-2">Treinadores Ativos</ion-card-subtitle>
-                                </ion-card-content>
-                            </ion-card>
-                        </ion-col>
-                    </ion-row>
-                </ion-col>
-                <ion-col sizeXs="12" sizeSm="12" sizeMd="12" sizeLg="12" sizeXl="6">
-                    <ion-card class="info-card">
-                        <ion-card-content>
-                            <h4 class="fw-bolder">
-                                Analise de Receitas (R$/Mes) - Ultimos 12 Meses
-                            </h4>
-                        </ion-card-content>
-                        <ngx-charts-bar-vertical-2d [results]="receitasMensais" [gradient]="true" [xAxis]="false" [yAxis]="false" [yAxisTicks]="['R$']" [legend]="false" [showXAxisLabel]="false" [showYAxisLabel]="false" [xAxisLabel]="''" [yAxisLabel]="''" [legendTitle]="''" [view]="view">
-                        </ngx-charts-bar-vertical-2d>
-                    </ion-card>
-                </ion-col>
-            </ion-row>
+    <!-- 1. Banner Outdoor (Empresa) -->
+    <div class="dash-company-banner animate__animated animate__fadeIn" *ngIf="empresa?.banner_url">
+        <img [src]="empresa?.banner_url" alt="Banner">
+        <div class="dash-company-banner__overlay">
+            <div class="dash-company-banner__name">{{ empresa?.nome_fantasia || empresa?.nome }}</div>
+        </div>
+    </div>
 
+    <!-- 2. Header de Boas-vindas -->
+    <div class="dash-welcome-header animate__animated animate__fadeInUp">
+        <!-- <div class="dash-welcome-avatar">
+            <img *ngIf="usuario?.foto_url && usuario?.foto_url !== '' && usuario?.foto_url !== 'false' "
+                [src]="usuario.foto_url">
+            <span *ngIf="!usuario?.foto_url">{{ usuario?.nome }}</span>
+        </div> -->
+        <div class="dash-welcome-text">
+            <div class="dash-welcome-greeting">{{ getGreeting() }},</div>
+            <div class="dash-welcome-name">{{ usuario?.nome }}</div>
+            <small class="dash-welcome-date">
+                {{ today | date:'EEEE, dd' | titlecase }} de {{ today | date:'MMMM' | titlecase }}<br>
+                <!-- <span style="opacity: 0.6; font-weight: 400;">{{ today | date:'shortTime' }}</span> -->
+            </small>
+        </div>
+    </div>
+
+    <!-- 3. KPI Cards — Fila 1 (Estratégico) -->
+    <ion-row class="ion-no-padding">
+        <ion-col size="12" size-md="6" size-lg="3" class="ion-padding-bottom ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--receita">
+                <div class="dash-kpi-label">Receita Mensal</div>
+                <div class="dash-kpi-value">{{ totals.totalReceitas | currency:'BRL' }}</div>
+                <div class="dash-trend dash-trend--up">
+                    <ion-icon name="arrow-up-outline"></ion-icon> 12%
+                </div>
+                <ion-icon name="trending-up-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
+        </ion-col>
+
+        <ion-col size="12" size-md="6" size-lg="3" class="ion-padding-bottom ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--despesa">
+                <div class="dash-kpi-label">Despesa Mensal</div>
+                <div class="dash-kpi-value">{{ totals.totalDespesas | currency:'BRL' }}</div>
+                <div class="dash-kpi-sub">Dentro do esperado</div>
+                <ion-icon name="trending-down-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
+        </ion-col>
+
+        <ion-col size="12" size-md="6" size-lg="3" class="ion-padding-bottom ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--alunos">
+                <div class="dash-kpi-label">Alunos Ativos</div>
+                <div class="dash-kpi-value">{{ totals.totalMembros }}</div>
+                <div class="dash-trend dash-trend--up">
+                    <ion-icon name="caret-up-outline"></ion-icon> 5 novos
+                </div>
+                <ion-icon name="people-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
+        </ion-col>
+
+        <ion-col size="12" size-md="6" size-lg="3" class="ion-padding-bottom ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--instrutores">
+                <div class="dash-kpi-label">Instrutores</div>
+                <div class="dash-kpi-value">{{ totals.totalInstrutores }}</div>
+                <div class="dash-kpi-sub">{{ totals.totalFichas }} fichas ativas</div>
+                <ion-icon name="barbell-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
         </ion-col>
     </ion-row>
-</ion-grid>
 
-
-<!-- <div class="d-flex"> -->
-<ion-grid>
-    <ion-row>
-        <ion-col size-md="12" size-sm="12" sizeLg="6">
-            <p class="ms-3 w-100 d-flex ion-justify-content-between ion-align-items-center">Treinadores
-                <ion-chip [routerLink]="['/admin/instrutores']">Ver Todos
-                </ion-chip>
-            </p>
-            <ion-row>
-                <br> @for(teacher of teachers$ | async; track $index){
-                <ion-col size-md="12" size-sm="12" size-lg="6">
-                    <ion-card style="background-image: url('https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size: 200px;
-            background-position: 100% 0%;
-            background-repeat: no-repeat;
-            position: relative;">
-                        <ion-card-content>
-                            <h3>{{teacher.nome}}</h3>
-                            <ion-card-subtitle>Especialização</ion-card-subtitle>
-                            <ion-row>
-                                <ion-col>
-                                    <ion-card-title>
-                                        3
-                                        <ion-label color="success">+</ion-label>
-                                    </ion-card-title>
-                                    <p>Alunos</p>
-                                </ion-col>
-                                <ion-col>
-                                    <ion-card-title>
-                                        2
-                                        <ion-label color="danger">+</ion-label>
-                                    </ion-card-title>
-                                    <p>Treinos</p>
-                                </ion-col>
-
-                            </ion-row>
-                            <ion-button class="position-absolute top-0 end-0" color="success" fill="clear" shape="round">
-                                <ion-icon slot="icon-only" name="expand"></ion-icon>
-                            </ion-button>
-                            <ion-row>
-
-                                <ion-chip *ngFor="let tag of ['Motivação', 'Musculação', 'Mentalidade']; track tag">{{tag}}</ion-chip>
-
-                            </ion-row>
-                        </ion-card-content>
-                    </ion-card>
-                </ion-col>
-                }
-            </ion-row>
-
+    <!-- 4. KPI Cards — Fila 2 (Operacional/Alertas) -->
+    <ion-row class="ion-no-padding ion-margin-top">
+        <ion-col size="6" size-md="3" class="ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--checkins">
+                <div class="dash-kpi-label">Check-ins Hoje</div>
+                <div class="dash-kpi-value">{{ checkinsHoje.total }}</div>
+                <ion-icon name="checkmark-circle-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
         </ion-col>
 
-        <ion-col size-md="12" size-sm="12" sizeLg="6">
-            <p class="ms-3 w-100 d-flex ion-justify-content-between">
-                Exercícios Mais Praticados
-            </p>
-            <ion-card>
-                <ion-card-content>
-                    <ion-row>
-                        <swiper-container init="true" space-between="3" slides-per-view="6" effect="card" free-mode="true" pagination="false" grabCursor="true" loop="false">
-                            @for(exercicio of ['Todos', 'Musculação', 'Aerobicos', 'Cardio', 'Musculação', 'Aerobicos', 'Cardio', 'Flexibilidade']; track $index){
-                            <swiper-slide>
-                                <ion-chip [color]="exercicio === 'Todos' ? 'primary' : ''">{{exercicio}}</ion-chip>
-                            </swiper-slide>
-                            }
-                        </swiper-container>
-                    </ion-row>
-                    <hr>
-                    <ion-row style="height: 100px; overflow: auto;">
-                        <ion-col>
-                            @for(exercicio of ['exercicio2', 'exercicio3','exercicio1','exercicio3','exercicio1', 'exercicio2', 'exercicio2', 'exercicio3','exercicio1', 'exercicio2', 'exercicio3','exercicio1', 'exercicio2', 'exercicio3','exercicio1', 'exercicio2', 'exercicio3','exercicio1',
-                            'exercicio2', 'exercicio3', 'exercicio4']; track $index){
-                            <ion-chip>{{exercicio}}</ion-chip>
-                            }
-                        </ion-col>
-                    </ion-row>
+        <ion-col size="6" size-md="3" class="ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--pendente">
+                <div class="dash-kpi-label">Receitas Pendentes</div>
+                <div class="dash-kpi-value" style="font-size: 1.4rem;">{{ receitasPendentes.totalValor |
+                    currency:'BRL' }}</div>
+                <div class="dash-kpi-sub">{{ receitasPendentes.total }} transações</div>
+                <ion-icon name="alert-circle-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
+        </ion-col>
+
+        <ion-col size="6" size-md="3" class="ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--churn">
+                <div class="dash-kpi-label">Ausentes (14d+)</div>
+                <div class="dash-kpi-value">{{ alunosChurn.total }}</div>
+                <ion-icon name="sad-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
+        </ion-col>
+
+        <ion-col size="6" size-md="3" class="ion-padding-end">
+            <div class="dash-kpi-card dash-kpi-card--vencimento">
+                <div class="dash-kpi-label">Vencendo (7d)</div>
+                <div class="dash-kpi-value">{{ alertasVencimento.total }}</div>
+                <ion-icon name="calendar-number-outline" class="dash-kpi-icon"></ion-icon>
+            </div>
+        </ion-col>
+    </ion-row>
+
+    <!-- 5. Gráficos Principais -->
+    <div class="dash-section-title">Análise de Performance</div>
+
+    <ion-row>
+        <!-- Gráfico de Área: Receita vs Despesa -->
+        <ion-col size="12" size-lg="8" class="ion-padding-end">
+            <ion-card class="dash-chart-card">
+                <ion-card-header>
+                    <ion-card-title>Financeiro (12 meses)</ion-card-title>
+                    <ion-card-subtitle>Comparativo de Receitas e Despesas</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content class="ion-no-padding">
+                    <div style="height: 300px; padding: 10px;">
+                        <ngx-charts-area-chart [view]="[view[0] * 1.5, 280]" [scheme]="colorSchemeArea"
+                            [results]="revenueVsExpenseData" [gradient]="true" [xAxis]="true" [yAxis]="true"
+                            [legend]="true" [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true"
+                            [curve]="curveBasis">
+                        </ngx-charts-area-chart>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </ion-col>
+
+        <!-- Gráfico de Pizza: Conversão Alunos -->
+        <ion-col size="12" size-lg="4">
+            <ion-card class="dash-chart-card">
+                <ion-card-header>
+                    <ion-card-title>Status dos Alunos</ion-card-title>
+                </ion-card-header>
+                <ion-card-content class="ion-no-padding">
+                    <div style="height: 300px;">
+                        <ngx-charts-pie-chart [view]="[view[0] * 0.8, 280]" [scheme]="colorSchemeStatus"
+                            [results]="membrosStatusData" [doughnut]="true" [legend]="true" [labels]="true">
+                        </ngx-charts-pie-chart>
+                    </div>
                 </ion-card-content>
             </ion-card>
         </ion-col>
     </ion-row>
 
-    <app-usuarios [onlyList]="true"></app-usuarios>
-</ion-grid>
+    <!-- 6. Operacional e Pico de Uso -->
+    <ion-row class="ion-margin-top">
+
+        <!-- Pico de Uso Bar Chart -->
+        <ion-col size="12" size-lg="4" class="ion-padding-end">
+            <ion-card class="dash-chart-card">
+                <ion-card-header>
+                    <ion-card-title>Horários de Pico</ion-card-title>
+                    <ion-card-subtitle>Check-ins nos últimos 30 dias</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                    <div style="height: 250px;">
+                        <ngx-charts-bar-vertical [view]="[view[0] * 0.7, 220]" [scheme]="colorSchemePico"
+                            [results]="picoCheckinsData" [xAxis]="true" [yAxis]="true">
+                        </ngx-charts-bar-vertical>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </ion-col>
+
+        <!-- Lista de Alertas de Vencimento -->
+        <ion-col size="12" size-lg="4" class="ion-padding-end">
+            <ion-card class="dash-chart-card" style="height: 100%;">
+                <ion-card-header>
+                    <ion-card-title>Fim de Ciclo Próximo</ion-card-title>
+                    <ion-card-subtitle>Alunos com plano vencendo</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                    <div *ngIf="alertasVencimento.alertas.length === 0" class="ion-text-center ion-padding">
+                        <p>Nenhum vencimento próximo.</p>
+                    </div>
+                    <div class="dash-alert-item" *ngFor="let alerta of alertasVencimento.alertas | slice:0:5">
+                        <div class="dash-alert-badge" [class.dash-alert-badge--urgent]="alerta.dias_para_vencer <= 2"
+                            [class.dash-alert-badge--warning]="alerta.dias_para_vencer > 2">
+                            {{ alerta.dias_para_vencer }}d
+                        </div>
+                        <div class="dash-alert-name">
+                            {{ alerta.nome }}
+                            <div class="dash-alert-sub">{{ alerta.plano?.descricao }}</div>
+                        </div>
+                        <ion-button fill="clear" color="primary" [href]="'https://wa.me/55' + alerta.whatsapp"
+                            target="_blank">
+                            <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+                        </ion-button>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </ion-col>
+
+        <!-- Destaque Instrutores -->
+        <ion-col size="12" size-lg="4">
+            <div class="dash-section-title" style="margin-top: 5px;">Equipe</div>
+
+            <div *ngFor="let teacher of teachers$ | async" class="dash-instructor-card ion-margin-bottom"
+                style="background: var(--ion-card-background); padding: 12px; display: flex; align-items: center; gap: 12px;">
+                <div class="dash-instructor-avatar">
+                    <img *ngIf="teacher.foto_url" [src]="teacher.foto_url">
+                    <span *ngIf="!teacher.foto_url">{{ teacher.nome | slice:0:1 }}</span>
+                </div>
+                <div style="flex: 1;">
+                    <div class="dash-instructor-name">{{ teacher.nome }}</div>
+                    <div class="dash-instructor-meta">Professor Responsável</div>
+                </div>
+                <div class="ion-text-end">
+                    <div style="font-weight: 700; color: var(--ion-color-primary);">Ativo</div>
+                    <div style="font-size: 0.65rem; opacity: 0.6;">Destaque</div>
+                </div>
+            </div>
+        </ion-col>
+    </ion-row>
+
+</div>
+<!-- </ion-content> -->

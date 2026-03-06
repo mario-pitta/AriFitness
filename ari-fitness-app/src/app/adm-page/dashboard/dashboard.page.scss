@@ -1,59 +1,30 @@
-.card-icon-medium {
-  font-size: 30px;
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 10px;
+
+  // Custom animation delays
+  .animate__animated {
+    --animate-duration: 0.8s;
+  }
 }
 
-.info-card{
-  min-height: 100px;
-  max-height: fit-content;
+// Ensure columns have consistent spacing on mobile
+@media (max-width: 768px) {
+  ion-col {
+    padding-right: 0 !important;
+  }
+
+  .dash-kpi-card {
+    margin-bottom: 12px;
+  }
 }
 
-ion-card {
-  cursor: pointer;
-}
-
-ion-card:hover {
- animation: zoomIn 0.15s ease-in forwards;
-}
-
-
-
-
-
-swiper-container {
-  width: 100%;
-  height: 100%;
-}
-
-swiper-slide {
-  text-align: center;
-  // font-size: 18px;
-  // background: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-swiper-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-swiper-slide {
-  width: 80%;
-}
-
-swiper-slide:nth-child(2n) {
-  width: 60%;
-}
-
-swiper-slide:nth-child(3n) {
-  width: 40%;
-}
-
-
-
-ion-avatar {
-  --border-radius: 4px;
+// Adjust ngx-charts legends for small screens
+::ng-deep {
+  .chart-legend {
+    .legend-labels {
+      background: transparent !important;
+    }
+  }
 }

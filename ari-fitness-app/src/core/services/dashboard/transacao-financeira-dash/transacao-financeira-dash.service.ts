@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class TransacaoFinanceiraDashService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getByPeriod(
     data_inicio: string,
@@ -26,11 +26,33 @@ export class TransacaoFinanceiraDashService {
   }
 
 
-  getFinancialResumeByEmpresaId(empresaId: string){
+  getFinancialResumeByEmpresaId(empresaId: string) {
     return this.http.get(`${environment.apiUrl}/transacao-financeira-dash/receitas-por-mes/${empresaId}`)
   }
 
-  getTotalsByEmpresaId(empresaId: string){
+  getTotalsByEmpresaId(empresaId: string) {
     return this.http.get(`${environment.apiUrl}/dashboard/totals/${empresaId}`)
+  }
+
+  // ─── NOVOS MÉTODOS DE DASHBOARD ────────────────────────────────────────────
+
+  getCheckinsHoje(empresaId: string) {
+    return this.http.get<any>(`${environment.apiUrl}/dashboard/checkins-hoje/${empresaId}`);
+  }
+
+  getAlertasVencimento(empresaId: string, dias: number = 7) {
+    return this.http.get<any>(`${environment.apiUrl}/dashboard/alertas-vencimento/${empresaId}?dias=${dias}`);
+  }
+
+  getAlunosSemCheckin(empresaId: string, dias: number = 14) {
+    return this.http.get<any>(`${environment.apiUrl}/dashboard/alunos-sem-checkin/${empresaId}?dias=${dias}`);
+  }
+
+  getPicoCheckins(empresaId: string) {
+    return this.http.get<any>(`${environment.apiUrl}/dashboard/pico-checkins/${empresaId}`);
+  }
+
+  getReceitasPendentes(empresaId: string) {
+    return this.http.get<any>(`${environment.apiUrl}/dashboard/receitas-pendentes/${empresaId}`);
   }
 }
