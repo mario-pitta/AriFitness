@@ -2,21 +2,38 @@
     "name": "mvk-gym-manager",
     "version": "1.5.8",
     "author": "Mario Pitta",
-    "homepage": "",
+    "homepage": "https://mvk-gym.vercel.app",
     "ionic_sass": "./sass.config.js",
+    "main": "electron/main.js",
     "scripts": {
         "ng": "ng",
         "start": "ionic serve",
         "start:hmr": "ng serve --hmr",
         "start:server": "npm run --prefix ../ari-fitness-api start:dev",
         "build": "ng build && npm run copy:assets",
-        "copy:assets": "robocopy ./public ../ari-fitness-api/src/public /E",
+        "copy:assets": "robocopy ./www ../ari-fitness-api/src/public /E",
         "watch": "ng build --watch --configuration development",
         "deploy": "sh deploy.sh",
-        "start:full": "npm-run-all --parallel  start  start:server",
+        "start:full": "npm-run-all --parallel start start:server",
+        "electron:serve": "concurrently \"ng serve\" \"wait-on http-get://localhost:8100/ && electron . --serve\"",
+        "electron:build": "ng build --configuration production --base-href ./ && electron-builder",
         "test": "ng test",
         "lint": "ng lint",
         "release": "standard-version"
+    },
+    "build": {
+        "appId": "com.mvk.gymmanager",
+        "productName": "MVK Gym Manager",
+        "directories": {
+            "output": "dist-electron"
+        },
+        "files": [
+            "electron/**/*",
+            "www/**/*"
+        ],
+        "win": {
+            "target": "nsis"
+        }
     },
     "private": true,
     "dependencies": {
@@ -89,6 +106,10 @@
         "@types/pdfmake": "^0.2.11",
         "@typescript-eslint/eslint-plugin": "^6.0.0",
         "@typescript-eslint/parser": "^6.0.0",
+        "concurrently": "^9.2.1",
+        "cross-env": "^10.1.0",
+        "electron": "^40.7.0",
+        "electron-builder": "^26.8.1",
         "eslint": "^8.57.0",
         "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-jsdoc": "^48.2.1",
@@ -102,7 +123,8 @@
         "karma-jasmine-html-reporter": "~2.1.0",
         "npm-run-all": "^4.1.5",
         "standard-version": "^9.5.0",
-        "typescript": "~5.4.0"
+        "typescript": "~5.4.0",
+        "wait-on": "^9.0.4"
     },
     "description": "An Ionic project"
 }

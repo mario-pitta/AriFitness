@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title>Formulário de Cadastro {{ tipoUsuarioForm?.nome }}</ion-title>
+        <ion-title>Formulário de Usuário - {{tipoUsuarioForm?.nome}}</ion-title>
     </ion-toolbar>
 </ion-header>
 
@@ -13,44 +13,54 @@
                     <form [formGroup]="form" class="ion-text-left" (ionChange)="onFormChange($event)">
                         <h2>
                             <strong>
-                Dados Pessoais
-              </strong>
+                                Dados Pessoais
+                            </strong>
                         </h2>
                         <div class="form-group">
-                            <ion-input formControlName="nome" autocapitalize="words" label="Nome"></ion-input>
-                        </div>
-                        <div class="form-group">
-                            <ion-input formControlName="data_nascimento" label="Data de Nascimento" type="date"></ion-input>
-                        </div>
-                        <div class="form-group">
-                            <ion-input formControlName="cpf" [maskito]="cpfMask" [maskitoElement]="maskPredicate" label="CPF" type="text" placeholder="000.000.000-00"></ion-input>
-                        </div>
-                        <div class="form-group">
-                            <ion-input formControlName="whatsapp" [maskito]="phoneMask" [maskitoElement]="maskPredicate" label="Whatsapp" class="text-break" type="text" placeholder="(00) 0 0000-0000">
-                            </ion-input>
-                        </div>
-
-                        <div class="form-group">
-                            <ion-select formControlName="genero" [value]="null" label="Gênero" interface="popover" placeholder="--SELECIONE--">
+                            <ion-select formControlName="tipo_usuario" class="ion-color-danger" interface="popover"
+                                readonly label="Tipo de usuário" placeholder="--SELECIONE--"
+                                (ionChange)="onChangeTipoUser()">
                                 <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
-                                <ion-select-option value="M">Masculino</ion-select-option>
-                                <ion-select-option value="F">Feminino</ion-select-option>
-                            </ion-select>
-                        </div>
-                        <div class="form-group">
-                            <ion-select formControlName="tipo_usuario" class="ion-color-danger" interface="popover" readonly label="Tipo de usuário" placeholder="--SELECIONE--" (ionChange)="onChangeTipoUser()">
-                                <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
-                                <ion-select-option *ngFor="let tipoUser of tiposUsuario" [value]="tipoUser.id">{{tipoUser.nome}}
+                                <ion-select-option *ngFor="let tipoUser of tiposUsuario"
+                                    [value]="tipoUser.id">{{tipoUser.nome}}
                                 </ion-select-option>
 
                             </ion-select>
 
                         </div>
+                        <div class="form-group">
+                            <ion-input formControlName="nome" autocapitalize="words" label="Nome"></ion-input>
+                        </div>
+                        <div class="form-group">
+                            <ion-input formControlName="data_nascimento" label="Data de Nascimento"
+                                type="date"></ion-input>
+                        </div>
+                        <div class="form-group">
+                            <ion-input formControlName="cpf" [maskito]="cpfMask" [maskitoElement]="maskPredicate"
+                                label="CPF" type="text" placeholder="000.000.000-00"></ion-input>
+                        </div>
+                        <div class="form-group">
+                            <ion-input formControlName="whatsapp" [maskito]="phoneMask" [maskitoElement]="maskPredicate"
+                                label="Whatsapp" class="text-break" type="text" placeholder="(00) 0 0000-0000">
+                            </ion-input>
+                        </div>
+
+                        <div class="form-group">
+                            <ion-select formControlName="genero" [value]="null" label="Gênero" interface="popover"
+                                placeholder="--SELECIONE--">
+                                <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
+                                <ion-select-option value="M">Masculino</ion-select-option>
+                                <ion-select-option value="F">Feminino</ion-select-option>
+                            </ion-select>
+                        </div>
+
                         <ng-container *ngIf="form.getRawValue().tipo_usuario !== 5; else alunoForm">
-                            <ion-checkbox class="ion-text-wrap" *ngIf="form.value.tipo_usuario" labelPlacement="end" formControlName="flagAdmin">Adminstrador
+                            <ion-checkbox class="ion-text-wrap" *ngIf="form.value.tipo_usuario" labelPlacement="end"
+                                formControlName="flagAdmin">Adminstrador
                             </ion-checkbox>
 
-                            @switch(form.value.tipo_usuario){ @case(Constants.INSTRUTOR_ID){ formulario de instrutor } @case(Constants.GERENCIA_ID){ formulario de gerencia } }
+                            @switch(form.value.tipo_usuario){ @case(Constants.INSTRUTOR_ID){ formulario de instrutor }
+                            @case(Constants.GERENCIA_ID){ formulario de gerencia } }
 
 
                         </ng-container>
@@ -60,7 +70,8 @@
                             <br>
                             <ion-row>
                                 <ion-col size="6">
-                                    <ion-select formControlName="horario_id" class="ion-color-danger" [value]="null" label="Horário" interface="popover" placeholder="--SELECIONE--">
+                                    <ion-select formControlName="horario_id" class="ion-color-danger" [value]="null"
+                                        label="Horário" interface="popover" placeholder="--SELECIONE--">
                                         <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
                                         <ion-select-option *ngFor="let horario of horarios" [value]="horario.id">
                                             {{horario.hora_inicio}} - {{horario.hora_fim}}</ion-select-option>
@@ -68,18 +79,22 @@
                                     </ion-select>
                                 </ion-col>
                                 <ion-col size="6">
-                                    <ion-select formControlName="plano" class="ion-color-danger" [value]="null" label="Plano" interface="popover" placeholder="--SELECIONE--">
+                                    <ion-select formControlName="plano" class="ion-color-danger" [value]="null"
+                                        label="Plano" interface="popover" placeholder="--SELECIONE--">
                                         <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
-                                        <ion-select-option *ngFor="let plano of planos" [value]="plano.id">{{plano.descricao}}
+                                        <ion-select-option *ngFor="let plano of planos"
+                                            [value]="plano.id">{{plano.descricao}}
                                         </ion-select-option>
 
                                     </ion-select>
                                 </ion-col>
                             </ion-row>
                             <ion-row>
-                                <ion-select formControlName="data_vencimento" class="ion-color-danger" [value]="null" interface="popover" label="Dia de Vencimento" placeholder="--SELECIONE--">
+                                <ion-select formControlName="data_vencimento" class="ion-color-danger" [value]="null"
+                                    interface="popover" label="Dia de Vencimento" placeholder="--SELECIONE--">
                                     <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
-                                    <ion-select-option *ngFor="let dia of [1, 5, 10, 15, 20, 25, 30]" [value]="dia">{{dia}}
+                                    <ion-select-option *ngFor="let dia of [1, 5, 10, 15, 20, 25, 30]"
+                                        [value]="dia">{{dia}}
                                     </ion-select-option>
 
                                 </ion-select>
@@ -87,19 +102,23 @@
                             <br>
                             <h2>
                                 <strong>
-                  Medidas Básicas
-                </strong>
+                                    Medidas Básicas
+                                </strong>
                             </h2>
                             <br>
                             <ion-row>
                                 <ion-col size="6">
                                     <div class="form-group">
-                                        <ion-input formControlName="altura" [maskitoElement]="maskPredicate" [maskito]="alturaMask" label="Altura" type="text" placeholder="0.00 m" (ionChange)="calcIMC()"></ion-input>
+                                        <ion-input formControlName="altura" [maskitoElement]="maskPredicate"
+                                            [maskito]="alturaMask" label="Altura" type="text" placeholder="0.00 m"
+                                            (ionChange)="calcIMC()"></ion-input>
                                     </div>
                                 </ion-col>
                                 <ion-col size="6">
                                     <div class="form-group">
-                                        <ion-input formControlName="peso" [maskitoElement]="maskPredicate" [maskito]="pesoMask" label="Peso" type="text" placeholder="00.00 kg" (ionChange)="calcIMC()"></ion-input>
+                                        <ion-input formControlName="peso" [maskitoElement]="maskPredicate"
+                                            [maskito]="pesoMask" label="Peso" type="text" placeholder="00.00 kg"
+                                            (ionChange)="calcIMC()"></ion-input>
                                     </div>
                                 </ion-col>
                                 <!-- <ion-col size="12">
@@ -109,7 +128,8 @@
                 </ion-col> -->
                                 <ion-col size="12">
                                     <div class="form-group">
-                                        <ion-input label="IMC" type="number" placeholder="00.00" [(ngModel)]="imcIdeal" [ngModelOptions]="{standalone: true}" disabled></ion-input>
+                                        <ion-input label="IMC" type="number" placeholder="00.00" [(ngModel)]="imcIdeal"
+                                            [ngModelOptions]="{standalone: true}" disabled></ion-input>
                                     </div>
                                 </ion-col>
                             </ion-row>
@@ -118,12 +138,13 @@
                             <br>
                             <h2>
                                 <strong>
-                  Anaminese
-                </strong>
+                                    Anaminese
+                                </strong>
                             </h2>
                             <br>
                             <div class="form-group">
-                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" #temDoenca [checked]="form.value.doencas" type="number" placeholder="00.00">
+                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" #temDoenca
+                                    [checked]="form.value.doencas" type="number" placeholder="00.00">
                                     <div class="ion-text-wrap">
 
                                         Tenho alguma patologia.</div>
@@ -133,23 +154,27 @@
                                 </ng-container>
                             </div>
                             <div class="form-group">
-                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" #flagMedicamento [checked]="form.value.medicacao_em_uso" type="number" placeholder="00.00">
+                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" #flagMedicamento
+                                    [checked]="form.value.medicacao_em_uso" type="number" placeholder="00.00">
                                     <div class="ion-text-wrap">
                                         Uso ou estou usando alguma medicação.
                                     </div>
                                 </ion-checkbox>
                                 <ng-container *ngIf="flagMedicamento.checked === true">
-                                    <ion-input label="Qual(s) ? " type="text" formControlName="medicacao_em_uso"></ion-input>
+                                    <ion-input label="Qual(s) ? " type="text"
+                                        formControlName="medicacao_em_uso"></ion-input>
                                 </ng-container>
                             </div>
                             <div class="form-group">
-                                <ion-checkbox labelPlacement="end" #cirurgia [checked]="form.value.cirurgia" type="number" placeholder="00.00">
+                                <ion-checkbox labelPlacement="end" #cirurgia [checked]="form.value.cirurgia"
+                                    type="number" placeholder="00.00">
                                     <div class="ion-text-wrap">
 
                                         Passei por cirurgia, internação e/ou fraturas nos últimos 6 meses.
                                     </div>
                                 </ion-checkbox>
-                                <ion-input *ngIf="cirurgia.checked === true" label="Qual(s) ? " type="text" formControlName="cirurgia">
+                                <ion-input *ngIf="cirurgia.checked === true" label="Qual(s) ? " type="text"
+                                    formControlName="cirurgia">
                                 </ion-input>
 
                             </div>
@@ -160,20 +185,22 @@
                                 </ion-checkbox>
                             </div>
                             <div class="form-group">
-                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" #relato_dor [checked]="form.value.relato_dor">
+                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" #relato_dor
+                                    [checked]="form.value.relato_dor">
                                     <div class="ion-text-wrap">
 
                                         Sinto dores frequentes, ou senti dores nas últimas semanas.
                                     </div>
                                 </ion-checkbox>
-                                <ion-input *ngIf="relato_dor.checked === true" label="Qual(s) ? " type="text" formControlName="relato_dor"></ion-input>
+                                <ion-input *ngIf="relato_dor.checked === true" label="Qual(s) ? " type="text"
+                                    formControlName="relato_dor"></ion-input>
                             </div>
 
                             <br>
                             <h2>
                                 <strong>
-                  Antecedente Familiar (Mãe, Pai, Avós)
-                </strong>
+                                    Antecedente Familiar (Mãe, Pai, Avós)
+                                </strong>
                             </h2>
                             <br>
                             <div class="form-group">
@@ -198,7 +225,8 @@
                                 </ion-checkbox>
                             </div>
                             <div class="form-group">
-                                <ion-checkbox class="ion-text-wrap" labelPlacement="end" formControlName="pressao_arterial" label="" type="number" placeholder="00.00">
+                                <ion-checkbox class="ion-text-wrap" labelPlacement="end"
+                                    formControlName="pressao_arterial" label="" type="number" placeholder="00.00">
                                     <div class="ion-text-wrap">
 
                                         Tenho pressão arterial fora do padrão para minha idade.</div>
@@ -206,10 +234,13 @@
                             </div>
 
                             <div class="form-group">
-                                <ion-select formControlName="classificacao_risco" id="classificacao_risco" [value]="null" interface="popover" [ngClass]="form.value.classificacao_risco === 1 ? 'ion-text-success' : form.value.classificacao_risco === 2 ? 'ion-text-warning' : 'ion-text-danger'"
+                                <ion-select formControlName="classificacao_risco" id="classificacao_risco"
+                                    [value]="null" interface="popover"
+                                    [ngClass]="form.value.classificacao_risco === 1 ? 'ion-text-success' : form.value.classificacao_risco === 2 ? 'ion-text-warning' : 'ion-text-danger'"
                                     label="Classificação de Risco" placeholder="--SELECIONE--">
                                     <ion-select-option [value]="null">--SELECIONE--</ion-select-option>
-                                    <ion-select-option *ngFor="let grau of [1, 2, 3]" [value]="grau" [ngClass]="grau === 1 ? 'ion-text-success' : grau === 2 ? 'ion-text-warning' : 'ion-text-danger'">
+                                    <ion-select-option *ngFor="let grau of [1, 2, 3]" [value]="grau"
+                                        [ngClass]="grau === 1 ? 'ion-text-success' : grau === 2 ? 'ion-text-warning' : 'ion-text-danger'">
                                         {{grau}}
                                         <ion-icon [color]="grau === 1 ? 'success' : grau === 2 ? 'warning' : 'danger' ">
                                         </ion-icon>
@@ -218,7 +249,9 @@
                                 </ion-select>
                             </div>
                             <div class="form-group">
-                                <ion-textarea label="Observações: " formControlName="observacoes" labelPlacement="fixed" placeholder="Escreva aqui" maxlength="250" [counterFormatter]="customCounterFormatter">
+                                <ion-textarea label="Observações: " formControlName="observacoes" labelPlacement="fixed"
+                                    placeholder="Escreva aqui" maxlength="250"
+                                    [counterFormatter]="customCounterFormatter">
                                 </ion-textarea>
                             </div>
                             <br>
@@ -227,11 +260,12 @@
 
                     </form>
                 </ion-card-content>
-                <ion-button *ngIf="user.tipo_usuario !== Constants.ALUNO_ID || user.flagAdmin" expand="block" type="submit" (click)="submitForm()" color="primary" [disabled]="form.invalid || loading">
+                <ion-button *ngIf="user.tipo_usuario !== Constants.ALUNO_ID || user.flagAdmin" expand="block"
+                    type="submit" (click)="submitForm()" color="primary" [disabled]="form.invalid || loading">
                     <span *ngIf="!loading; else spinner">
-            Enviar
-            <ion-icon slot="end" name="send"></ion-icon>
-          </span>
+                        Enviar
+                        <ion-icon slot="end" name="send"></ion-icon>
+                    </span>
                 </ion-button>
             </ion-card>
         </div>

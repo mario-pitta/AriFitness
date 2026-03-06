@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { forkJoin, tap, throwError } from 'rxjs';
 import {
@@ -40,6 +40,9 @@ export class PessoaFormPage implements OnInit {
     (el as HTMLIonInputElement).getInputElement();
   planos: Plano[] = [];
   horarios: Horario[] = [];
+  /** Tipo de usuario selecionado no form */
+  @Input({ required: true }) tipoUsuarioForm!: TipoUsuario;
+
   tiposUsuario: TipoUsuario[] = [];
 
   onFormChange($event: Event) {
@@ -64,19 +67,22 @@ export class PessoaFormPage implements OnInit {
     this.user = this.auth.getUser;
     console.log('this.user: ', this.user);
 
-    // console.log(
-    //   'this.aRoute.snapshot.params["userId"] : ',
-    //   this.aRoute.snapshot.queryParams['userId']
-    // );
+
+    console.log(
+      'this.aRoute.snapshotdata : ',
+      this.aRoute.snapshot.data
+    );
+
     this.createForm();
     this.loadData();
+    console.log('tiposUsuario = ', this.tiposUsuario)
+
     if (this.aRoute.snapshot.queryParams['userId']) {
       this.getUserInfo(this.aRoute.snapshot.queryParams['userId']);
     }
 
 
   }
-  tipoUsuarioForm!: TipoUsuario;
 
   getUserInfo(id: any) {
     this.usuarioService.findByFilters({ id: id }).subscribe({
@@ -139,25 +145,31 @@ export class PessoaFormPage implements OnInit {
     return this.tipoUsuarioService.findAll().subscribe({
       next: (res: TipoUsuario[]) => {
         if (res) this.tiposUsuario = res;
+        this.tipoUsuarioForm = this.tiposUsuario.find(t => t.id == this.aRoute.snapshot.data['tipoUsuario']) as TipoUsuario;
+        console.log(' this.tipoUsuarioForm = ', this.tipoUsuarioForm)
+        this.form.get('tipo_usuario')?.setValue(this.tipoUsuarioForm.id)
+        this.form.get('tipo_usuario')?.disable()
       },
       error: (err) => {
         this.loading = false;
-        this.aRoute.data.subscribe({
-          next: (data: any) => {
-            console.log('💻🔍🪲 - data', data);
 
 
-            if (!data) return;
-            this.tipoUsuarioForm = this.tiposUsuario.find(t => t.id == data.tipoUsuario) as TipoUsuario;
-            console.log('💻🔍🪲 - this.tipoUsuarioForm ', this.tipoUsuarioForm);
+        // this.aRoute.data.subscribe({
+        //   next: (data: any) => {
+        //     console.log('💻🔍🪲 - data', data);
 
 
-            this.form.get('tipo_usuario')?.setValue(data.tipoUsuario)
-            // this.form.get('tipo_usuario')?.disable()
+        //     if (!data) return;
+        //     this.tipoUsuarioForm = this.tiposUsuario.find(t => t.id == data.tipoUsuario) as TipoUsuario;
+        //     console.log('💻🔍🪲 - this.tipoUsuarioForm ', this.tipoUsuarioForm);
 
-            console.log(this.form)
-          }
-        })
+
+        //     this.form.get('tipo_usuario')?.setValue(data.tipoUsuario)
+        //     // this.form.get('tipo_usuario')?.disable()
+
+        //     console.log(this.form)
+        //   }
+        // })
         throwError(err);
       },
       complete: () => {

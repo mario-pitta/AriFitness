@@ -63,6 +63,7 @@ O sistema depende de um arquivo `.env` para operar. As principais chaves são:
 - `SUPABASE_URL`: Endpoint da sua instância Supabase.
 - `SUPABASE_KEY`: Chave de acesso anônima ou de serviço.
 - `GOOGLE_GEMINI_KEY`: Chave de API para acesso ao Google AI Studio.
+- `GROC_API_KEY`: Chave de API para acesso ao Groc.
 
 ---
 

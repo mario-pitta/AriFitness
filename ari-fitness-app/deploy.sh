@@ -17,6 +17,8 @@ echo "- Iniciando criacao dos bundles do frontend 👌"
 ionic build --prod
 if [ $? -eq 0 ]; then
   echo "✅ BUNDLES DO FRONTEND CRIADOS COM SUCESSO 👌"
+  echo "📦 Copiando os arquivos para a API..."
+  npm run copy:assets
 else
   echo "❌ ERRO: Falha na construção dos bundles do frontend."
   exit 1

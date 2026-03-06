@@ -5,7 +5,7 @@ import { AuthGuard } from 'src/core/guards/auth.guard';
 const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () => import('./auth/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./auth/login/login.module').then(m => m.LoginPageModule)
   },
   {
     canActivate: [AuthGuard],
@@ -15,7 +15,7 @@ const routes: Routes = [
   },
   {
     path: 'check-in',
-    loadChildren: () => import('./check-in/check-in.module').then( m => m.CheckInPageModule)
+    loadChildren: () => import('./check-in/check-in.module').then(m => m.CheckInPageModule)
   },
 
 
@@ -24,8 +24,8 @@ const routes: Routes = [
 ];
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes, { useHash: true })
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
