@@ -8,45 +8,37 @@
   @if(isMobile){
 
   <ion-tab-bar slot="bottom">
-    <ion-tab-button
-      [ngClass]="route.indexOf('admin/dashboard') > -1 ? 'tab-selected' : ''"
+    <ion-tab-button [ngClass]="route.indexOf('admin/dashboard') > -1 ? 'tab-selected' : ''"
       (click)="navigate('admin/dashboard', false)">
       <ion-icon aria-hidden="true" name="home"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button [ngClass]="route.indexOf('admin/financas') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/financas', false)"
-      >
+      (click)="navigate('admin/financas', false)">
       <ion-icon name="cash"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button
-      [ngClass]="route.indexOf('admin/membros') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/membros', false)"
-    >
+    <ion-tab-button [ngClass]="route.indexOf('admin/membros') > -1 ? 'tab-selected' : ''"
+      (click)="navigate('admin/membros', false)">
       <ion-icon name="people"></ion-icon>
     </ion-tab-button>
 
 
     <!-- planejador -->
     <ion-tab-button [ngClass]="route.indexOf('admin/planejador') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/planejador', false)"
-      >
+      (click)="navigate('admin/planejador', false)">
       <ion-icon name="time"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button [ngClass]="route.indexOf('admin/calendario') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/calendario', false)"
-      >
+      (click)="navigate('admin/calendario', false)">
       <ion-icon name="calendar"></ion-icon>
     </ion-tab-button>
 
 
 
-    <ion-tab-button
-      [ngClass]="route.indexOf('admin/configuracoes') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/configuracoes', false)"
-      >
+    <ion-tab-button [ngClass]="route.indexOf('admin/configuracoes') > -1 ? 'tab-selected' : ''"
+      (click)="navigate('admin/configuracoes', false)">
       <ion-icon name="settings"></ion-icon>
     </ion-tab-button>
 

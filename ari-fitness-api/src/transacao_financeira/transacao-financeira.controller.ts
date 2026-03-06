@@ -8,6 +8,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Put,
   Query,
@@ -21,7 +22,7 @@ export class TransacaoFinanceiraController {
   constructor(
     private TransacaoFinanceiraService: TransacaoFinanceiraService,
 
-  ) {}
+  ) { }
 
   /**
    * The function `findAll` retrieves all users and sends the data or an error response using the
@@ -114,28 +115,28 @@ export class TransacaoFinanceiraController {
   @Post()
   async create(@Body() body: TransacaoFinanceira) {
     return await this.TransacaoFinanceiraService.create(body)
-      // .then(async (_res) => {
-      //   console.log('_res: ', _res);
+    // .then(async (_res) => {
+    //   console.log('_res: ', _res);
 
-      //   if (_res.error) {
-      //     console.error(
-      //       'erro no TransacaoFinanceiraService/update',
-      //       _res.error,
-      //     );
-      //     res.status(500).send({
-      //       status: 500,
-      //       ..._res.error,
-      //     });
-      //   }
-
- 
-
-      //   return res.send(_res.data);
-      // });
-  
+    //   if (_res.error) {
+    //     console.error(
+    //       'erro no TransacaoFinanceiraService/update',
+    //       _res.error,
+    //     );
+    //     res.status(500).send({
+    //       status: 500,
+    //       ..._res.error,
+    //     });
+    //   }
 
 
-   
+
+    //   return res.send(_res.data);
+    // });
+
+
+
+
   }
 
 
@@ -185,6 +186,17 @@ export class TransacaoFinanceiraController {
       }
 
       return res.send(_res.data);
+    });
+  }
+  @Post('import/:empresaId')
+  importFinances(@Res() res: Response, @Param('empresaId') empresaId: string, @Body() body: any[]) {
+    console.log('importing finances for empresa:', empresaId);
+    return this.TransacaoFinanceiraService.importFinances(empresaId, body).then((_res: any) => {
+      if (_res.error) {
+        console.error('erro no transacao-financeira/import', _res.error);
+        res.status(500).send(_res.error);
+      }
+      return res.status(201).send(_res.data);
     });
   }
 }

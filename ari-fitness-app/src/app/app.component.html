@@ -1,5 +1,5 @@
 <ion-app>
-  <ion-header [translucent]="true">
+  <ion-header [translucent]="true" *ngIf="user">
     <ion-toolbar class="d-flex">
       <!-- <ion-icon *ngIf="(route !== '/home' && route !== '/login')" slot="start"   size="large" class="ion-padding-start"  (click)="navigateBack()" name="arrow-back"></ion-icon> -->
       <div class="d-flex">
@@ -17,11 +17,7 @@
         id="options-trigger"></ion-icon>
     </ion-toolbar>
   </ion-header>
-  <ion-content>
-
-    <ion-router-outlet></ion-router-outlet>
-  </ion-content>
-
+  <ion-router-outlet></ion-router-outlet>
 </ion-app>
 
 

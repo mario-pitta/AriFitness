@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { Usuario } from 'src/usuario/Usuario.interface';
 @Controller('auth')
 export class AuthController {
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService) { }
 
   @Get('login')
   async login(
@@ -32,5 +32,25 @@ export class AuthController {
     });
   }
 
+  @Post('register')
+  async register(@Body() body: { user: any; company: any; planId?: number }, @Res() res: Response) {
+    try {
+      const result = await this.auth.register(body);
+      return res.status(201).send(result);
+    } catch (error) {
+      return res.status(400).send({ status: 400, message: error.message });
+    }
+  }
 
+  @Post('request-password-reset')
+  async requestPasswordReset(@Body() body: { email: string }, @Res() res: Response) {
+    const result = await this.auth.requestPasswordReset(body.email);
+    return res.send(result);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: { token: string; novaSenha: string }, @Res() res: Response) {
+    const result = await this.auth.resetPassword(body.token, body.novaSenha);
+    return res.send(result);
+  }
 }

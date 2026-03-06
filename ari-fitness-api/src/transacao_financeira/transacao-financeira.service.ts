@@ -173,4 +173,17 @@ export class TransacaoFinanceiraService {
         break;
     }
   }
+
+  async importFinances(empresaId: string, transactions: any[]) {
+    const transactionsToInsert = transactions.map((t) => ({
+      ...t,
+      empresa_id: empresaId,
+      fl_ativo: true,
+    }));
+
+    return this.database.supabase
+      .from(tableName)
+      .insert(transactionsToInsert)
+      .select();
+  }
 }

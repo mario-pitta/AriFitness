@@ -1,0 +1,141 @@
+<ion-content>
+    <div class="register-container">
+        <div class="register-card">
+
+            <!-- Stepper Header -->
+            <div class="stepper-header">
+                <div class="step-indicator" [class.active]="currentStep >= 1">1</div>
+                <div class="step-line" [class.active]="currentStep >= 2"></div>
+                <div class="step-indicator" [class.active]="currentStep >= 2">2</div>
+                <div class="step-line" [class.active]="currentStep >= 3"></div>
+                <div class="step-indicator" [class.active]="currentStep >= 3">3</div>
+                <div class="step-line" [class.active]="currentStep >= 4"></div>
+                <div class="step-indicator" [class.active]="currentStep >= 4">4</div>
+            </div>
+
+            <div class="header-text">
+                <h2 *ngIf="currentStep === 1">Dados Pessoais</h2>
+                <h2 *ngIf="currentStep === 2">Dados da Empresa</h2>
+                <h2 *ngIf="currentStep === 3">Escolha seu Plano</h2>
+                <h2 *ngIf="currentStep === 4">Importação de Dados</h2>
+                <p>Passo {{currentStep}} de {{totalSteps}}</p>
+            </div>
+
+            <div [ngSwitch]="currentStep" class="wizard-content">
+
+                <!-- Step 1: User Data -->
+                <div *ngSwitchCase="1" [formGroup]="userForm" class="step-form">
+                    <ion-item lines="none">
+                        <ion-label position="floating">Nome Completo</ion-label>
+                        <ion-input type="text" formControlName="nome" placeholder="Seu nome"></ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">CPF</ion-label>
+                        <ion-input type="text" formControlName="cpf" [maskito]="cpfMask"
+                            [maskitoElement]="maskPredicate" placeholder="000.000.000-00">
+                        </ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">Email</ion-label>
+                        <ion-input type="email" formControlName="email" placeholder="seu@email.com"></ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">Senha</ion-label>
+                        <ion-input type="password" formControlName="senha" placeholder="••••••••"></ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">Confirmar Senha</ion-label>
+                        <ion-input type="password" formControlName="confirmSenha" placeholder="••••••••"></ion-input>
+                    </ion-item>
+                </div>
+
+                <!-- Step 2: Company Data -->
+                <div *ngSwitchCase="2" [formGroup]="companyForm" class="step-form">
+                    <ion-item lines="none">
+                        <ion-label position="floating">Nome da Empresa</ion-label>
+                        <ion-input type="text" formControlName="nome" placeholder="Nome da sua academia"></ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">CNPJ</ion-label>
+                        <ion-input type="text" formControlName="cnpj" [maskito]="cnpjMask"
+                            [maskitoElement]="maskPredicate" placeholder="00.000.000/0000-00">
+                        </ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">Email da Empresa</ion-label>
+                        <ion-input type="email" formControlName="email"
+                            placeholder="comercial@academia.com"></ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label position="floating">Telefone</ion-label>
+                        <ion-input type="tel" formControlName="telefone" [maskito]="phoneMask"
+                            [maskitoElement]="maskPredicate" placeholder="(00) 00000-0000">
+                        </ion-input>
+                    </ion-item>
+                </div>
+
+                <!-- Step 3: Plan Selection -->
+                <div *ngSwitchCase="3" class="plans-container">
+                    <div *ngFor="let plan of plans" class="plan-card" [class.selected]="selectedPlan?.id === plan.id"
+                        (click)="selectPlan(plan)">
+                        <div class="plan-header">
+                            <h3>{{plan.name}}</h3>
+                            <div class="price">R$ {{plan.price | number:'1.2-2'}}<span>/mês</span></div>
+                        </div>
+                        <p>{{plan.description}}</p>
+                        <div class="plan-check" *ngIf="selectedPlan?.id === plan.id">
+                            <ion-icon name="checkmark-circle" color="primary"></ion-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Import (Optional) -->
+                <div *ngSwitchCase="4" class="import-section">
+                    <div class="import-card">
+                        <ion-icon name="cloud-upload" color="primary" size="large"></ion-icon>
+                        <h3>Alunos</h3>
+                        <p>Importe sua lista de alunos via Excel ou CSV</p>
+                        <ion-button fill="outline" size="small">Selecionar Arquivo</ion-button>
+                    </div>
+
+                    <div class="import-card">
+                        <ion-icon name="stats-chart" color="secondary" size="large"></ion-icon>
+                        <h3>Finanças</h3>
+                        <p>Importe seu histórico financeiro (opcional)</p>
+                        <ion-button fill="outline" size="small">Selecionar Arquivo</ion-button>
+                    </div>
+
+                    <p class="skip-text">Você pode pular esta etapa e importar depois.</p>
+                </div>
+
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons">
+                <ion-button fill="clear" (click)="prevStep()" *ngIf="currentStep > 1" class="prev-btn">
+                    Voltar
+                </ion-button>
+                <div class="spacer"></div>
+                <ion-button (click)="nextStep()" *ngIf="currentStep < totalSteps" class="next-btn"
+                    [disabled]="!canGoNext()">
+                    Próximo
+                </ion-button>
+                <ion-button (click)="finish()" *ngIf="currentStep === totalSteps" class="finish-btn">
+                    Finalizar Cadastro
+                </ion-button>
+            </div>
+
+            <div class="footer-login" *ngIf="currentStep === 1">
+                <p>Já possui uma conta? <span (click)="goToLogin()">Faça login</span></p>
+            </div>
+
+        </div>
+    </div>
+</ion-content>

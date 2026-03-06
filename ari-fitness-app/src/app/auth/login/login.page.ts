@@ -20,7 +20,7 @@ export class LoginPage implements OnInit {
   form!: FormGroup;
   cpfMask = Constants.cpfMask;
   maskPredicate: MaskitoElementPredicate = async (el) =>
-    (el as HTMLIonInputElement).getInputElement();
+    (el as unknown as HTMLIonInputElement).getInputElement();
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) { }
 
@@ -43,5 +43,15 @@ export class LoginPage implements OnInit {
         }
       },
     });
+  }
+
+  forgotPassword() {
+    console.log("navegando para esqueci minha senha")
+    this.router.navigate(['/forgot-password']);
+  }
+
+  goToRegister() {
+    console.log("navegando para cadastro")
+    this.router.navigate(['/register']);
   }
 }

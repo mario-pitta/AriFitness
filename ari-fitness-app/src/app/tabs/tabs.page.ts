@@ -45,8 +45,8 @@ export class TabsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.isMobile = this.pageSizeService.getSize().isMobile
     this.router.events.subscribe(ev => {
-      if(ev instanceof NavigationEnd){
-        console.log('selected: ',ev);
+      if (ev instanceof NavigationEnd) {
+        console.log('selected: ', ev);
         this.route = ev.url
       }
     })
@@ -70,7 +70,7 @@ export class TabsPage implements OnInit, OnDestroy {
 
   navigate(path: string, whitParams: boolean = true, params?: any) {
     setTimeout(() => {
-      this.router.navigate([path], whitParams ? { queryParams: { userId: this.user.id } }  : {});
+      this.router.navigate([path], whitParams ? { queryParams: { userId: this.user.id } } : {});
     }, 80);
   }
 

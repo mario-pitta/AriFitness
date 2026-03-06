@@ -355,4 +355,18 @@ export class UsuarioService {
       .order('data_hora', { ascending: false });
   }
 
+  async importStudents(empresaId: string, students: any[]) {
+    const studentsToInsert = students.map(s => ({
+      ...s,
+      empresa_id: empresaId,
+      senha: md5('123456'), // Default password
+      fl_ativo: true,
+      tipo_usuario: 3
+    }));
+
+    return this.database.supabase
+      .from(tableName)
+      .insert(studentsToInsert)
+      .select();
+  }
 }

@@ -198,4 +198,16 @@ export class UsuarioController {
     });
   }
 
+  @Post('import/:empresaId')
+  importStudents(@Res() res: Response, @Param('empresaId') empresaId: string, @Body() body: any[]) {
+    console.log('importing students for empresa:', empresaId);
+    return this.usuarioService.importStudents(empresaId, body).then((_res: any) => {
+      if (_res.error) {
+        console.error('erro no usuario/import', _res.error);
+        res.status(500).send(_res.error);
+      }
+      return res.status(201).send(_res.data);
+    });
+  }
+
 }

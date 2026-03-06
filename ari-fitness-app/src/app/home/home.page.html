@@ -1,19 +1,9 @@
-<ion-header [translucent]="true">
-    <ion-toolbar>
-        <!-- <ion-title>Home</ion-title> -->
-    </ion-toolbar>
-</ion-header>
-
-<!-- <ion-content [fullscreen]="true">
-  <div *ngIf="user.flagAdmin; else alunoHome" >
+<ion-content [fullscreen]="true">
+  <div *ngIf="user.flagAdmin; else alunoHome">
     <app-admin-home [user]="user"></app-admin-home>
   </div>
-</ion-content> -->
+</ion-content>
 
-
-
-
-<!-- <ng-template #alunoHome> -->
-<!-- <app-aluno-home [user]="user"></app-aluno-home> -->
-
-<!-- </ng-template> -->
+<ng-template #alunoHome>
+  <app-aluno-home [user]="user"></app-aluno-home>
+</ng-template>

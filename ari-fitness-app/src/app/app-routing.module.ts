@@ -8,6 +8,18 @@ const routes: Routes = [
     loadChildren: () => import('./auth/login/login.module').then(m => m.LoginPageModule)
   },
   {
+    path: 'register',
+    loadChildren: () => import('./auth/register/register.module').then(m => m.RegisterPageModule)
+  },
+  {
+    path: 'forgot-password',
+    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
+  },
+  {
+    path: 'reset-password',
+    loadChildren: () => import('./auth/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule)
+  },
+  {
     canActivate: [AuthGuard],
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule),

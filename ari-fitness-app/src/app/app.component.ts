@@ -70,7 +70,11 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.user = JSON.parse(localStorage.getItem('user') as string);
+    this.authService.userValue.subscribe({
+      next: (user) => {
+        this.user = user;
+      },
+    });
     this.titleService.title.asObservable().subscribe({
       next: (title) => {
         this.pageTitle = title;
@@ -98,11 +102,19 @@ export class AppComponent implements OnInit {
     document.body.classList.toggle('dark', this.isDarkMode);
   }
 
+  openUserMenu(e: Event) {
+    this.showOptions = true;
+  }
+
   logout() {
     this.authService.logout();
   }
 
   navigateBack() {
     history.back();
+  }
+
+  ngOnDestroy() {
+    this.authService.userValue.unsubscribe();
   }
 }

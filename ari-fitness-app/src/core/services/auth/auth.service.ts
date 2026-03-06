@@ -51,8 +51,21 @@ export class AuthService {
       );
   }
 
+  register(user: any, company: any, planId?: number) {
+    return this.http.post(`${environment.apiUrl}/auth/register`, { user, company, planId });
+  }
+
+  requestPasswordReset(email: string) {
+    return this.http.post(`${environment.apiUrl}/auth/request-password-reset`, { email });
+  }
+
+  resetPassword(token: string, novaSenha: string) {
+    return this.http.post(`${environment.apiUrl}/auth/reset-password`, { token, novaSenha });
+  }
+
   logout() {
     localStorage.clear();
+    this.user.set(null);
     this.userValue.next(null);
     this.router.navigate(['/login']);
   }
