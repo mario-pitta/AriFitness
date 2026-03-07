@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/mario-pitta/AriFitness/compare/v1.5.9...v1.6.0) (2026-03-07)
+
+
+### Features
+
+* Implement a new planner page featuring drag-and-drop task management and a task creation/editing modal. ([7307940](https://github.com/mario-pitta/AriFitness/commit/7307940d13d7eba945827b3bb4ebf9c0424f93d5))
+
 ### [1.5.9](https://github.com/mario-pitta/ari-fitness/compare/v1.5.8...v1.5.9) (2026-03-06)
 
 ### [1.5.8](https://github.com/mario-pitta/ari-fitness/compare/v1.5.7...v1.5.8) (2026-03-05)
