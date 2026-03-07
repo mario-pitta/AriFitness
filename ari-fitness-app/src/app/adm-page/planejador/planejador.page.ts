@@ -9,7 +9,11 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CheckboxChangeEventDetail } from '@ionic/angular';
 import { IonCheckboxCustomEvent } from '@ionic/core';
-import { DragulaService } from 'ng2-dragula';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
 import { Subscription } from 'rxjs';
 
 import { IUsuario, Usuario } from 'src/core/models/Usuario';
@@ -59,15 +63,8 @@ export class PlanejadorPage implements OnInit, OnDestroy {
     private tarefaService: TarefasService,
     private fb: FormBuilder,
     private authService: AuthService,
-    private toastr: ToastrService,
-    private dragula: DragulaService
-  ) {
-    dragula.createGroup('tarefas', {
-      removeOnSpill: false,
-      revertOnSpill: true,
-      direction: 'horizontal',
-    });
-  }
+    private toastr: ToastrService
+  ) { }
   @ViewChild('prazo') prazo!: any;
   sub$: Subscription = new Subscription();
   ngOnInit() {
@@ -75,42 +72,54 @@ export class PlanejadorPage implements OnInit, OnDestroy {
     this.loadTiposTarefa();
     this.loadTasks();
     this.createForm();
-    this.buildDragableFeat();
   }
 
-  buildDragableFeat() {
-    this.sub$.add(
-      this.dragula.drag('tarefas').subscribe((value) => {
-        console.log('drag', value);
-      })
-    );
-    this.sub$.add(
-      this.dragula
-        .dropModel('tarefas')
-        .subscribe(({ el, target, source, sourceModel, targetModel, item }) => {
+  drop(event: CdkDragDrop<Tarefa[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    }
 
+    // Update positions and status for all tasks in the target container
+    const targetStatusId = Number(event.container.id.split('_')[1]);
 
-          console.log('dropou elemento:', el, target, source, sourceModel, targetModel, item);
-          targetModel.forEach((task: any, index: number) => {
-            task.posicao = index + 1;
-            this.updateTaskStatus(
-              task.id,
-              Number(target.id.split('_')[1]),
-              task.posicao
-            );
-          });
+    event.container.data.forEach((task, index) => {
+      const newPos = index + 1;
+      if (task.posicao !== newPos || task.status_tarefa_id !== targetStatusId) {
+        task.posicao = newPos;
+        task.status_tarefa_id = targetStatusId;
+        this.updateTaskStatus(task.id!, targetStatusId, newPos);
+      }
+    });
 
+    // If moved between containers, also update positions in the source container
+    if (event.previousContainer !== event.container) {
+      event.previousContainer.data.forEach((task, index) => {
+        const newPos = index + 1;
+        if (task.posicao !== newPos) {
+          task.posicao = newPos;
+          this.updateTaskStatus(task.id!, task.status_tarefa_id, newPos);
+        }
+      });
+    }
 
-          setTimeout(() => {
-            this.loadTasks();
-
-          }, 500);
-        })
-    );
+    // Refresh tasks after a short delay to ensure backend is updated
+    setTimeout(() => {
+      this.loadTasks();
+    }, 500);
   }
 
   ngOnDestroy(): void {
-    this.dragula.destroy('tarefas');
     this.sub$.unsubscribe();
   }
 

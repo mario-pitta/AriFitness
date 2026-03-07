@@ -22,6 +22,13 @@ export class AuthController {
         return res
           .status(401)
           .send({ status: 401, message: 'Usuario/Senha inválidos' });
+
+
+      if (_res.data[0].tipo_usuario !== 3)
+        return res
+          .status(401)
+          .send({ status: 401, message: 'Você não tem permissão para acessar o sistema.' });
+
       console.log('vai retornar ok?: ', _res);
       _res.data.map(async (user: Usuario | any) => {
         if (user.senha) delete user.senha;

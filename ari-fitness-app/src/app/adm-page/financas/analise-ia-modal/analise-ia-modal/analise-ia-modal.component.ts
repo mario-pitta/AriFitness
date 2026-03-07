@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { AiService } from 'src/core/services/ai/ai.service';
 import jsPDF from 'jspdf';
 import * as pdfMake from 'pdfmake/build/pdfmake';
-import  * as pdfFonts  from 'pdfmake/build/vfs_fonts';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 const htmlToPdfmake = require('html-to-pdfmake');
 
 
@@ -26,7 +26,7 @@ export class AnaliseIaModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private aiService: AiService
-  ) {}
+  ) { }
 
   analisys!: {
     report: string;
@@ -207,7 +207,7 @@ export class AnaliseIaModalComponent implements OnInit {
   gerarRelatorioPDF() {
     const pdfMaker = {
       ...pdfMake,
-      vfs: pdfFonts.vfs
+      vfs: pdfFonts['vfs']
     }
 
     const documentDefinition = {
@@ -258,7 +258,7 @@ export class AnaliseIaModalComponent implements OnInit {
       .substring(inicio + tituloSecao.length, fim)
       .trim();
 
-      console.log('conteudo: ', conteudo);
+    console.log('conteudo: ', conteudo);
 
     return [
       { text: tituloSecao.replace('## ', ''), style: style },

@@ -36,7 +36,7 @@ export class LoginPage implements OnInit {
 
     this.auth.login(this.form.value.cpf, md5(this.form.value.senha)).subscribe({
       next: (user: IUsuario) => {
-        if (!user.flagAdmin) {
+        if (user.tipo_usuario !== Constants.GERENCIA_ID) {
           this.router.navigate(['/home']);
         } else {
           this.router.navigate(['/admin']);

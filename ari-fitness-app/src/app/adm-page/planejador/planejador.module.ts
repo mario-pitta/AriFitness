@@ -8,7 +8,7 @@ import { PlanejadorPageRoutingModule } from './planejador-routing.module';
 
 import { PlanejadorPage } from './planejador.page';
 import { NgxEditorModule } from 'ngx-editor';
-import { DragulaModule } from 'ng2-dragula';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   imports: [
@@ -18,8 +18,8 @@ import { DragulaModule } from 'ng2-dragula';
     IonicModule,
     PlanejadorPageRoutingModule,
     NgxEditorModule,
-    DragulaModule
+    DragDropModule
   ],
   declarations: [PlanejadorPage]
 })
-export class PlanejadorPageModule {}
+export class PlanejadorPageModule { }

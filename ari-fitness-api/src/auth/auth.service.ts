@@ -34,7 +34,8 @@ export class AuthService {
         `,
       )
       .eq('cpf', cpf)
-      .eq('senha', senha);
+      .eq('senha', senha)
+
   }
   async register(registrationData: { user: any; company: any; planId?: number }) {
     const { user, company, planId } = registrationData;

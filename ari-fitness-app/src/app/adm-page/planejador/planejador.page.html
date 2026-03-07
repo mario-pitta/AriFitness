@@ -1,20 +1,25 @@
 <ion-grid class="board">
-    <ion-row class="overflow-x-auto">
-        <ion-col class="mb-3 column position-relative w-100" sizeXs="12" sizeSm="12" sizeMd="4" sizeLg="4" sizeXl="4" *ngFor="let column of cols">
+    <ion-row class="overflow-x-auto" cdkDropListGroup>
+        <ion-col class="mb-3 column position-relative w-100" sizeXs="12" sizeSm="12" sizeMd="4" sizeLg="4" sizeXl="4"
+            *ngFor="let column of cols">
             <div>
-                <div class="column-header d-flex justify-content-between align-items-center p-2" (click)="column.visible = !column.visible">
+                <div class="column-header d-flex justify-content-between align-items-center p-2"
+                    (click)="column.visible = !column.visible">
                     <ion-label class="text-capitalize">{{ column.title }}</ion-label>
                     <span class="column-count gap-2 d-flex justify-content-around align-items-center">
-            <ion-badge color="light">{{ column.tasks.length }}</ion-badge>
-            <ion-button fill="clear" shape="round" size="small"
-              (click)="showTaskForm = true; createForm(column.status_tarefa_id); $event.stopPropagation()">
-              <ion-icon name="add-outline"></ion-icon>
-            </ion-button>
-          </span>
+                        <ion-badge color="light">{{ column.tasks.length }}</ion-badge>
+                        <ion-button fill="clear" shape="round" size="small"
+                            (click)="showTaskForm = true; createForm(column.status_tarefa_id); $event.stopPropagation()">
+                            <ion-icon name="add-outline"></ion-icon>
+                        </ion-button>
+                    </span>
                 </div>
-                <div class="taskContainer task-list mb-5 p-2 rounded" [id]="'task-list_' + column.status_tarefa_id" dragula="tarefas" [dragulaModel]="column.tasks" [hidden]="!column.visible">
+                <div class="taskContainer task-list mb-5 p-2 rounded" [id]="'task-list_' + column.status_tarefa_id"
+                    cdkDropList [cdkDropListData]="column.tasks" (cdkDropListDropped)="drop($event)"
+                    [hidden]="!column.visible">
 
-                    <ion-card class="mb-2 task-card" *ngFor="let task of column.tasks" (click)="showTaskForm = true; createForm(column.status_tarefa_id, task)" [ngClass]="{
+                    <ion-card class="mb-2 task-card" *ngFor="let task of column.tasks"
+                        (click)="showTaskForm = true; createForm(column.status_tarefa_id, task)" cdkDrag [ngClass]="{
               'low-priority': task.prioridade === 0,
               'medium-priority': task.prioridade === 1,
               'high-priority': task.prioridade === 2
@@ -35,7 +40,8 @@
                         </ion-card-content>
                     </ion-card>
                 </div>
-                <div class="add-task p-2 rounded-bottom text-center" (click)="showTaskForm = true; createForm(column.status_tarefa_id)">
+                <div class="add-task p-2 rounded-bottom text-center"
+                    (click)="showTaskForm = true; createForm(column.status_tarefa_id)">
                     <ion-icon name="add-outline" class="me-1"></ion-icon>
                     Adicionar tarefa
                 </div>
@@ -50,12 +56,14 @@
             <div class="task-form ion-padding">
                 <form [formGroup]="taskForm">
                     <ion-item lines="full" class="mb-2">
-                        <ion-input type="text" placeholder="Digite o título da tarefa..." formControlName="titulo"></ion-input>
+                        <ion-input type="text" placeholder="Digite o título da tarefa..."
+                            formControlName="titulo"></ion-input>
                     </ion-item>
 
                     <div class="d-flex gap-2 mb-2">
                         <ion-item lines="full" class="flex-grow-1">
-                            <ion-select interface="popover" labelPlacement="floating" label="Status" aria-label="Status" formControlName="status_tarefa_id">
+                            <ion-select interface="popover" labelPlacement="floating" label="Status" aria-label="Status"
+                                formControlName="status_tarefa_id">
                                 <ion-select-option [value]="1">A Fazer</ion-select-option>
                                 <ion-select-option [value]="2">Fazendo</ion-select-option>
                                 <ion-select-option [value]="3">Feito</ion-select-option>
@@ -63,7 +71,8 @@
                         </ion-item>
 
                         <ion-item lines="full" class="flex-grow-1">
-                            <ion-select interface="popover" labelPlacement="floating" label="Prioridade" aria-label="Prioridade" formControlName="prioridade">
+                            <ion-select interface="popover" labelPlacement="floating" label="Prioridade"
+                                aria-label="Prioridade" formControlName="prioridade">
                                 <ion-select-option [value]="0">Baixa</ion-select-option>
                                 <ion-select-option [value]="1">Média</ion-select-option>
                                 <ion-select-option [value]="2">Alta</ion-select-option>
@@ -71,20 +80,25 @@
                         </ion-item>
 
                         <ion-item lines="full" class="flex-grow-1">
-                            <ion-select interface="popover" labelPlacement="floating" label="Tipo" aria-label="Tipo de Tarefa" formControlName="tipo_tarefa_id">
-                                <ion-select-option *ngFor="let t of tiposTarefa" [value]="t.id">{{ t.descricao }}</ion-select-option>
+                            <ion-select interface="popover" labelPlacement="floating" label="Tipo"
+                                aria-label="Tipo de Tarefa" formControlName="tipo_tarefa_id">
+                                <ion-select-option *ngFor="let t of tiposTarefa" [value]="t.id">{{ t.descricao
+                                    }}</ion-select-option>
                             </ion-select>
                         </ion-item>
                     </div>
 
                     <ion-item>
-                        <ion-checkbox labelPlacement="end" #prazo [checked]="taskForm.value.data_limite_conclusao" (ionChange)="prazoChange($event)" class="mb-2">
+                        <ion-checkbox labelPlacement="end" #prazo [checked]="taskForm.value.data_limite_conclusao"
+                            (ionChange)="prazoChange($event)" class="mb-2">
                             <ion-label>Possui Prazo</ion-label>
                         </ion-checkbox>
-                        <ion-datetime-button class="ms-auto" [disabled]="!prazo.checked" datetime="datetime"></ion-datetime-button>
+                        <ion-datetime-button class="ms-auto" [disabled]="!prazo.checked"
+                            datetime="datetime"></ion-datetime-button>
                         <ion-modal [keepContentsMounted]="true">
                             <ng-template>
-                                <ion-datetime id="datetime" presentation="date" formControlName="data_limite_conclusao" [formatOptions]="{
+                                <ion-datetime id="datetime" presentation="date" formControlName="data_limite_conclusao"
+                                    [formatOptions]="{
                     date: { weekday: 'short', month: 'long', day: '2-digit' }
                   }"></ion-datetime>
                             </ng-template>
@@ -92,7 +106,9 @@
                     </ion-item>
 
                     <ion-item lines="full" class="mb-2">
-                        <ion-textarea label="Descrição" labelPlacement="floating" placeholder="Digite a descrição da tarefa..." autoGrow="true" formControlName="descricao"></ion-textarea>
+                        <ion-textarea label="Descrição" labelPlacement="floating"
+                            placeholder="Digite a descrição da tarefa..." autoGrow="true"
+                            formControlName="descricao"></ion-textarea>
                     </ion-item>
                 </form>
             </div>
