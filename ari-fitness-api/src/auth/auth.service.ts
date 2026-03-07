@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import md5 = require('md5');
 import { EmailService } from 'src/email/email.service';
-import { resetPasswordTemplate } from 'src/email/templates/reset-password.template';
+import { resetPasswordTemplate } from '../email/templates/reset-password.template';
+
 
 @Injectable()
 export class AuthService {

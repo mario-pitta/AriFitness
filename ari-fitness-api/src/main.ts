@@ -16,11 +16,11 @@ async function bootstrap() {
     "optionsSuccessStatus": 204,
     "credentials": true,
   };
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {cors: corsConfig});
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: corsConfig });
 
   app.use(bodyParser.json({ limit: '5mb' })); // Ajuste o limite conforme necessário
   // app.use(bodyParser.urlencoded({ limit: '5mb', extended: true })); // Ajuste o limite conforme necessário
-  
+
 
   app.useStaticAssets(path.join(__dirname, 'public'));
   app.setBaseViewsDir(path.join(__dirname, 'public'));
@@ -29,7 +29,7 @@ async function bootstrap() {
 
   // app.enableCors(corsConfig);
   await app.listen(3000);
-  
+
 
 }
 bootstrap();
