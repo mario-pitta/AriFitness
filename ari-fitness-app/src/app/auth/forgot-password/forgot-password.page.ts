@@ -63,6 +63,16 @@ export class ForgotPasswordPage implements OnInit {
         await toast.present();
     }
 
+
+
+    enviarEmailTest() {
+        this.auth.sendEmailTest().subscribe({
+            next: (res: any) => console.log('res = ', res),
+            error: (err: any) => console.log('err = ', err)
+
+
+        })
+    }
     goToLogin() {
         this.router.navigate(['/login']);
     }

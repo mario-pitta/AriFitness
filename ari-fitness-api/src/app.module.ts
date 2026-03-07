@@ -24,6 +24,7 @@ import { CategoriaModule } from './categoria/categoria.module';
 import { TarefaModule } from './tarefas/tarefas.module';
 import { EventoModule } from './evento/evento.module';
 import { TransacaoFinanceiraModule } from './transacao_financeira/transacao-financeira.module';
+import { EmailModule } from './email/email.module';
 import { EmpresaModule } from './empresa/empresa.module';
 
 
@@ -59,8 +60,9 @@ import { EmpresaModule } from './empresa/empresa.module';
     EventoModule,
     TransacaoFinanceiraModule,
     EmpresaModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

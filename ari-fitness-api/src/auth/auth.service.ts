@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import md5 = require('md5');
-import * as emailjs from '@emailjs/nodejs';
+import { EmailService } from 'src/email/email.service';
+import { resetPasswordTemplate } from 'src/email/templates/reset-password.template';
 
 @Injectable()
 export class AuthService {
-  constructor(private supabase: DataBaseService) { }
+  constructor(private supabase: DataBaseService, private emailService: EmailService) { }
 
   login(cpf: string, senha: string) {
     console.log('logando...', cpf, senha);
@@ -79,6 +80,9 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string) {
+
+    console.log("inicianto solicitacao de reset de senha para : ", email)
+
     // 1. Check if user exists
     const { data: user, error } = await this.supabase.supabase
       .from('usuario')
@@ -87,6 +91,7 @@ export class AuthService {
       .single();
 
     if (error || !user) {
+      console.error("usuário não encontrado")
       // For security, don't reveal if user exists. Just return "success" message.
       return { success: true };
     }
@@ -105,28 +110,30 @@ export class AuthService {
       .select()
       .single();
 
-    if (tokenError) throw tokenError;
+    if (tokenError) {
+      console.log('tokenError = ', tokenError)
 
-    // 4. Send email via EmailJS
-
-
-    const templateParams = {
-      to_email: email,
-      to_name: user.nome,
-      reset_link: `http://localhost:8100/auth/reset-password?token=${token}`,
+      throw tokenError
     };
 
-    try {
-      await emailjs.send(
-        process.env.EMAILJS_SERVICE_ID || '',
-        process.env.EMAILJS_TEMPLATE_ID || '',
-        templateParams,
-      );
-      console.log(`Email sent to ${email}`);
-    } catch (err) {
-      console.error('EmailJS Error:', err);
-    }
+    // 3. Generate HTML content for email
+    const html = resetPasswordTemplate({
+      name: user.nome,
+      // resetLink: `https://mvkgym.vercel.app/#/reset-password?token=${token}`,
+      resetLink: `http://localhost:8100/#/reset-password?token=${token}`,
+    })
 
+    console.log("html = ", html)
+
+    // 4. Send email via EmailService
+    await this.emailService.sendEmail({
+      title: 'Recuperação de Senha',
+      to_email: user.email,
+      content: html,
+      systemName: 'MvK Gym Manager'
+    })
+
+    console.log("email enviado com sucesso")
     return { success: true };
   }
 
@@ -166,4 +173,6 @@ export class AuthService {
       return { success: false, error: error.message };
     }
   }
+
+
 }

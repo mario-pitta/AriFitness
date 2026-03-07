@@ -1,5 +1,25 @@
-ari-fitness-api/src/public/*
-ari-fitness-api/www
+# Build artifacts
+ari-fitness-api/dist
+ari-fitness-api/node_modules
+ari-fitness-app/dist
+ari-fitness-app/dist-electron
+ari-fitness-app/node_modules
+ari-fitness-app/www
+ari-fitness-app/platforms
+ari-fitness-app/plugins
 
+# Vercel
 .vercel
 
+# Environment
+.env
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

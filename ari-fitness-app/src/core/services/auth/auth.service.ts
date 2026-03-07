@@ -63,6 +63,10 @@ export class AuthService {
     return this.http.post(`${environment.apiUrl}/auth/reset-password`, { token, novaSenha });
   }
 
+  sendEmailTest() {
+    return this.http.get(`${environment.apiUrl}/auth/teste-email`)
+  }
+
   logout() {
     localStorage.clear();
     this.user.set(null);

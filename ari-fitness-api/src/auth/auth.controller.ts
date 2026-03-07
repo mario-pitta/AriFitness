@@ -44,6 +44,8 @@ export class AuthController {
 
   @Post('request-password-reset')
   async requestPasswordReset(@Body() body: { email: string }, @Res() res: Response) {
+    console.log('body = ', body)
+
     const result = await this.auth.requestPasswordReset(body.email);
     return res.send(result);
   }
@@ -53,4 +55,6 @@ export class AuthController {
     const result = await this.auth.resetPassword(body.token, body.novaSenha);
     return res.send(result);
   }
+
+
 }
