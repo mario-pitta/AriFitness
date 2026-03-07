@@ -218,6 +218,11 @@ ion-menu {
     z-index: 10;
     background: var(--ion-background-color);
     padding-bottom: 8px;
+
+    @media (max-width: 768px) {
+      padding-top: 65px;
+    }
+
     /* Extra breathing space */
   }
 

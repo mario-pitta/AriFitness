@@ -116,7 +116,9 @@
     <div class="ion-page" id="main">
         <div class="fixed-breadcrumb-header ion-padding-horizontal ion-padding-top px-md-4">
             <ion-breadcrumbs [maxItems]="4">
-                <ion-breadcrumb href="#admin">Home</ion-breadcrumb>
+                <ion-breadcrumb href="#/admin">
+                    <ion-icon name="home-outline"></ion-icon>
+                </ion-breadcrumb>
                 <ion-breadcrumb *ngFor="let breadcrumb of breadcrumbs" [href]="'#'+breadcrumb.href">{{breadcrumb.title |
                     titlecase}}
                 </ion-breadcrumb>

@@ -1,5 +1,6 @@
 <ion-tab-bar color="light" *ngIf="isAdminPath && empresaId" slot="top">
-    <ion-tab-button (click)="viewMode='list';  getCheckinHistoric(empresaId, dataInicio, dataFim)" [active]="viewMode==='list'">
+    <ion-tab-button (click)="viewMode='list';  getCheckinHistoric(empresaId, dataInicio, dataFim)"
+        [active]="viewMode==='list'">
         <ion-icon name="list"></ion-icon>
         <ion-label>Frequência</ion-label>
     </ion-tab-button>
@@ -10,113 +11,138 @@
     </ion-tab-button>
 </ion-tab-bar>
 
-<ng-container *ngIf="viewMode === 'list'">
-    <div *ngIf="empresaId; else noEmpresaId">
+<ion-content>
+    <ng-container *ngIf="viewMode === 'list'">
+        <ion-content class="ion-padding">
+            <div *ngIf="empresaId; else noEmpresaId">
 
+                <ion-card>
+                    <ion-card-header>
+                        <ion-card-title class="ion-text-center ion-padding-top">Histórico de Check-ins</ion-card-title>
+                        <ion-card-subtitle></ion-card-subtitle>
+
+                    </ion-card-header>
+                </ion-card>
+                <!-- Seletor de data e filtro por nome -->
+                <ion-row>
+                    <ion-col size="12" size-md="4">
+                        <ion-input class="ion-text-left" type="date" label="Data:" labelPlacement="floating"
+                            placeholder="Data Início" [(ngModel)]="dataInicio"
+                            (ionInput)="getCheckinHistoric(empresaId, dataInicio, dataFim)">
+                        </ion-input>
+                    </ion-col>
+                    <ion-col size="12" size-md="4">
+                        <ion-input placeholder="Filtrar por Nome" [(ngModel)]="filtroNome"
+                            (ionInput)="getCheckinHistoric(empresaId, dataInicio, dataFim)">
+                        </ion-input>
+                    </ion-col>
+
+                </ion-row>
+
+
+                <ion-list *ngIf="checkinHistoric.length > 0; else noCheckins">
+                    <ion-item *ngFor="let checkin of checkinHistoric">
+                        <ion-label>
+                            <h2>{{ checkin.nome_completo || 'Nome não informado' }}</h2>
+                            <p>CPF: {{ checkin.cpf_aluno }}</p>
+                            <p class="ion-text-wrap">
+                                <ion-badge [color]="checkin.status_acesso === 'Visitante' ? 'warning' : 'success'"
+                                    class="ion-margin-end">
+                                    <ion-icon
+                                        [name]="checkin.status_acesso === 'Visitante' ? 'person-outline' : 'checkmark-circle-outline'"
+                                        class="ion-align-self-center"></ion-icon>
+                                    {{ checkin.tipo_usuario_desc }}
+                                </ion-badge>
+                            </p>
+                            <p>
+                                <ion-icon name="time-outline" color="medium"></ion-icon>
+                                {{ checkin.data_hora | date: 'mediumTime' }} em {{ checkin.data_hora | date:
+                                'dd/MM/yyyy' }}
+                            </p>
+                        </ion-label>
+
+                        <ion-buttons slot="end">
+                            <ion-button fill="clear" color="medium" size="small" (click)="openCheckinActions(checkin)">
+                                <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                    </ion-item>
+                </ion-list>
+
+                <ng-template #noCheckins>
+                    <ion-card>
+                        <ion-card-header>
+                            <ion-card-title>Nenhum Check-in Registrado</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <p>Não há registros de check-in para o período selecionado.</p>
+                        </ion-card-content>
+                    </ion-card>
+                </ng-template>
+            </div>
+        </ion-content>
+    </ng-container>
+
+    <ng-container *ngIf="viewMode === 'checkin'">
+        <div *ngIf="empresaId; else noEmpresaId">
+            <ion-card>
+                <ion-card-header class="ion-text-center ion-padding-top">
+                    <ion-img *ngIf="!isAdminPath" [src]="empresa?.logo_url"
+                        [alt]="'Logo da Empresa' + empresa?.nome"></ion-img>
+                    <ion-card-title> {{isAdminPath ?'Check-in de Alunos' : 'Boas Vindas'}}</ion-card-title>
+                    <ion-card-subtitle *ngIf="isAdminPath">Solicite que o aluno leia o QR Code abaixo para registrar o
+                        check-in.
+                    </ion-card-subtitle>
+                </ion-card-header>
+            </ion-card>
+
+            <ion-row>
+                <ion-col size="12" size-md="6" *ngIf="isAdminPath">
+                    <div class="qrcodeImage">
+                        <qrcode [qrdata]="checkinUrl" [allowEmptyString]="true"
+                            [ariaLabel]="'QR Code image with the following content...'" [cssClass]="'center'"
+                            [colorDark]="'#000000ff'" [colorLight]="'#ffffffff'" [elementType]="'canvas'"
+                            [errorCorrectionLevel]="'Q'" [imageSrc]="empresa?.logo_url" [imageHeight]="75"
+                            [imageWidth]="70" [margin]="4" [scale]="1" [title]="'Fazer Check-in'"
+                            [width]="isMobile ? 200 : 400"></qrcode>
+                    </div>
+                </ion-col>
+
+                <ion-col size="12" size-md="6">
+                    <h6 class="ion-text-center ion-padding-top">{{isAdminPath ?'Ou registre manualmente' : 'Informe seus
+                        dados:'}}
+                    </h6>
+                    <div
+                        class="ion-container  ion-text-center d-flex ion-justify-content-center ion-align-items-center">
+                        <div class=" ion-container ion-padding ion-align-items-center">
+                            <ion-input label="Nome:" labelPlacement="floating" class="ion-text-left" [(ngModel)]="nome"
+                                type="text" placeholder="Seu nome completo"></ion-input>
+                            <ion-input class="ion-text-left" [(ngModel)]="cpf" label="CPF" labelPlacement="floating"
+                                [maskito]="cpfMask" [maskitoElement]="maskPredicate" type="text"
+                                placeholder="000.000.000-00" />
+                            <ion-checkbox *ngIf="!isAdminPath" class="ion-margin-top" labelPlacement="end"
+                                [(ngModel)]="saveInfoOnDevice">Salvar no dispositivo</ion-checkbox>
+                            <ion-button class="ion-margin-top " color="primary" shape="round" expand="block"
+                                [disabled]="!cpf && !nome" (click)="registrarCheckIn()">Registrar Check-in</ion-button>
+                        </div>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+
+
+        </div>
+    </ng-container>
+
+    <ng-template #noEmpresaId>
         <ion-card>
             <ion-card-header>
-                <ion-card-title class="ion-text-center ion-padding-top">Histórico de Check-ins</ion-card-title>
-                <ion-card-subtitle></ion-card-subtitle>
-
+                <ion-card-title>Aviso</ion-card-title>
             </ion-card-header>
+            <ion-card-content>
+                <p>Não foi possível obter informações da academia/studio. Por favor, verifique se o link está correto ou
+                    entre em contato com o suporte.</p>
+            </ion-card-content>
         </ion-card>
-        <!-- Seletor de data e filtro por nome -->
-        <ion-row>
-            <ion-col size="12" size-md="4">
-                <ion-input class="ion-text-left" type="date" label="Data:" labelPlacement="floating" placeholder="Data Início" [(ngModel)]="dataInicio" (ionInput)="getCheckinHistoric(empresaId, dataInicio, dataFim)">
-                </ion-input>
-            </ion-col>
-            <ion-col size="12" size-md="4">
-                <ion-input placeholder="Filtrar por Nome" [(ngModel)]="filtroNome" (ionInput)="getCheckinHistoric(empresaId, dataInicio, dataFim)">
-                </ion-input>
-            </ion-col>
-
-        </ion-row>
-
-
-        <ion-list *ngIf="checkinHistoric.length > 0; else noCheckins">
-            <ion-item *ngFor="let checkin of checkinHistoric">
-                <ion-label>
-                    <h2>{{ checkin.nome_completo || 'Nome não informado' }}</h2>
-                    <p>CPF: {{ checkin.cpf_aluno }}</p>
-                    <p class="ion-text-wrap">
-                        <ion-badge [color]="checkin.status_acesso === 'Visitante' ? 'warning' : 'success'" class="ion-margin-end">
-                            <ion-icon [name]="checkin.status_acesso === 'Visitante' ? 'person-outline' : 'checkmark-circle-outline'" class="ion-align-self-center"></ion-icon>
-                            {{ checkin.tipo_usuario_desc }}
-                        </ion-badge>
-                    </p>
-                    <p>
-                        <ion-icon name="time-outline" color="medium"></ion-icon>
-                        {{ checkin.data_hora | date: 'mediumTime' }} em {{ checkin.data_hora | date: 'dd/MM/yyyy' }}
-                    </p>
-                </ion-label>
-
-                <ion-buttons slot="end">
-                    <ion-button fill="clear" color="medium" size="small" (click)="openCheckinActions(checkin)">
-                        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
-                    </ion-button>
-                </ion-buttons>
-            </ion-item>
-        </ion-list>
-
-        <ng-template #noCheckins>
-            <ion-card>
-                <ion-card-header>
-                    <ion-card-title>Nenhum Check-in Registrado</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                    <p>Não há registros de check-in para o período selecionado.</p>
-                </ion-card-content>
-            </ion-card>
-        </ng-template>
-    </div>
-</ng-container>
-
-<ng-container *ngIf="viewMode === 'checkin'">
-    <div *ngIf="empresaId; else noEmpresaId">
-        <ion-card>
-            <ion-card-header class="ion-text-center ion-padding-top">
-                <ion-img *ngIf="!isAdminPath" [src]="empresa?.logo_url" [alt]="'Logo da Empresa' + empresa?.nome"></ion-img>
-                <ion-card-title> {{isAdminPath ?'Check-in de Alunos' : 'Boas Vindas'}}</ion-card-title>
-                <ion-card-subtitle *ngIf="isAdminPath">Solicite que o aluno leia o QR Code abaixo para registrar o check-in.
-                </ion-card-subtitle>
-            </ion-card-header>
-        </ion-card>
-
-        <ion-row>
-            <ion-col size="12" size-md="6" *ngIf="isAdminPath">
-                <div class="qrcodeImage">
-                    <qrcode [qrdata]="checkinUrl" [allowEmptyString]="true" [ariaLabel]="'QR Code image with the following content...'" [cssClass]="'center'" [colorDark]="'#000000ff'" [colorLight]="'#ffffffff'" [elementType]="'canvas'" [errorCorrectionLevel]="'Q'" [imageSrc]="empresa?.logo_url"
-                        [imageHeight]="75" [imageWidth]="70" [margin]="4" [scale]="1" [title]="'Fazer Check-in'" [width]="isMobile ? 200 : 400"></qrcode>
-                </div>
-            </ion-col>
-
-            <ion-col size="12" size-md="6">
-                <h6 class="ion-text-center ion-padding-top">{{isAdminPath ?'Ou registre manualmente' : 'Informe seus dados:'}}
-                </h6>
-                <div class="ion-container  ion-text-center d-flex ion-justify-content-center ion-align-items-center">
-                    <div class=" ion-container ion-padding ion-align-items-center">
-                        <ion-input label="Nome:" labelPlacement="floating" class="ion-text-left" [(ngModel)]="nome" type="text" placeholder="Seu nome completo"></ion-input>
-                        <ion-input class="ion-text-left" [(ngModel)]="cpf" label="CPF" labelPlacement="floating" [maskito]="cpfMask" [maskitoElement]="maskPredicate" type="text" placeholder="000.000.000-00" />
-                        <ion-checkbox *ngIf="!isAdminPath" class="ion-margin-top" labelPlacement="end" [(ngModel)]="saveInfoOnDevice">Salvar no dispositivo</ion-checkbox>
-                        <ion-button class="ion-margin-top " color="primary" shape="round" expand="block" [disabled]="!cpf && !nome" (click)="registrarCheckIn()">Registrar Check-in</ion-button>
-                    </div>
-                </div>
-            </ion-col>
-        </ion-row>
-
-
-
-    </div>
-</ng-container>
-
-<ng-template #noEmpresaId>
-    <ion-card>
-        <ion-card-header>
-            <ion-card-title>Aviso</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-            <p>Não foi possível obter informações da academia/studio. Por favor, verifique se o link está correto ou entre em contato com o suporte.</p>
-        </ion-card-content>
-    </ion-card>
-</ng-template>
+    </ng-template>
+</ion-content>

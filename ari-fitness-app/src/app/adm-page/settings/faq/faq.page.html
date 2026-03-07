@@ -1,44 +1,48 @@
-<ion-title>
-    Central de Ajuda</ion-title>
-<div class="faq-header ion-text-center">
-    <h2>Como podemos ajudar?</h2>
-    <p>Tire suas dúvidas ou assista aos tutoriais em vídeo abaixo.</p>
-</div>
+<ion-content>
+    <ion-title>Central de Ajuda</ion-title>
+    <div class="faq-header ion-text-center">
+        <h2>Como podemos ajudar?</h2>
+        <p>Tire suas dúvidas ou assista aos tutoriais em vídeo abaixo.</p>
+    </div>
 
-<div *ngFor="let cat of faqCategories" class="category-section">
-    <ion-item-divider sticky color="light">
-        <ion-icon [name]="cat.icon" slot="start"></ion-icon>
-        <ion-label>{{ cat.name }}</ion-label>
-    </ion-item-divider>
+    <div *ngFor="let cat of faqCategories" class="category-section">
+        <ion-item-divider sticky color="light">
+            <ion-icon [name]="cat.icon" slot="start"></ion-icon>
+            <ion-label>{{ cat.name }}</ion-label>
+        </ion-item-divider>
 
-    <ion-accordion-group>
-        <ion-accordion *ngFor="let item of cat.questions; let i = index" [value]="item.q">
-            <ion-item slot="header" color="light">
-                <ion-label class="question-text">{{ item.q }}</ion-label>
-            </ion-item>
+        <ion-accordion-group>
+            <ion-accordion *ngFor="let item of cat.questions; let i = index" [value]="item.q">
+                <ion-item slot="header" color="light">
+                    <ion-label class="question-text">{{ item.q }}</ion-label>
+                </ion-item>
 
-            <div class="ion-padding answer-content" slot="content">
-                <p>{{ item.a }}</p>
+                <div class="ion-padding answer-content" slot="content">
+                    <p>{{ item.a }}</p>
 
-                <p *ngIf="item.videoId">Vídeo Tutorial: <a href="https://www.youtube.com/watch?v={{ item.videoId }}" target="_blank" rel="noopener">Assistir</a></p>
-                <div class="video-container" *ngIf="item.videoId">
-                    <!-- <div class="video-placeholder">
+                    <p *ngIf="item.videoId">Vídeo Tutorial: <a href="https://www.youtube.com/watch?v={{ item.videoId }}"
+                            target="_blank" rel="noopener">Assistir</a></p>
+                    <div class="video-container" *ngIf="item.videoId">
+                        <!-- <div class="video-placeholder">
                         <ion-icon name="play-circle"></ion-icon>
                         <p>Vídeo Tutorial: {{ item.q }}</p>
                     </div> -->
-                    <!-- <video src="https://www.youtube.com/watch?v={{ item.videoId }}" controls></video> -->
-                    <iframe width="1335" height="751" [src]="item.videoUrl" binding="true" title="{{item.q}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen></iframe>
+                        <!-- <video src="https://www.youtube.com/watch?v={{ item.videoId }}" controls></video> -->
+                        <iframe width="1335" height="751" [src]="item.videoUrl" binding="true" title="{{item.q}}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
                 </div>
-            </div>
-        </ion-accordion>
-    </ion-accordion-group>
-</div>
+            </ion-accordion>
+        </ion-accordion-group>
+    </div>
 
-<div class="support-footer ion-text-center ion-padding">
-    <p>Ainda precisa de ajuda?</p>
-    <ion-button fill="outline" color="primary" href="mailto:suporte@mvk.com">
-        <ion-icon name="mail-outline" slot="start"></ion-icon>
-        Contatar Suporte
-    </ion-button>
-</div>
+    <div class="support-footer ion-text-center ion-padding">
+        <p>Ainda precisa de ajuda?</p>
+        <ion-button fill="outline" color="primary" href="mailto:suporte@mvk.com">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            Contatar Suporte
+        </ion-button>
+    </div>
+</ion-content>

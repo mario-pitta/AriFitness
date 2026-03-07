@@ -12,7 +12,18 @@
 // Ensure columns have consistent spacing on mobile
 @media (max-width: 768px) {
   ion-col {
+    padding-left: 10px;
     padding-right: 0 !important;
+  }
+
+  .dashboard-container {
+    padding: 10px;
+
+
+    // Custom animation delays
+    .animate__animated {
+      --animate-duration: 0.8s;
+    }
   }
 
   .dash-kpi-card {

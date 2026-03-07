@@ -13,8 +13,8 @@
         </ion-title>
       </div>
       <!-- <ion-icon *ngIf="route !== '/login'" name="power-sharp" slot="end" size="large" class="ion-padding-end" [routerLink]="['/login']"></ion-icon> -->
-      <ion-icon *ngIf="route !== '/login'" name="person" slot="end" size="large" class="ion-padding-end"
-        id="options-trigger"></ion-icon>
+      <ion-icon *ngIf="route !== '/login'" (click)="showOptions = true" name="person" slot="end" size="large"
+        class="ion-padding-end" id="options-trigger"></ion-icon>
     </ion-toolbar>
   </ion-header>
   <ion-router-outlet></ion-router-outlet>
@@ -23,32 +23,31 @@
 
 
 
-<ion-popover trigger="options-trigger" [dismissOnSelect]="true" (didDismiss)="showOptions = false">
+<ion-popover trigger="options-trigger" [isOpen]="showOptions" [dismissOnSelect]="true"
+  (didDismiss)="showOptions = false">
   <ng-template>
-    <ion-content>
 
-      <ion-list>
-        <ion-list-header>
-          <ion-label>Olá, {{user?.nome}}</ion-label>
-        </ion-list-header>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Olá, {{user?.nome}}</ion-label>
+      </ion-list-header>
 
-        <ion-item [button]="true" (click)="showOptions = false">
-          <ion-icon name="notifications" slot="start"></ion-icon>
-          Notificações
-        </ion-item>
-        <ion-item [button]="true" (click)="showOptions = false">
-          <ion-icon name="person" slot="start"></ion-icon>
-          Meu Perfil
-        </ion-item>
-        <ion-item [button]="true" (click)="toggleTheme()">
-          <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" slot="start"></ion-icon>
-          Modo {{ isDarkMode ? 'Claro' : 'Escuro' }}
-        </ion-item>
-        <ion-item [button]="true" (click)="showOptions = false; logout()">
-          <ion-icon name="exit" slot="start"></ion-icon>
-          Sair
-        </ion-item>
-      </ion-list>
-    </ion-content>
+      <ion-item [button]="true" (click)="showOptions = false">
+        <ion-icon name="notifications" slot="start"></ion-icon>
+        Notificações
+      </ion-item>
+      <ion-item [button]="true" (click)="showOptions = false">
+        <ion-icon name="person" slot="start"></ion-icon>
+        Meu Perfil
+      </ion-item>
+      <ion-item [button]="true" (click)="toggleTheme()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'" slot="start"></ion-icon>
+        Modo {{ isDarkMode ? 'Claro' : 'Escuro' }}
+      </ion-item>
+      <ion-item [button]="true" (click)="showOptions = false; logout()">
+        <ion-icon name="exit" slot="start"></ion-icon>
+        Sair
+      </ion-item>
+    </ion-list>
   </ng-template>
 </ion-popover>
