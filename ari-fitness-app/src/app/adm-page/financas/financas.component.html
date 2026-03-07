@@ -1,221 +1,224 @@
-<div class="ion-padding">
+<ion-content>
+  <div class="ion-padding">
 
 
 
-  <ion-row class="ion-justify-content-between ion-align-items-center">
-    <!-- filtro por mes e ano -->
-    <ion-col size="12" sizeMd="4">
-      <ion-item>
-        <ion-select interface="popover" [formControl]="periodo">
-          <ion-select-option [value]="0" selected>Esse mês</ion-select-option>
-          <ion-select-option [value]="3">Nos últimos 3 mês</ion-select-option>
-          <ion-select-option [value]="6">Nos últimos 6 mês</ion-select-option>
-          <ion-select-option [value]="12">No último ano</ion-select-option>
-          <ion-select-option [value]="null">Personalizado</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-col>
-    <div class="ion-text-end">
-      <ion-button class="ai-analysis-btn" id="analysisIAButton">
-        <div class="btn-content">
-          <ion-icon name="logo-ionitron" class="ai-icon"></ion-icon>
-          <ion-text>Análise de IA</ion-text>
-        </div>
-      </ion-button>
-    </div>
-    <ion-popover trigger="analysisIAButton" triggerAction="hover">
-      <ng-template>
-        <ion-content class="ion-padding">Em breve</ion-content>
-      </ng-template>
-    </ion-popover>
-  </ion-row>
-  <ion-row *ngIf="periodo.value === null">
-    <ion-col size="12" size-md="6">
+    <ion-row class="ion-justify-content-between ion-align-items-center">
+      <!-- filtro por mes e ano -->
+      <ion-col size="12" sizeMd="4">
+        <ion-item>
+          <ion-select interface="popover" [formControl]="periodo">
+            <ion-select-option [value]="0" selected>Esse mês</ion-select-option>
+            <ion-select-option [value]="3">Nos últimos 3 mês</ion-select-option>
+            <ion-select-option [value]="6">Nos últimos 6 mês</ion-select-option>
+            <ion-select-option [value]="12">No último ano</ion-select-option>
+            <ion-select-option [value]="null">Personalizado</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <div class="ion-text-end">
+        <ion-button class="ai-analysis-btn" id="analysisIAButton">
+          <div class="btn-content">
+            <ion-icon name="logo-ionitron" class="ai-icon"></ion-icon>
+            <ion-text>Análise de IA</ion-text>
+          </div>
+        </ion-button>
+      </div>
+      <ion-popover trigger="analysisIAButton" triggerAction="hover">
+        <ng-template>
+          <ion-content class="ion-padding">Em breve</ion-content>
+        </ng-template>
+      </ion-popover>
+    </ion-row>
+    <ion-row *ngIf="periodo.value === null">
+      <ion-col size="12" size-md="6">
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label>Início:</ion-label>
+              <ion-datetime-button datetime="startDate"></ion-datetime-button>
+
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label>Fim:</ion-label>
+              <ion-datetime-button datetime="finalDate"></ion-datetime-button>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+
+      <ion-modal #startDateModal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime (ionChange)="onChangeDates()" presentation="date" #startDate id="startDate"
+            [(ngModel)]="data_inicio">
+            <ion-buttons slot="buttons">
+              <ion-button color="primary" (click)="startDate.cancel(); startDateModal.dismiss()">Cancelar</ion-button>
+              <ion-button color="primary" (click)="startDate.confirm(); startDateModal.dismiss()">OK</ion-button>
+            </ion-buttons>
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-modal #finalDateModal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime (ionChange)="onChangeDates()" presentation="date" #finalDate id="finalDate"
+            [(ngModel)]="data_fim">
+            <ion-buttons slot="buttons">
+              <ion-button color="primary" (click)="finalDate.cancel(); finalDateModal.dismiss()">Cancelar</ion-button>
+              <ion-button color="primary" (click)="finalDate.confirm(); finalDateModal.dismiss()">OK</ion-button>
+            </ion-buttons>
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-row>
+
+    <ng-template #chartSkeleton>
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeMd="4" size="12" *ngFor="let item of [1,2,3]">
+            <ion-card>
+              <ion-card-content>
+                <ion-list-header>
+                  <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+                </ion-list-header>
+                <ion-item>
+                  <ion-thumbnail slot="start">
+                    <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+                  </ion-thumbnail>
+                  <ion-label>
+                    <h3>
+                      <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+                    </h3>
+                    <p>
+                      <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+                    </p>
+                    <p>
+                      <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
+                    </p>
+                  </ion-label>
+                </ion-item>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ng-template>
+
+
+    <ion-grid *ngIf="!loading; else chartSkeleton" class="dashboard-grid">
       <ion-row>
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label>Início:</ion-label>
-            <ion-datetime-button datetime="startDate"></ion-datetime-button>
-
-          </ion-item>
+        <!-- Receitas -->
+        <ion-col size="12" size-md="4">
+          <ion-card class="metric-card glow-success">
+            <ion-card-content>
+              <div class="metric-header">
+                <div class="icon-wrapper bg-success-light">
+                  <ion-icon name="trending-up" color="success"></ion-icon>
+                </div>
+                <ion-card-subtitle>Receitas Totais</ion-card-subtitle>
+              </div>
+              <ion-card-title class="color-success">R$ {{totalReceitas}}</ion-card-title>
+            </ion-card-content>
+          </ion-card>
         </ion-col>
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label>Fim:</ion-label>
-            <ion-datetime-button datetime="finalDate"></ion-datetime-button>
-          </ion-item>
+
+        <!-- Despesas -->
+        <ion-col size="12" size-md="4">
+          <ion-card class="metric-card glow-danger">
+            <ion-card-content>
+              <div class="metric-header">
+                <div class="icon-wrapper bg-danger-light">
+                  <ion-icon name="trending-down" color="danger"></ion-icon>
+                </div>
+                <ion-card-subtitle>Custo Operacional</ion-card-subtitle>
+              </div>
+              <ion-card-title class="color-danger">R$ {{totalDespesas}}</ion-card-title>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- Saldo / Lucro Líquido -->
+        <ion-col size="12" size-md="4">
+          <ion-card class="metric-card" [ngClass]="{'glow-success': isSaldoPositivo, 'glow-danger': !isSaldoPositivo}">
+            <ion-card-content>
+              <div class="metric-header">
+                <div class="icon-wrapper" [ngClass]="isSaldoPositivo ? 'bg-success-light' : 'bg-danger-light'">
+                  <ion-icon name="wallet" [color]="isSaldoPositivo ? 'success' : 'danger'"></ion-icon>
+                </div>
+                <ion-card-subtitle>Lucro Líquido</ion-card-subtitle>
+              </div>
+              <ion-card-title [ngClass]="isSaldoPositivo ? 'color-success' : 'color-danger'">R$
+                {{saldo}}</ion-card-title>
+            </ion-card-content>
+          </ion-card>
         </ion-col>
       </ion-row>
-    </ion-col>
 
+      <!-- CHARTS -->
+      <ion-row class="charts-row">
+        <ion-col size="12" size-md="6">
+          <ion-card class="metric-card glass-card glow-success">
+            <ion-card-header>
+              <ion-card-subtitle>Distribuição de Receitas</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content class="d-flex justify-content-center">
+              <ngx-charts-pie-chart [view]="chartViewSize" [results]="totalReceitasPorCategoria" [gradient]="true"
+                [animations]="true" [labels]="true" labelType="percent">
+                <!-- <ngx-charts-legend [animations]="true">
+              </ngx-charts-legend> -->
+              </ngx-charts-pie-chart>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
 
-    <ion-modal #startDateModal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime (ionChange)="onChangeDates()" presentation="date" #startDate id="startDate"
-          [(ngModel)]="data_inicio">
-          <ion-buttons slot="buttons">
-            <ion-button color="primary" (click)="startDate.cancel(); startDateModal.dismiss()">Cancelar</ion-button>
-            <ion-button color="primary" (click)="startDate.confirm(); startDateModal.dismiss()">OK</ion-button>
-          </ion-buttons>
-        </ion-datetime>
-      </ng-template>
-    </ion-modal>
-    <ion-modal #finalDateModal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime (ionChange)="onChangeDates()" presentation="date" #finalDate id="finalDate"
-          [(ngModel)]="data_fim">
-          <ion-buttons slot="buttons">
-            <ion-button color="primary" (click)="finalDate.cancel(); finalDateModal.dismiss()">Cancelar</ion-button>
-            <ion-button color="primary" (click)="finalDate.confirm(); finalDateModal.dismiss()">OK</ion-button>
-          </ion-buttons>
-        </ion-datetime>
-      </ng-template>
-    </ion-modal>
-  </ion-row>
-
-  <ng-template #chartSkeleton>
-    <ion-grid>
-      <ion-row>
-        <ion-col sizeMd="4" size="12" *ngFor="let item of [1,2,3]">
-          <ion-card>
-            <ion-card-content>
-              <ion-list-header>
-                <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
-              </ion-list-header>
-              <ion-item>
-                <ion-thumbnail slot="start">
-                  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-                </ion-thumbnail>
-                <ion-label>
-                  <h3>
-                    <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-                  </h3>
-                  <p>
-                    <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-                  </p>
-                  <p>
-                    <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
-                  </p>
-                </ion-label>
-              </ion-item>
+        <ion-col size="12" size-md="6">
+          <ion-card class="glass-card glow-danger">
+            <ion-card-header>
+              <ion-card-subtitle>Distribuição de Despesas</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content class="d-flex justify-content-center">
+              <ngx-charts-pie-chart [view]="chartViewSize" [results]="totalDespesasPorCategoria" [gradient]="true"
+                [animations]="true" [labels]="true" labelType="percent">
+              </ngx-charts-pie-chart>
             </ion-card-content>
           </ion-card>
         </ion-col>
       </ion-row>
     </ion-grid>
-  </ng-template>
 
 
-  <ion-grid *ngIf="!loading; else chartSkeleton" class="dashboard-grid">
+
+
     <ion-row>
-      <!-- Receitas -->
-      <ion-col size="12" size-md="4">
-        <ion-card class="metric-card glow-success">
+      <ion-col size="12">
+        <ion-list>
           <ion-card-content>
-            <div class="metric-header">
-              <div class="icon-wrapper bg-success-light">
-                <ion-icon name="trending-up" color="success"></ion-icon>
-              </div>
-              <ion-card-subtitle>Receitas Totais</ion-card-subtitle>
-            </div>
-            <ion-card-title class="color-success">R$ {{totalReceitas}}</ion-card-title>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
+            <ion-card-title class="d-flex ion-justify-content-between ion-align-items-center flex-wrap gap-2 mb-3">
+              <h4>Extrato Financeiro</h4>
+              <ion-button color="primary" class="add-tx-btn" shape="round" (click)="openTransacaoForm()">
+                <ion-icon name="add" slot="start"></ion-icon>
+                Nova Transação
+              </ion-button>
+            </ion-card-title>
 
-      <!-- Despesas -->
-      <ion-col size="12" size-md="4">
-        <ion-card class="metric-card glow-danger">
-          <ion-card-content>
-            <div class="metric-header">
-              <div class="icon-wrapper bg-danger-light">
-                <ion-icon name="trending-down" color="danger"></ion-icon>
-              </div>
-              <ion-card-subtitle>Custo Operacional</ion-card-subtitle>
+            <div class="transactions-container">
+              @if (!loading) {
+              <ng-container *ngFor="let item of transacoes; let i = index" class="zoomIn">
+                <ng-content *ngTemplateOutlet="itemListFinance; context: {$implicit: item}"></ng-content>
+              </ng-container>
+              } @else {
+              <ng-content *ngTemplateOutlet="skeleton"></ng-content>
+              }
             </div>
-            <ion-card-title class="color-danger">R$ {{totalDespesas}}</ion-card-title>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
 
-      <!-- Saldo / Lucro Líquido -->
-      <ion-col size="12" size-md="4">
-        <ion-card class="metric-card" [ngClass]="{'glow-success': isSaldoPositivo, 'glow-danger': !isSaldoPositivo}">
-          <ion-card-content>
-            <div class="metric-header">
-              <div class="icon-wrapper" [ngClass]="isSaldoPositivo ? 'bg-success-light' : 'bg-danger-light'">
-                <ion-icon name="wallet" [color]="isSaldoPositivo ? 'success' : 'danger'"></ion-icon>
-              </div>
-              <ion-card-subtitle>Lucro Líquido</ion-card-subtitle>
-            </div>
-            <ion-card-title [ngClass]="isSaldoPositivo ? 'color-success' : 'color-danger'">R$ {{saldo}}</ion-card-title>
           </ion-card-content>
-        </ion-card>
+        </ion-list>
       </ion-col>
     </ion-row>
-
-    <!-- CHARTS -->
-    <ion-row class="charts-row">
-      <ion-col size="12" size-md="6">
-        <ion-card class="metric-card glass-card glow-success">
-          <ion-card-header>
-            <ion-card-subtitle>Distribuição de Receitas</ion-card-subtitle>
-          </ion-card-header>
-          <ion-card-content class="d-flex justify-content-center">
-            <ngx-charts-pie-chart [view]="chartViewSize" [results]="totalReceitasPorCategoria" [gradient]="true"
-              [animations]="true" [labels]="true" labelType="percent">
-              <!-- <ngx-charts-legend [animations]="true">
-              </ngx-charts-legend> -->
-            </ngx-charts-pie-chart>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="12" size-md="6">
-        <ion-card class="glass-card glow-danger">
-          <ion-card-header>
-            <ion-card-subtitle>Distribuição de Despesas</ion-card-subtitle>
-          </ion-card-header>
-          <ion-card-content class="d-flex justify-content-center">
-            <ngx-charts-pie-chart [view]="chartViewSize" [results]="totalDespesasPorCategoria" [gradient]="true"
-              [animations]="true" [labels]="true" labelType="percent">
-            </ngx-charts-pie-chart>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-
-
-
-  <ion-row>
-    <ion-col size="12">
-      <ion-list>
-        <ion-card-content>
-          <ion-card-title class="d-flex ion-justify-content-between ion-align-items-center flex-wrap gap-2 mb-3">
-            <h4>Extrato Financeiro</h4>
-            <ion-button color="primary" class="add-tx-btn" shape="round" (click)="openTransacaoForm()">
-              <ion-icon name="add" slot="start"></ion-icon>
-              Nova Transação
-            </ion-button>
-          </ion-card-title>
-
-          <div class="transactions-container">
-            @if (!loading) {
-            <ng-container *ngFor="let item of transacoes; let i = index" class="zoomIn">
-              <ng-content *ngTemplateOutlet="itemListFinance; context: {$implicit: item}"></ng-content>
-            </ng-container>
-            } @else {
-            <ng-content *ngTemplateOutlet="skeleton"></ng-content>
-            }
-          </div>
-
-        </ion-card-content>
-      </ion-list>
-    </ion-col>
-  </ion-row>
-</div>
+  </div>
+</ion-content>
 
 
 

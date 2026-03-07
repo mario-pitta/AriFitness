@@ -1,8 +1,116 @@
-.form-group {
-  text-wrap: wrap !important;
-  white-space: normal !important
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-:ng-deep :ng-host ion-select#classificacao_risco {
+.modern-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  background: var(--ion-card-background, #fff);
 
+  ion-card-header {
+    background: rgba(var(--ion-color-primary-rgb), 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 16px;
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  ion-card-content {
+    padding-top: 20px;
+  }
+}
+
+.modern-input {
+  --border-radius: 8px;
+  margin-bottom: 16px;
+  --background: var(--ion-color-step-50, #f7f7f7);
+}
+
+.readonly-item {
+  --background: transparent;
+  margin-top: 16px;
+
+  ion-label {
+    font-size: 0.9em;
+    color: var(--ion-color-medium);
+  }
+
+  ion-badge {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-item {
+  --background: var(--ion-color-step-50, #f7f7f7);
+  --border-radius: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+
+  ion-checkbox {
+    width: 100%;
+    padding: 12px 16px;
+  }
+}
+
+.conditional-input {
+  padding-left: 16px;
+  margin-top: -4px;
+  margin-bottom: 12px;
+  border-left: 2px solid var(--ion-color-primary);
+}
+
+.modern-accordion {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  background: var(--ion-card-background, #fff);
+
+  ion-item[slot="header"] {
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      margin: 0;
+
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+.mt-4 {
+  margin-top: 24px;
+}
+
+.action-container {
+  padding: 24px 0 80px 0;
+
+  ion-button {
+    --box-shadow: 0 8px 16px rgba(var(--ion-color-primary-rgb), 0.3);
+    height: 56px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
 }

@@ -37,7 +37,7 @@ export class PessoaFormPage implements OnInit {
   pesoMask: MaskitoOptions = Constants.pesoMask
 
   maskPredicate: MaskitoElementPredicate = async (el) =>
-    (el as HTMLIonInputElement).getInputElement();
+    (el as unknown as HTMLIonInputElement).getInputElement();
   planos: Plano[] = [];
   horarios: Horario[] = [];
   /** Tipo de usuario selecionado no form */
@@ -204,6 +204,7 @@ export class PessoaFormPage implements OnInit {
     this.form = this.fb.group({
       id: [null, [Validators.nullValidator]],
       nome: ['', [Validators.required]],
+      email: ['', [Validators.email]],
       data_nascimento: null,
       tipo_usuario: [
         null,
@@ -270,6 +271,10 @@ export class PessoaFormPage implements OnInit {
       classificacao_risco: [1, [Validators.nullValidator]],
       observacoes: ['', [Validators.nullValidator]],
       empresa_id: [this.user.empresa_id, [Validators.nullValidator]],
+      cref: [null, [Validators.nullValidator]],
+      especialidade: [null, [Validators.nullValidator]],
+      turno: [null, [Validators.nullValidator]],
+      funcao: [null, [Validators.nullValidator]],
     });
   }
 
@@ -288,12 +293,22 @@ export class PessoaFormPage implements OnInit {
       this.form.controls['plano'].setValidators(Validators.required);
       this.form.controls['horario_id'].setValidators(Validators.required);
     } else {
-      this.form.controls['plano'].setValidators(Validators.nullValidator);
-      this.form.controls['horario_id'].setValidators(Validators.nullValidator);
+      this.form.controls['plano'].clearValidators();
+      this.form.controls['horario_id'].clearValidators();
+    }
+
+    if (newValue === Constants.INSTRUTOR_ID) {
+      this.form.controls['cref'].setValidators(Validators.required);
+      this.form.controls['especialidade'].setValidators(Validators.required);
+    } else {
+      this.form.controls['cref'].clearValidators();
+      this.form.controls['especialidade'].clearValidators();
     }
 
     this.form.get('horario_id')?.updateValueAndValidity();
     this.form.get('plano')?.updateValueAndValidity();
+    this.form.get('cref')?.updateValueAndValidity();
+    this.form.get('especialidade')?.updateValueAndValidity();
   }
 
   submitForm() {

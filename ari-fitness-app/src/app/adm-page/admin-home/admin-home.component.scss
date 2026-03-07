@@ -210,10 +210,42 @@ ion-menu {
   height: 100vh;
   overflow: hidden;
   background: var(--ion-background-color);
+  display: flex;
+  flex-direction: column;
+
+  .fixed-breadcrumb-header {
+    flex-shrink: 0;
+    z-index: 10;
+    background: var(--ion-background-color);
+    padding-bottom: 8px;
+    /* Extra breathing space */
+  }
 
   .main-content-scroll {
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    position: relative;
+
+    /* Forces the routed component to fill the entire container height without pushing it */
+    ::ng-deep>*:not(router-outlet) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      /* Apply padding internally to ion-content so the scrollbar stays at the absolute edge */
+      ion-content {
+        @media (min-width: 768px) {
+          --padding-start: 1rem;
+          --padding-end: 1rem;
+        }
+
+        @media (min-width: 992px) {
+          --padding-start: 3rem;
+          --padding-end: 3rem;
+        }
+      }
+    }
   }
 }

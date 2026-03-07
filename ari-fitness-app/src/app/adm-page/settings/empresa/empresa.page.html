@@ -1,78 +1,80 @@
-<form [formGroup]="empresaForm">
+<ion-content>
+  <form [formGroup]="empresaForm">
 
-  <div class="section">
-    <div class=" ion-padding">
-      <h5 class="section-title">Imagens</h5>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="4">
-            <ion-label>Logo</ion-label>
-            <div>
-              <input type="file" accept="image/*" (change)="onLogoChange($event)" hidden #logo_url id="logo_url"
-                labelPlacement="floating" />
-              <ion-thumbnail class="logo-thumbnail">
-                <img class="logo-preview" (click)="logo_url.click()" alt="Logo"
-                  [src]="empresaForm.value.logo_url ? empresaForm.value.logo_url : 'https://ionicframework.com/docs/img/demos/thumbnail.svg'" />
-              </ion-thumbnail>
-              <!-- <img (click)="logo_url.click()"
+    <div class="section">
+      <div class=" ion-padding">
+        <h5 class="section-title">Imagens</h5>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="4">
+              <ion-label>Logo</ion-label>
+              <div>
+                <input type="file" accept="image/*" (change)="onLogoChange($event)" hidden #logo_url id="logo_url"
+                  labelPlacement="floating" />
+                <ion-thumbnail class="logo-thumbnail">
+                  <img class="logo-preview" (click)="logo_url.click()" alt="Logo"
+                    [src]="empresaForm.value.logo_url ? empresaForm.value.logo_url : 'https://ionicframework.com/docs/img/demos/thumbnail.svg'" />
+                </ion-thumbnail>
+                <!-- <img (click)="logo_url.click()"
                 [src]=" 'assets/mvk-gym-manager-logo.png'"
                 alt="Logo Preview" class="logo-preview"> -->
-            </div>
+              </div>
 
-          </ion-col>
-          <ion-col size="12">
-            <ion-label>Banner</ion-label>
-            <div>
+            </ion-col>
+            <ion-col size="12">
+              <ion-label>Banner</ion-label>
+              <div>
 
-              <input type="file" accept="image/*" (change)="onBannerChange($event)" hidden #banner_url id="banner_url"
-                labelPlacement="floating" />
-              <ion-thumbnail class="banner-thumbnail">
-                <img (click)="banner_url.click()"
-                  [src]="empresaForm.value.banner_url ? empresaForm.value.banner_url  : 'https://ionicframework.com/docs/img/demos/thumbnail.svg'"
-                  alt="Banner Preview" class="banner-preview">
-              </ion-thumbnail>
-            </div>
-          </ion-col>
-          <ion-col></ion-col>
-        </ion-row>
-      </ion-grid>
+                <input type="file" accept="image/*" (change)="onBannerChange($event)" hidden #banner_url id="banner_url"
+                  labelPlacement="floating" />
+                <ion-thumbnail class="banner-thumbnail">
+                  <img (click)="banner_url.click()"
+                    [src]="empresaForm.value.banner_url ? empresaForm.value.banner_url  : 'https://ionicframework.com/docs/img/demos/thumbnail.svg'"
+                    alt="Banner Preview" class="banner-preview">
+                </ion-thumbnail>
+              </div>
+            </ion-col>
+            <ion-col></ion-col>
+          </ion-row>
+        </ion-grid>
 
 
+      </div>
     </div>
-  </div>
 
-  <div class="section">
-    <div class=" ion-padding">
-      <h5 class="section-title">Informações Básicas</h5>
-      <ion-item>
-        <ion-input type="text" id="nome" label="Nome" labelPlacement="floating" formControlName="nome" required>
-        </ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input type="text" id="nome_fantasia" label="Nome Fantasia" labelPlacement="floating"
-          formControlName="nome_fantasia" required>
-        </ion-input>
-      </ion-item>
+    <div class="section">
+      <div class=" ion-padding">
+        <h5 class="section-title">Informações Básicas</h5>
+        <ion-item>
+          <ion-input type="text" id="nome" label="Nome" labelPlacement="floating" formControlName="nome" required>
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" id="nome_fantasia" label="Nome Fantasia" labelPlacement="floating"
+            formControlName="nome_fantasia" required>
+          </ion-input>
+        </ion-item>
 
-      <ion-item>
-        <ion-input type="text" id="cnpj" label="CNPJ" formControlName="cnpj" labelPlacement="floating"
-          [maskito]="cnpjMask" [maskitoElement]="maskPredicate">
-        </ion-input>
-      </ion-item>
+        <ion-item>
+          <ion-input type="text" id="cnpj" label="CNPJ" formControlName="cnpj" labelPlacement="floating"
+            [maskito]="cnpjMask" [maskitoElement]="maskPredicate">
+          </ion-input>
+        </ion-item>
 
-      <ion-item>
-        <ion-input type="text" id="telefone" label="Telefone" labelPlacement="floating" formControlName="telefone"
-          [maskito]="telefoneMask" [maskitoElement]="maskPredicate">
-        </ion-input>
-      </ion-item>
+        <ion-item>
+          <ion-input type="text" id="telefone" label="Telefone" labelPlacement="floating" formControlName="telefone"
+            [maskito]="telefoneMask" [maskitoElement]="maskPredicate">
+          </ion-input>
+        </ion-item>
 
-      <ion-item>
-        <ion-input type="email" id="email" label="Email" labelPlacement="floating" formControlName="email"></ion-input>
-      </ion-item>
+        <ion-item>
+          <ion-input type="email" id="email" label="Email" labelPlacement="floating"
+            formControlName="email"></ion-input>
+        </ion-item>
+      </div>
     </div>
-  </div>
 
-  <!-- <div class="section">
+    <!-- <div class="section">
     <div class=" ion-padding">
       <h5 class="section-title">Endereço</h5>
       <ion-item>
@@ -112,166 +114,167 @@
     </div>
   </div> -->
 
-  <div class="section">
-    <div class=" ion-padding">
-      <h5 class="section-title d-flex justify-content-between align-items-center">Horários de Funcionamento
-        <ion-button fill="clear" slot="end" (click)="addHorario()">
-          <ion-icon color="primary" name="add-circle-outline"></ion-icon>
-        </ion-button>
-      </h5>
+    <div class="section">
+      <div class=" ion-padding">
+        <h5 class="section-title d-flex justify-content-between align-items-center">Horários de Funcionamento
+          <ion-button fill="clear" slot="end" (click)="addHorario()">
+            <ion-icon color="primary" name="add-circle-outline"></ion-icon>
+          </ion-button>
+        </h5>
 
 
-      <ng-container formArrayName="horarios">
-        <ion-row *ngFor="let horario of horarios.controls; let i = index" [formGroupName]="i">
-          <ion-col size="5">
-            <ion-item>
-              <ion-input type="time" id="horario_abertura" label="Abertura" labelPlacement="floating"
-                formControlName="hora_inicio"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col size="5">
-            <ion-item>
-              <ion-input type="time" id="horario_fechamento" label="Fechamento" labelPlacement="floating"
-                formControlName="hora_fim"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col size="2">
-            <ion-button fill="clear" (click)="removeHorario(i)">
-              <ion-icon color="danger" name="trash-outline"></ion-icon>
-            </ion-button>
-          </ion-col>
-        </ion-row>
-
-      </ng-container>
-    </div>
-  </div>
-
-
-  <div class="section">
-    <div class=" ion-padding">
-      <h5 class="section-title d-flex justify-content-between align-items-center">Planos de Acesso
-        <ion-button fill="clear" slot="end" (click)="addPlano()">
-          <ion-icon color="primary" name="add-circle-outline"></ion-icon>
-        </ion-button>
-      </h5>
-
-
-      <ng-container formArrayName="planos">
-        <div class="mt-2" *ngFor="let plano of planos.controls; let i = index">
-          <ion-item [formGroupName]="i">
-            <ion-col size="12">
-              <ion-row>
-                <ion-col size="12">
-                  <ion-item>
-                    <ion-input type="text" id="plano" label="Plano" labelPlacement="floating"
-                      formControlName="descricao">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-input type="number" id="preco" label="Preco" labelPlacement="floating"
-                      formControlName="preco_padrao">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-input type="number" max="7" min="1" id="duracao" label="Dias/Semana" labelPlacement="floating"
-                      formControlName="qtd_dias_semana"></ion-input>
-                  </ion-item>
-                </ion-col>
-                <ion-col size="12">
-                  <ion-item>
-                    <ion-textarea type="text" maxlength="250" class="w-100" id="caracteristicas"
-                      label="Outras Características" labelPlacement="floating" formControlName="caracteristicas">
-                    </ion-textarea>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-
-              <ion-button fill="clear" expand="block" color="danger" (click)="removePlano(i)">
-                <ion-icon color="danger" name="trash-outline"> </ion-icon> Remover
+        <ng-container formArrayName="horarios">
+          <ion-row *ngFor="let horario of horarios.controls; let i = index" [formGroupName]="i">
+            <ion-col size="5">
+              <ion-item>
+                <ion-input type="time" id="horario_abertura" label="Abertura" labelPlacement="floating"
+                  formControlName="hora_inicio"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="5">
+              <ion-item>
+                <ion-input type="time" id="horario_fechamento" label="Fechamento" labelPlacement="floating"
+                  formControlName="hora_fim"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="2">
+              <ion-button fill="clear" (click)="removeHorario(i)">
+                <ion-icon color="danger" name="trash-outline"></ion-icon>
               </ion-button>
             </ion-col>
+          </ion-row>
+
+        </ng-container>
+      </div>
+    </div>
+
+
+    <div class="section">
+      <div class=" ion-padding">
+        <h5 class="section-title d-flex justify-content-between align-items-center">Planos de Acesso
+          <ion-button fill="clear" slot="end" (click)="addPlano()">
+            <ion-icon color="primary" name="add-circle-outline"></ion-icon>
+          </ion-button>
+        </h5>
+
+
+        <ng-container formArrayName="planos">
+          <div class="mt-2" *ngFor="let plano of planos.controls; let i = index">
+            <ion-item [formGroupName]="i">
+              <ion-col size="12">
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-item>
+                      <ion-input type="text" id="plano" label="Plano" labelPlacement="floating"
+                        formControlName="descricao">
+                      </ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="6">
+                    <ion-item>
+                      <ion-input type="number" id="preco" label="Preco" labelPlacement="floating"
+                        formControlName="preco_padrao">
+                      </ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="6">
+                    <ion-item>
+                      <ion-input type="number" max="7" min="1" id="duracao" label="Dias/Semana"
+                        labelPlacement="floating" formControlName="qtd_dias_semana"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="12">
+                    <ion-item>
+                      <ion-textarea type="text" maxlength="250" class="w-100" id="caracteristicas"
+                        label="Outras Características" labelPlacement="floating" formControlName="caracteristicas">
+                      </ion-textarea>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+
+                <ion-button fill="clear" expand="block" color="danger" (click)="removePlano(i)">
+                  <ion-icon color="danger" name="trash-outline"> </ion-icon> Remover
+                </ion-button>
+              </ion-col>
+            </ion-item>
+          </div>
+
+        </ng-container>
+      </div>
+    </div>
+
+
+
+    <div class="section">
+      <div class=" ion-padding">
+        <h5 class="section-title">Opções de Pagamento</h5>
+
+        <ion-row class="d-flex align-items-center gap-2 mt-1">
+          <ion-checkbox labelPlacement="end" formControlName="accept_money_in_cash">Dinheiro</ion-checkbox>
+        </ion-row>
+        <ion-row class="d-flex align-items-center gap-2 mt-1">
+          <ion-checkbox labelPlacement="end" formControlName="accept_debit_card">Cartão de Débito</ion-checkbox>
+        </ion-row>
+        <ion-row class="d-flex align-items-center gap-2 mt-1">
+          <ion-checkbox labelPlacement="end" formControlName="accept_credit_card">Cartão de Crédito</ion-checkbox>
+          <ion-item *ngIf="f.value.accept_credit_card" class="w-50">
+            <ion-input type="number" min="1" id="credit_parcels" label="Max Parcelas" labelPlacement="floating"
+              formControlName="pgmto_credito_max_parcelas">
+            </ion-input>
           </ion-item>
-        </div>
+        </ion-row>
 
-      </ng-container>
+        <ion-row class="d-flex align-items-center gap-2 mt-1">
+          <ion-checkbox labelPlacement="end" formControlName="accept_pix">Pix</ion-checkbox>
+          <ion-item *ngIf="f.value.accept_pix" class="w-100">
+            <ion-input type="text" id="pix" label="Chave Pix" labelPlacement="floating" formControlName="chave_pix">
+            </ion-input>
+          </ion-item>
+        </ion-row>
+
+
+      </div>
     </div>
-  </div>
+    <div class="section">
+      <div class=" ion-padding">
+        <h5 class="section-title">Integrações de API (em breve)</h5>
 
 
-
-  <div class="section">
-    <div class=" ion-padding">
-      <h5 class="section-title">Opções de Pagamento</h5>
-
-      <ion-row class="d-flex align-items-center gap-2 mt-1">
-        <ion-checkbox labelPlacement="end" formControlName="accept_money_in_cash">Dinheiro</ion-checkbox>
-      </ion-row>
-      <ion-row class="d-flex align-items-center gap-2 mt-1">
-        <ion-checkbox labelPlacement="end" formControlName="accept_debit_card">Cartão de Débito</ion-checkbox>
-      </ion-row>
-      <ion-row class="d-flex align-items-center gap-2 mt-1">
-        <ion-checkbox labelPlacement="end" formControlName="accept_credit_card">Cartão de Crédito</ion-checkbox>
-        <ion-item *ngIf="f.value.accept_credit_card" class="w-50">
-          <ion-input type="number" min="1" id="credit_parcels" label="Max Parcelas" labelPlacement="floating"
-            formControlName="pgmto_credito_max_parcelas">
+        <ion-item>
+          <ion-input type="password" [readonly]="true" id="openai_key" label="OpenAI Key" labelPlacement="floating"
+            formControlName="openai_key">
           </ion-input>
         </ion-item>
-      </ion-row>
-
-      <ion-row class="d-flex align-items-center gap-2 mt-1">
-        <ion-checkbox labelPlacement="end" formControlName="accept_pix">Pix</ion-checkbox>
-        <ion-item *ngIf="f.value.accept_pix" class="w-100">
-          <ion-input type="text" id="pix" label="Chave Pix" labelPlacement="floating" formControlName="chave_pix">
-          </ion-input>
-        </ion-item>
-      </ion-row>
-
-
-    </div>
-  </div>
-  <div class="section">
-    <div class=" ion-padding">
-      <h5 class="section-title">Integrações de API (em breve)</h5>
-
-
-      <ion-item>
-        <ion-input type="password" [readonly]="true" id="openai_key" label="OpenAI Key" labelPlacement="floating"
-          formControlName="openai_key">
-        </ion-input>
-      </ion-item>
-      <sub>
-        <ion-icon color="warning" name="warning-outline"></ion-icon>
-        A chave de API da Open AI será utilizada para gerar treinos, ficha de avaliação, relatórios personalizados
-        sobre o desenvolvimento dos membros e operações financeiras utilizando o ChatGPT.
-      </sub>
-
-      <br>
-
-      <ion-item class="ion-margin-top">
-        <ion-input type="password" [readonly]="true" id="meta_key" label="Meta Api Key" labelPlacement="floating"
-          formControlName="meta_key">
-        </ion-input>
-      </ion-item>
-      <ion-text>
-        <p>
+        <sub>
           <ion-icon color="warning" name="warning-outline"></ion-icon>
-          <sub class="text-small">
-            A chave de API da Meta será utilizada para enviar mensagens via WhatsApp sobre cobranças, lembretes,
-            recibos, promoções e eventos cadastrados para os membros da empresa.
-          </sub>
-        </p>
-      </ion-text>
+          A chave de API da Open AI será utilizada para gerar treinos, ficha de avaliação, relatórios personalizados
+          sobre o desenvolvimento dos membros e operações financeiras utilizando o ChatGPT.
+        </sub>
+
+        <br>
+
+        <ion-item class="ion-margin-top">
+          <ion-input type="password" [readonly]="true" id="meta_key" label="Meta Api Key" labelPlacement="floating"
+            formControlName="meta_key">
+          </ion-input>
+        </ion-item>
+        <ion-text>
+          <p>
+            <ion-icon color="warning" name="warning-outline"></ion-icon>
+            <sub class="text-small">
+              A chave de API da Meta será utilizada para enviar mensagens via WhatsApp sobre cobranças, lembretes,
+              recibos, promoções e eventos cadastrados para os membros da empresa.
+            </sub>
+          </p>
+        </ion-text>
+      </div>
     </div>
-  </div>
 
 
 
-  <ion-button type="submit" expand="block" color="primary" (click)="onSaveButtonClick()"
-    [disabled]="empresaForm.invalid || loading">
-    Salvar Configurações
-  </ion-button>
-</form>
+    <ion-button type="submit" expand="block" color="primary" (click)="onSaveButtonClick()"
+      [disabled]="empresaForm.invalid || loading">
+      Salvar Configurações
+    </ion-button>
+  </form>
+</ion-content>

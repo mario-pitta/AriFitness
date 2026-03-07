@@ -1,75 +1,75 @@
-<ion-row class="ion-justify-content-between ion-align-items-center monthControls">
-  <ion-col (click)="goToPreviousMonth()">
-    <ion-button fill="clear" shape="round">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-    </ion-button>
-  </ion-col>
-  <ion-col>
-    <ion-button fill="clear" shape="round">
-      {{ currentDate.getMonth() + 1}} / {{ currentDate.getFullYear() }}
-    </ion-button>
-  </ion-col>
-  <ion-col (click)="goToNextMonth()">
-    <ion-button fill="clear" shape="round">
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </ion-button>
-  </ion-col>
-</ion-row>
-<ion-grid>
-  <ion-row>
-    <ion-col class="weekDays" *ngFor="let day of daysOfWeek">{{ day }}</ion-col>
-  </ion-row>
-  <ion-grid class="calendar">
-    <ion-row class="week" *ngFor="let week of calendar">
-
-      <ion-col *ngFor="let day of week" [class.disabled]="day === null" class="day position-relative"
-        (click)="selectDay(day?.day)">
-
-        {{ day ? day.day : '' }}
-
-
-        <div *ngIf="(day?.events || []).length && !isMobile" class="point position-absolute top-0 start-0"
-          (click)="scrollToList(day?.events)">
-          <div class="point">
-            <ion-chip size="small">{{day?.events?.length}}</ion-chip>
-          </div>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-grid>
-
-
-<ion-grid #eventList>
-  <ion-row *ngFor="let event of events" (click)="openEventForm = true; completeForm(event)">
+<ion-content>
+  <ion-row class="ion-justify-content-between ion-align-items-center monthControls">
+    <ion-col (click)="goToPreviousMonth()">
+      <ion-button fill="clear" shape="round">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
     <ion-col>
-      <ion-card>
-        <ion-card-content>
-          <ion-card-subtitle>
-            {{event.data_inicio | date: 'dd/MM/yyyy'}}
-          </ion-card-subtitle>
-          <div class="d-flex flew-wrap">
-            @if(event.hora_inicio){
-            <div class="d-flex align-items-center">
-              <ion-icon name="time-outline" class="me-1"></ion-icon>
-              <span>{{event.hora_inicio }}</span>
-            </div>
-            }
-            @if(event.data_fim){
-            <span class="ms-1 me-1"> até </span>
-            <div class="d-flex align-items-center">
-              <ion-icon name="time-outline" class="me-1"></ion-icon>
-              <span> {{event.data_fim | date: 'dd/MM/yyyy'}} {{event.hora_fim }}</span>
-            </div>}
-          </div>
+      <ion-button fill="clear" shape="round">
+        {{ currentDate.getMonth() + 1}} / {{ currentDate.getFullYear() }}
+      </ion-button>
+    </ion-col>
+    <ion-col (click)="goToNextMonth()">
+      <ion-button fill="clear" shape="round">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-grid>
+    <ion-row>
+      <ion-col class="weekDays" *ngFor="let day of daysOfWeek">{{ day }}</ion-col>
+    </ion-row>
+    <ion-grid class="calendar">
+      <ion-row class="week" *ngFor="let week of calendar">
 
-          <div class="d-flex w-100  align-items-center justify-content-between flex-wrap">
-            <span>
-              {{event.titulo}}
-            </span>
-            <!-- 1 - treino, 2 - aula, 3 - evento, 4 - palestra, 5 - curso, 6 - corrida, 7 - seminario, 8 - workshop, 9 - outros -->
-            <ion-icon size="large" id="hover-trigger_{{event.id}}"
-             [name]="event.tipo_evento_id === 1 ? 'barbell' :
+        <ion-col *ngFor="let day of week" [class.disabled]="day === null" class="day position-relative"
+          (click)="selectDay(day?.day)">
+
+          {{ day ? day.day : '' }}
+
+
+          <div *ngIf="(day?.events || []).length && !isMobile" class="point position-absolute top-0 start-0"
+            (click)="scrollToList(day?.events)">
+            <div class="point">
+              <ion-chip size="small">{{day?.events?.length}}</ion-chip>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-grid>
+
+
+  <ion-grid #eventList>
+    <ion-row *ngFor="let event of events" (click)="openEventForm = true; completeForm(event)">
+      <ion-col>
+        <ion-card>
+          <ion-card-content>
+            <ion-card-subtitle>
+              {{event.data_inicio | date: 'dd/MM/yyyy'}}
+            </ion-card-subtitle>
+            <div class="d-flex flew-wrap">
+              @if(event.hora_inicio){
+              <div class="d-flex align-items-center">
+                <ion-icon name="time-outline" class="me-1"></ion-icon>
+                <span>{{event.hora_inicio }}</span>
+              </div>
+              }
+              @if(event.data_fim){
+              <span class="ms-1 me-1"> até </span>
+              <div class="d-flex align-items-center">
+                <ion-icon name="time-outline" class="me-1"></ion-icon>
+                <span> {{event.data_fim | date: 'dd/MM/yyyy'}} {{event.hora_fim }}</span>
+              </div>}
+            </div>
+
+            <div class="d-flex w-100  align-items-center justify-content-between flex-wrap">
+              <span>
+                {{event.titulo}}
+              </span>
+              <!-- 1 - treino, 2 - aula, 3 - evento, 4 - palestra, 5 - curso, 6 - corrida, 7 - seminario, 8 - workshop, 9 - outros -->
+              <ion-icon size="large" id="hover-trigger_{{event.id}}" [name]="event.tipo_evento_id === 1 ? 'barbell' :
               event.tipo_evento_id === 2 ? 'pencil' :
               event.tipo_evento_id === 3 ? 'paper-plane' :
               event.tipo_evento_id === 4 ? 'person' :
@@ -81,26 +81,27 @@
 
             ''"></ion-icon>
 
-          </div>
-          <ion-popover trigger="hover-trigger_{{event.id}}" triggerAction="hover" focusTrap="false" reference="trigger"
-            showBackdrop="false" translucent="true">
-            <ng-template>
-              <ion-content class="ion-padding">{{event.tipo_evento.descricao | titlecase}}</ion-content>
-            </ng-template>
-          </ion-popover>
-          <ion-card-header>
-            <!-- <h6> -->
-            <!-- </h6> -->
-            {{event.descricao}}
-          </ion-card-header>
+            </div>
+            <ion-popover trigger="hover-trigger_{{event.id}}" triggerAction="hover" focusTrap="false"
+              reference="trigger" showBackdrop="false" translucent="true">
+              <ng-template>
+                <ion-content class="ion-padding">{{event.tipo_evento.descricao | titlecase}}</ion-content>
+              </ng-template>
+            </ion-popover>
+            <ion-card-header>
+              <!-- <h6> -->
+              <!-- </h6> -->
+              {{event.descricao}}
+            </ion-card-header>
 
 
 
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-  </ion-row>
-</ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
 
 
 <ion-modal [isOpen]="openEventForm" (didDismiss)="openEventForm = false; selectedDay = ''">

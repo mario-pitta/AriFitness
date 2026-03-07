@@ -58,7 +58,11 @@ export interface IUsuario {
     label: string;
     errors: string[];
   } | any;
-
+  cref?: string;
+  especialidade?: string;
+  turno?: string;
+  funcao?: string;
+  email?: string;
 }
 export class Usuario implements IUsuario {
   idade?: any;
@@ -106,6 +110,10 @@ export class Usuario implements IUsuario {
     label: string;
     errors: string[];
   } | any;
+  cref?: string;
+  especialidade?: string;
+  turno?: string;
+  funcao?: string;
 
   constructor(obj: IUsuario) {
     Object.assign(this, obj);

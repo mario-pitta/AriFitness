@@ -1,86 +1,93 @@
-<ion-grid>
+<ion-content>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="6">
+                <h5 class="ms-3 d-flex gap-2 ion-align-items-center">Instrutores:
+                    <ion-button size="small" fill="clear" shape="round" color="success  "
+                        [routerLink]="['/admin/instrutores/formulario']">
+                        <ion-icon name="add"></ion-icon>
+                    </ion-button>
+                </h5>
+                <ion-row></ion-row>
+            </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+            <ion-col size="6">
+                <ion-searchbar></ion-searchbar>
+            </ion-col>
+
+            <ion-col size="3" class="d-flex gap-2 ion-align-items-center ion-justify-content-around">
+                <ion-card-subtitle for="orderMemberSelector" style="width: inherit !important;"
+                    class="d-flex gap-1 ion-text-center fw-light">
+                    <ion-icon name="swap-vertical-sharp" size="small"></ion-icon>
+                    <ion-label>Ordernar:</ion-label>
+                </ion-card-subtitle>
+                <ion-select name="orderMemberSelector" id="orderMemberSelector" interface="popover">
+                    <ion-select-option selected [value]="'dateExpiracao'">Data de Expiração</ion-select-option>
+                    <ion-select-option [value]="'idade'">Idade</ion-select-option>
+                    <ion-select-option [value]="'plano'">Plano</ion-select-option>
+                    <ion-select-option [value]="'status'">Status</ion-select-option>
+                    <ion-select-option [value]="'horario'">Horário</ion-select-option>
+                    <ion-select-option [value]="'ultimaAtividade'">Última Atividade</ion-select-option>
+                </ion-select>
+            </ion-col>
+            <ion-col size="3" class="w-50 d-flex gap-2 ion-align-items-center ion-justify-content-around">
+                <ion-card-subtitle for="filterMemberSelector" style="width: inherit !important;"
+                    class="d-flex gap-1 ion-text-center fw-light">
+                    <ion-icon name="funnel" size="small"></ion-icon>
+                    <ion-label>Filtrar:</ion-label>
+                </ion-card-subtitle>
+                <ion-select name="filterMemberSelector" id="filterMemberSelector" interface="popover">
+                    <ion-select-option [value]="'status'">Todos</ion-select-option>
+                    <ion-select-option [value]="'idade'">Inadiplentes</ion-select-option>
+                    <ion-select-option [value]="'status'">Inativo</ion-select-option>
+                </ion-select>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
     <ion-row>
-        <ion-col size="6">
-            <h5 class="ms-3 d-flex gap-2 ion-align-items-center">Instrutores:
-                <ion-button size="small" fill="clear" shape="round" color="success  " [routerLink]="['/admin/instrutores/formulario']">
-                    <ion-icon name="add"></ion-icon>
-                </ion-button>
-            </h5>
-            <ion-row></ion-row>
-        </ion-col>
-    </ion-row>
-    <ion-row class="ion-align-items-center">
-        <ion-col size="6">
-            <ion-searchbar></ion-searchbar>
-        </ion-col>
-
-        <ion-col size="3" class="d-flex gap-2 ion-align-items-center ion-justify-content-around">
-            <ion-card-subtitle for="orderMemberSelector" style="width: inherit !important;" class="d-flex gap-1 ion-text-center fw-light">
-                <ion-icon name="swap-vertical-sharp" size="small"></ion-icon>
-                <ion-label>Ordernar:</ion-label>
-            </ion-card-subtitle>
-            <ion-select name="orderMemberSelector" id="orderMemberSelector" interface="popover">
-                <ion-select-option selected [value]="'dateExpiracao'">Data de Expiração</ion-select-option>
-                <ion-select-option [value]="'idade'">Idade</ion-select-option>
-                <ion-select-option [value]="'plano'">Plano</ion-select-option>
-                <ion-select-option [value]="'status'">Status</ion-select-option>
-                <ion-select-option [value]="'horario'">Horário</ion-select-option>
-                <ion-select-option [value]="'ultimaAtividade'">Última Atividade</ion-select-option>
-            </ion-select>
-        </ion-col>
-        <ion-col size="3" class="w-50 d-flex gap-2 ion-align-items-center ion-justify-content-around">
-            <ion-card-subtitle for="filterMemberSelector" style="width: inherit !important;" class="d-flex gap-1 ion-text-center fw-light">
-                <ion-icon name="funnel" size="small"></ion-icon>
-                <ion-label>Filtrar:</ion-label>
-            </ion-card-subtitle>
-            <ion-select name="filterMemberSelector" id="filterMemberSelector" interface="popover">
-                <ion-select-option [value]="'status'">Todos</ion-select-option>
-                <ion-select-option [value]="'idade'">Inadiplentes</ion-select-option>
-                <ion-select-option [value]="'status'">Inativo</ion-select-option>
-            </ion-select>
-        </ion-col>
-    </ion-row>
-</ion-grid>
-
-<ion-row>
-    <ion-col size-md="12" size-sm="12" size-xs="12" size-lg="4" *ngFor="let instrutor of instrutores">
-        <ion-card class="instructor-card" (click)="openForm(instrutor.id)" [ngStyle]="{'background-image': 'url('+  instrutor.image_url + ')'}" style="background-size: 200px;
+        <ion-col size-md="12" size-sm="12" size-xs="12" size-lg="4" *ngFor="let instrutor of instrutores">
+            <ion-card class="instructor-card" (click)="openForm(instrutor.id)"
+                [ngStyle]="{'background-image': 'url('+  instrutor.image_url + ')'}" style="background-size: 200px;
   background-position: 100% 0%;
   background-repeat: no-repeat;
-  position: relative;" >
-            <ion-card-content>
-                <ion-card-title>
+  position: relative;">
+                <ion-card-content>
+                    <ion-card-title>
 
-                    <h3>{{instrutor.nome}}</h3>
-                    <ion-card-subtitle>{{instrutor.tipo}}</ion-card-subtitle>
-                </ion-card-title>
-                <ion-row>
-                    <ion-col>
-                        <ion-card-title>
-                            3
-                            <ion-label color="success">+</ion-label>
-                        </ion-card-title>
-                        <p>Alunos</p>
-                    </ion-col>
-                    <ion-col>
-                        <ion-card-title>
-                            2
-                            <ion-label color="danger">+</ion-label>
-                        </ion-card-title>
-                        <p>Treinos</p>
-                    </ion-col>
+                        <h3>{{instrutor.nome}}</h3>
+                        <ion-card-subtitle>{{instrutor.tipo}}</ion-card-subtitle>
+                    </ion-card-title>
+                    <ion-row>
+                        <ion-col>
+                            <ion-card-title>
+                                3
+                                <ion-label color="success">+</ion-label>
+                            </ion-card-title>
+                            <p>Alunos</p>
+                        </ion-col>
+                        <ion-col>
+                            <ion-card-title>
+                                2
+                                <ion-label color="danger">+</ion-label>
+                            </ion-card-title>
+                            <p>Treinos</p>
+                        </ion-col>
 
-                </ion-row>
-                <ion-button class="position-absolute top-0 end-0" color="success" fill="clear" shape="round">
-                    <ion-icon slot="icon-only" name="expand"></ion-icon>
-                </ion-button>
-                <ion-row>
+                    </ion-row>
+                    <ion-button class="position-absolute top-0 end-0" color="success" fill="clear" shape="round">
+                        <ion-icon slot="icon-only" name="expand"></ion-icon>
+                    </ion-button>
+                    <ion-row>
 
-                    <ion-chip *ngFor="let tag of ['Motivação', 'Musculação', 'Mentalidade']; track tag">{{tag}}</ion-chip>
+                        <ion-chip
+                            *ngFor="let tag of ['Motivação', 'Musculação', 'Mentalidade']; track tag">{{tag}}</ion-chip>
 
-                </ion-row>
-            </ion-card-content>
-        </ion-card>
-    </ion-col>
+                    </ion-row>
+                </ion-card-content>
+            </ion-card>
+        </ion-col>
 
-</ion-row>
+    </ion-row>
+</ion-content>

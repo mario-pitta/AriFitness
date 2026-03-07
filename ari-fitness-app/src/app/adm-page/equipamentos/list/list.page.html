@@ -1,59 +1,61 @@
-<div class="sticky-top bg-dark d-flex p-2">
-  <ion-searchbar class="mt-2 mb-1" placeholder="Buscar equipamentos..." [(ngModel)]="searchText"
-    (ionClear)="searchText = ''"></ion-searchbar>
-  <ion-button [routerLink]="['form']" shape="round" fill="clear">
-    <ion-icon name="add"></ion-icon>
-  </ion-button>
-</div>
+<ion-content>
+  <div class="sticky-top bg-dark d-flex p-2">
+    <ion-searchbar class="mt-2 mb-1" placeholder="Buscar equipamentos..." [(ngModel)]="searchText"
+      (ionClear)="searchText = ''"></ion-searchbar>
+    <ion-button [routerLink]="['form']" shape="round" fill="clear">
+      <ion-icon name="add"></ion-icon>
+    </ion-button>
+  </div>
 
-<ion-grid>
-  <ion-row>
-    <ion-col size="12" *ngIf="loading" class="text-center ion-padding">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p class="mt-2">Carregando equipamentos...</p>
-    </ion-col>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" *ngIf="loading" class="text-center ion-padding">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p class="mt-2">Carregando equipamentos...</p>
+      </ion-col>
 
-    <ion-col size="12" *ngIf="!loading && (equipamentos | filterByName: searchText).length === 0"
-      class="text-center ion-padding">
-      <p>Nenhum equipamento encontrado.</p>
-    </ion-col>
+      <ion-col size="12" *ngIf="!loading && (equipamentos | filterByName: searchText).length === 0"
+        class="text-center ion-padding">
+        <p>Nenhum equipamento encontrado.</p>
+      </ion-col>
 
-    <ion-col size="12" *ngFor="let eqp of equipamentos | filterByName: searchText" class="mb-2">
-      <ion-item lines="inset">
-        <ion-label class="ion-text-wrap">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center mt-1">
-              <ion-thumbnail *ngIf="eqp.foto_url" slot="start" style="width: 40px; height: 40px; margin-right: 8px;">
-                <img [src]="eqp.foto_url || 'assets/img/equipment-placeholder-small.png'" alt="{{ eqp.nome }}"
-                  style="object-fit: contain; width: 100%; height: 100%;">
-              </ion-thumbnail>
-              <div class="d-block align-items-center  mt-2">
-                <h3 class="text-capitalize mb-0">{{ eqp.nome }}</h3>
+      <ion-col size="12" *ngFor="let eqp of equipamentos | filterByName: searchText" class="mb-2">
+        <ion-item lines="inset">
+          <ion-label class="ion-text-wrap">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center mt-1">
+                <ion-thumbnail *ngIf="eqp.foto_url" slot="start" style="width: 40px; height: 40px; margin-right: 8px;">
+                  <img [src]="eqp.foto_url || 'assets/img/equipment-placeholder-small.png'" alt="{{ eqp.nome }}"
+                    style="object-fit: contain; width: 100%; height: 100%;">
+                </ion-thumbnail>
+                <div class="d-block align-items-center  mt-2">
+                  <h3 class="text-capitalize mb-0">{{ eqp.nome }}</h3>
 
-                <sub class="me-1" style="font-size: 0.75em;">
-                  <p class="text-capitalize text-muted mb-0"
-                    style="font-size: 0.8em; margin-right: 8px; color: #726e6e !important">
-                    {{ eqp.categoria.nome || 'Não Informado' }}
-                  </p>
-                  <!-- {{ eqp.nivelDificuldade || '?' }} -->
-                </sub>
-                <ion-badge color="light" *ngIf="!eqp.fl_ativo" class="ms-1" style="font-size: 0.75em;">
-                  Inativo
-                </ion-badge>
+                  <sub class="me-1" style="font-size: 0.75em;">
+                    <p class="text-capitalize text-muted mb-0"
+                      style="font-size: 0.8em; margin-right: 8px; color: #726e6e !important">
+                      {{ eqp.categoria.nome || 'Não Informado' }}
+                    </p>
+                    <!-- {{ eqp.nivelDificuldade || '?' }} -->
+                  </sub>
+                  <ion-badge color="light" *ngIf="!eqp.fl_ativo" class="ms-1" style="font-size: 0.75em;">
+                    Inativo
+                  </ion-badge>
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <ion-icon name="pencil-outline" color="primary" size="large" class="me-2" (click)="navigate(eqp.id)"
+                  style="cursor: pointer;"></ion-icon>
+                <ion-icon name="trash-outline" color="danger" size="large" (click)="delete(eqp.id)"
+                  style="cursor: pointer;"></ion-icon>
               </div>
             </div>
-            <div class="d-flex align-items-center">
-              <ion-icon name="pencil-outline" color="primary" size="large" class="me-2" (click)="navigate(eqp.id)"
-                style="cursor: pointer;"></ion-icon>
-              <ion-icon name="trash-outline" color="danger" size="large" (click)="delete(eqp.id)"
-                style="cursor: pointer;"></ion-icon>
-            </div>
-          </div>
-        </ion-label>
-      </ion-item>
-    </ion-col>
-  </ion-row>
-</ion-grid>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
 
 
 <ion-modal [isOpen]="false"></ion-modal>

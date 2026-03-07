@@ -1,49 +1,59 @@
-<div class="bg-dark sticky-top p-2 d-flex justify-content-between align-items-center">
-    <div class="flex-grow-1 ms-2 me-2">
-        <ion-searchbar placeholder="Pesquisar exercícios..." [(ngModel)]="searchText" (ionClear)="searchText = ''" (ionInput)="filterItems()"></ion-searchbar>
+<ion-content>
+    <div class="bg-dark sticky-top p-2 d-flex justify-content-between align-items-center">
+        <div class="flex-grow-1 ms-2 me-2">
+            <ion-searchbar placeholder="Pesquisar exercícios..." [(ngModel)]="searchText" (ionClear)="searchText = ''"
+                (ionInput)="filterItems()"></ion-searchbar>
+        </div>
+        <ion-button [routerLink]="['form']" color="primary" fill="clear" shape="round">
+            <ion-icon name="add"></ion-icon>
+        </ion-button>
     </div>
-    <ion-button [routerLink]="['form']" color="primary" fill="clear" shape="round">
-        <ion-icon name="add"></ion-icon>
-    </ion-button>
-</div>
 
-<ion-grid>
-    <ion-row>
-        <ion-col size="12" *ngIf="loading" class="text-center ion-padding">
-            <ion-spinner name="crescent"></ion-spinner>
-            <p class="mt-2">Carregando exercícios..</p>
-        </ion-col>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="12" *ngIf="loading" class="text-center ion-padding">
+                <ion-spinner name="crescent"></ion-spinner>
+                <p class="mt-2">Carregando exercícios..</p>
+            </ion-col>
 
-        <ion-col size="12" *ngIf="!loading && (exercicios | filterByName: searchText).length === 0" class="text-center ion-padding">
-            <p>Nenhum equipamento encontrado.</p>
-        </ion-col>
+            <ion-col size="12" *ngIf="!loading && (exercicios | filterByName: searchText).length === 0"
+                class="text-center ion-padding">
+                <p>Nenhum equipamento encontrado.</p>
+            </ion-col>
 
-        <ion-col size-sm="12" size-md="6" size-lg="4" *ngFor="let eqp of exercicios | filterByName: searchText" class="mb-2">
-            <ion-item lines="inset">
-                <ion-thumbnail *ngIf="eqp.midia_url" slot="start" style="width: 50px; height: 50px;">
-                    <img [src]="eqp.midia_url || 'assets/img/equipment-placeholder-small.png'" alt="{{ eqp.nome }}" style="object-fit: cover; width: 100%; height: 100%;" />
-                </ion-thumbnail>
-                <ion-label class="ion-text-wrap">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="text-capitalize mb-0">{{ eqp.nome }}</h3>
-                        <div class="d-flex align-items-center">
-                            <ion-icon name="create" color="primary" size="large" class="me-2" (click)="navigate(eqp.id)" style="cursor: pointer;"></ion-icon>
-                            <ion-icon name="close" color="danger" size="large" (click)="delete(eqp.id)" style="cursor: pointer;"></ion-icon>
+            <ion-col size-sm="12" size-md="6" size-lg="4" *ngFor="let eqp of exercicios | filterByName: searchText"
+                class="mb-2">
+                <ion-item lines="inset">
+                    <ion-thumbnail *ngIf="eqp.midia_url" slot="start" style="width: 50px; height: 50px;">
+                        <img [src]="eqp.midia_url || 'assets/img/equipment-placeholder-small.png'" alt="{{ eqp.nome }}"
+                            style="object-fit: cover; width: 100%; height: 100%;" />
+                    </ion-thumbnail>
+                    <ion-label class="ion-text-wrap">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="text-capitalize mb-0">{{ eqp.nome }}</h3>
+                            <div class="d-flex align-items-center">
+                                <ion-icon name="create" color="primary" size="large" class="me-2"
+                                    (click)="navigate(eqp.id)" style="cursor: pointer;"></ion-icon>
+                                <ion-icon name="close" color="danger" size="large" (click)="delete(eqp.id)"
+                                    style="cursor: pointer;"></ion-icon>
+                            </div>
                         </div>
-                    </div>
-                    <div class="d-flex align-items-center mt-1">
-                        <sub class="text-capitalize text-muted mb-0" color="light" style="font-size: 0.8em; margin-right: 8px;">
-              {{ eqp.musculo?.grupo_muscular?.nome || 'Não Informado' }}
-            </sub>
-                        <ion-badge color="warning" class="me-1" style="font-size: 0.75em;" *ngIf="eqp.nivelDificuldade">
-                            {{ eqp.nivelDificuldade }}
-                        </ion-badge>
-                    </div>
-                </ion-label>
-            </ion-item>
-        </ion-col>
-    </ion-row>
-</ion-grid>
+                        <div class="d-flex align-items-center mt-1">
+                            <sub class="text-capitalize text-muted mb-0" color="light"
+                                style="font-size: 0.8em; margin-right: 8px;">
+                                {{ eqp.musculo?.grupo_muscular?.nome || 'Não Informado' }}
+                            </sub>
+                            <ion-badge color="warning" class="me-1" style="font-size: 0.75em;"
+                                *ngIf="eqp.nivelDificuldade">
+                                {{ eqp.nivelDificuldade }}
+                            </ion-badge>
+                        </div>
+                    </ion-label>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
 
 <ion-modal [isOpen]="false"></ion-modal>
 

@@ -1,33 +1,34 @@
-<ion-grid class="board">
-    <ion-row class="overflow-x-auto" cdkDropListGroup>
-        <ion-col class="mb-3 column position-relative w-100" sizeXs="12" sizeSm="12" sizeMd="4" sizeLg="4" sizeXl="4"
-            *ngFor="let column of cols">
-            <div>
-                <div class="column-header d-flex justify-content-between align-items-center p-2"
-                    (click)="column.visible = !column.visible">
-                    <ion-label class="text-capitalize">{{ column.title }}</ion-label>
-                    <span class="column-count gap-2 d-flex justify-content-around align-items-center">
-                        <ion-badge color="light">{{ column.tasks.length }}</ion-badge>
-                        <ion-button fill="clear" shape="round" size="small"
-                            (click)="showTaskForm = true; createForm(column.status_tarefa_id); $event.stopPropagation()">
-                            <ion-icon name="add-outline"></ion-icon>
-                        </ion-button>
-                    </span>
-                </div>
-                <div class="taskContainer task-list mb-5 p-2 rounded" [id]="'task-list_' + column.status_tarefa_id"
-                    cdkDropList [cdkDropListData]="column.tasks" (cdkDropListDropped)="drop($event)"
-                    [hidden]="!column.visible">
+<ion-content>
+    <ion-grid class="board">
+        <ion-row class="overflow-x-auto" cdkDropListGroup>
+            <ion-col class="mb-3 column position-relative w-100" sizeXs="12" sizeSm="12" sizeMd="4" sizeLg="4"
+                sizeXl="4" *ngFor="let column of cols">
+                <div>
+                    <div class="column-header d-flex justify-content-between align-items-center p-2"
+                        (click)="column.visible = !column.visible">
+                        <ion-label class="text-capitalize">{{ column.title }}</ion-label>
+                        <span class="column-count gap-2 d-flex justify-content-around align-items-center">
+                            <ion-badge color="light">{{ column.tasks.length }}</ion-badge>
+                            <ion-button fill="clear" shape="round" size="small"
+                                (click)="showTaskForm = true; createForm(column.status_tarefa_id); $event.stopPropagation()">
+                                <ion-icon name="add-outline"></ion-icon>
+                            </ion-button>
+                        </span>
+                    </div>
+                    <div class="taskContainer task-list mb-5 p-2 rounded" [id]="'task-list_' + column.status_tarefa_id"
+                        cdkDropList [cdkDropListData]="column.tasks" (cdkDropListDropped)="drop($event)"
+                        [hidden]="!column.visible">
 
-                    <ion-card class="mb-2 task-card" *ngFor="let task of column.tasks"
-                        (click)="showTaskForm = true; createForm(column.status_tarefa_id, task)" cdkDrag [ngClass]="{
+                        <ion-card class="mb-2 task-card" *ngFor="let task of column.tasks"
+                            (click)="showTaskForm = true; createForm(column.status_tarefa_id, task)" cdkDrag [ngClass]="{
               'low-priority': task.prioridade === 0,
               'medium-priority': task.prioridade === 1,
               'high-priority': task.prioridade === 2
             }">
-                        <ion-card-content class="p-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <ion-card-subtitle class="mb-0 text-wrap">{{ task.titulo }}</ion-card-subtitle>
-                                <ion-icon [name]="
+                            <ion-card-content class="p-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <ion-card-subtitle class="mb-0 text-wrap">{{ task.titulo }}</ion-card-subtitle>
+                                    <ion-icon [name]="
                     task.tipo_tarefa_id === 1
                       ? 'hammer-outline'
                       : task.tipo_tarefa_id === 2
@@ -36,19 +37,20 @@
                       ? 'alert-circle-outline'
                       : ''
                   " size="small"></ion-icon>
-                            </div>
-                        </ion-card-content>
-                    </ion-card>
+                                </div>
+                            </ion-card-content>
+                        </ion-card>
+                    </div>
+                    <div class="add-task p-2 rounded-bottom text-center"
+                        (click)="showTaskForm = true; createForm(column.status_tarefa_id)">
+                        <ion-icon name="add-outline" class="me-1"></ion-icon>
+                        Adicionar tarefa
+                    </div>
                 </div>
-                <div class="add-task p-2 rounded-bottom text-center"
-                    (click)="showTaskForm = true; createForm(column.status_tarefa_id)">
-                    <ion-icon name="add-outline" class="me-1"></ion-icon>
-                    Adicionar tarefa
-                </div>
-            </div>
-        </ion-col>
-    </ion-row>
-</ion-grid>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
 
 <ion-modal [isOpen]="showTaskForm" (didDismiss)="showTaskForm = false; taskForm.reset()">
     <ng-template>
