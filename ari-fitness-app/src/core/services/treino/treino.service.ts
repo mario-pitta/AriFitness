@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class TreinoService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   find(filters?: Partial<Treino>): Observable<Treino[]> {
     const query =
@@ -30,6 +30,15 @@ export class TreinoService {
   }
 
   delete(id: number) {
-    return this.http.delete(environment.apiUrl+ '/treinos/'+ id).pipe(take(1))
+    return this.http.delete(environment.apiUrl + '/treinos/' + id).pipe(take(1));
+  }
+
+  getTreinoCompleto(id: number): Observable<Treino> {
+    return this.http.get<Treino>(environment.apiUrl + '/treinos/' + id + '/completo').pipe(take(1));
+  }
+
+  createSessao(sessao: any) {
+    return this.http.post(environment.apiUrl + '/treino-sessao', sessao).pipe(take(1));
   }
 }
+

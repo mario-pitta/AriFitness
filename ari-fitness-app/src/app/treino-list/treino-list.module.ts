@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { TreinoListPageRoutingModule } from './treino-list-routing.module';
 import { TreinosListPage } from './treino-list.page';
 import { TreinoListItemModule } from '../shared/treino-list-item/treino-list-item.module';
+import { WorkoutEditorModule } from '../shared/workout-editor/workout-editor.module';
+
 
 @NgModule({
   imports: [
@@ -16,9 +18,11 @@ import { TreinoListItemModule } from '../shared/treino-list-item/treino-list-ite
     ReactiveFormsModule,
     TreinoListPageRoutingModule,
     TreinoListItemModule,
+    WorkoutEditorModule
   ],
+
   declarations: [TreinosListPage],
   exports: [TreinosListPage],
   schemas: [],
 })
-export class TreinoListPageModule {}
+export class TreinoListPageModule { }

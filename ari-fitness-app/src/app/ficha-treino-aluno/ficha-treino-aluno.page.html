@@ -8,74 +8,96 @@
         <form [formGroup]="form">
             <ion-item-group>
                 <ion-item [formGroupName]="'aluno'">
-                    <ion-input readonly labelPlacement="floating" formControlName="nome" label="Nome do Aluno"></ion-input>
+                    <ion-input readonly labelPlacement="floating" formControlName="nome"
+                        label="Nome do Aluno"></ion-input>
                 </ion-item>
                 <ion-item>
-                    <ion-textarea [readonly]="!user.flagAdmin" labelPlacement="floating" formControlName="descricao" label="Descrição da Ficha"></ion-textarea>
+                    <ion-textarea [readonly]="!user.flagAdmin" labelPlacement="floating" formControlName="descricao"
+                        label="Descrição da Ficha"></ion-textarea>
                 </ion-item>
             </ion-item-group>
 
             <ion-row>
                 <ion-col size="12" size-md="6">
                     <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="ficha_data_inicio" type="date" label="Início da Ficha"></ion-input>
+                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin"
+                            formControlName="ficha_data_inicio" type="date" label="Início da Ficha"></ion-input>
                     </ion-item>
                 </ion-col>
                 <ion-col size="12" size-md="6">
                     <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="ficha_data_fim" type="date" label="Validade da Ficha"></ion-input>
+                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin"
+                            formControlName="ficha_data_fim" type="date" label="Validade da Ficha"></ion-input>
                     </ion-item>
                 </ion-col>
             </ion-row>
 
             <ion-item>
-                <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="objetivo" label="Objetivo"></ion-input>
+                <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="objetivo"
+                    label="Objetivo"></ion-input>
             </ion-item>
 
             <ion-row>
                 <ion-col size="12" size-md="6">
                     <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="peso_inicial" type="number" min="0" step="0.2" maxlength="5" label="Peso Atual"></ion-input>
+                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="peso_inicial"
+                            type="number" min="0" step="0.2" maxlength="5" label="Peso Atual"></ion-input>
                     </ion-item>
                 </ion-col>
                 <ion-col size="12" size-md="6">
                     <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="peso_meta" type="number" min="0" step="0.2" maxlength="5" label="Meta de Peso"></ion-input>
+                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="peso_meta"
+                            type="number" min="0" step="0.2" maxlength="5" label="Meta de Peso"></ion-input>
                     </ion-item>
                 </ion-col>
             </ion-row>
 
             <ion-item [formGroupName]="'instrutor'">
-                <ion-select formControlName="id" [disabled]="!user.flagAdmin" labelPlacement="floating" label="Instrutor(a):">
-                    <ion-select-option *ngFor="let instrutor of instrutores" [value]="instrutor.id">{{ instrutor.nome }}</ion-select-option>
+                <ion-select formControlName="id" [disabled]="!user.flagAdmin" labelPlacement="floating"
+                    label="Instrutor(a):">
+                    <ion-select-option *ngFor="let instrutor of instrutores" [value]="instrutor.id">{{ instrutor.nome
+                        }}</ion-select-option>
                 </ion-select>
             </ion-item>
         </form>
 
         <ion-list>
             <ion-row class="ion-justify-content-around ion-align-items-center">
-                <h5>Treinos: </h5>
-                <ion-button fill="clear" *ngIf="user.flagAdmin || user.id === aluno?.value.id" (click)="openTreinoList()">
+                <h5>Treinos e Sessões: </h5>
+                <ion-button fill="clear" *ngIf="user.flagAdmin || user.id === aluno?.value.id"
+                    (click)="openTreinoList()">
                     <ion-icon name="add"></ion-icon>
                 </ion-button>
             </ion-row>
-            <ion-reorder-group [disabled]="!user.flagAdmin" (ionItemReorder)="handleReorder($any($event))">
+
+            <!-- New Session-based View -->
+            <app-student-session-view *ngIf="fichaAtual?.sessoes?.length"
+                [sessoes]="fichaAtual.sessoes!"></app-student-session-view>
+
+            <!-- Legacy Flat List (Only if no sessions) -->
+            <ion-reorder-group *ngIf="!fichaAtual?.sessoes?.length" [disabled]="!user.flagAdmin"
+                (ionItemReorder)="handleReorder($any($event))">
+
                 <ion-card *ngFor="let tr of treinos.value; let i = index" [attr.data-item]="stringfy(tr)">
                     <ion-card-content class="d-flex ion-justify-content-between ion-align-items-center">
-                      <div class="d-flex ion-align-items-center gap-2">
-                        <ion-reorder slot="start" [id]="'reorder_tr_' + tr.id"></ion-reorder>
+                        <div class="d-flex ion-align-items-center gap-2">
+                            <ion-reorder slot="start" [id]="'reorder_tr_' + tr.id"></ion-reorder>
                             <strong class="text-uppercase">{{ tr.treino.nome }}</strong>
                         </div>
                         <div class="icons ion-padding-end">
-                            <ion-icon name="play-outline" color="primary" *ngIf="user.id === aluno?.value.id" (click)="onTreinoSelected(tr.treino)"></ion-icon>
-                            <ion-icon size="small" name="close" color="danger" *ngIf="user.flagAdmin || user.id !== aluno?.value.id" (click)="removeTreino(tr.treino.id)"></ion-icon>
+                            <ion-icon name="play-outline" color="primary" *ngIf="user.id === aluno?.value.id"
+                                (click)="onTreinoSelected(tr.treino)"></ion-icon>
+                            <ion-icon size="small" name="close" color="danger"
+                                *ngIf="user.flagAdmin || user.id !== aluno?.value.id"
+                                (click)="removeTreino(tr.treino.id)"></ion-icon>
                         </div>
                     </ion-card-content>
                 </ion-card>
             </ion-reorder-group>
         </ion-list>
 
-        <ion-button class="success" size="block" color="primary" *ngIf="user.flagAdmin || user.id === aluno?.value.id" (click)="submitForm()">SALVAR</ion-button>
+        <ion-button class="success" size="block" color="primary" *ngIf="user.flagAdmin || user.id === aluno?.value.id"
+            (click)="submitForm()">SALVAR</ion-button>
     </ion-card>
 </ion-grid>
 <router-outlet></router-outlet>

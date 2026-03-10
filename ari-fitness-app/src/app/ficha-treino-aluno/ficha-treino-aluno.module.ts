@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { FichaTreinoAlunoPageRoutingModule } from './ficha-treino-aluno-routing.module';
 
 import { FichaTreinoAlunoPage } from './ficha-treino-aluno.page';
+import { WorkoutEditorModule } from '../shared/workout-editor/workout-editor.module';
+
 
 @NgModule({
   imports: [
@@ -14,8 +16,10 @@ import { FichaTreinoAlunoPage } from './ficha-treino-aluno.page';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    FichaTreinoAlunoPageRoutingModule
+    FichaTreinoAlunoPageRoutingModule,
+    WorkoutEditorModule
   ],
+
   declarations: [FichaTreinoAlunoPage]
 })
-export class FichaTreinoAlunoPageModule {}
+export class FichaTreinoAlunoPageModule { }

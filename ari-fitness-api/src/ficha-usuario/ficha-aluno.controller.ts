@@ -19,7 +19,7 @@ import { Response } from 'express';
 
 @Controller('/ficha-aluno')
 export class FichaAlunoController {
-  constructor(private fichaAlunoService: FichaAlunoService) {}
+  constructor(private fichaAlunoService: FichaAlunoService) { }
 
   /**
    * The function `findAll` in TypeScript takes a query and response object, calls a service method, and
@@ -111,7 +111,7 @@ export class FichaAlunoController {
           });
 
         return res.status(200).send(_res.data);
-      }else{
+      } else {
         return res.status(400)
       }
     });
@@ -130,4 +130,13 @@ export class FichaAlunoController {
       return res.status(200).send(_res.data);
     });
   }
+
+  @Post(':fichaId/apply-template/:treinoId')
+  applyTemplate(@Param('fichaId') fichaId: number, @Param('treinoId') treinoId: number, @Res() res: Response) {
+    return this.fichaAlunoService.applyTemplateToStudent(treinoId, fichaId).then((_res) => {
+      if (_res.error) res.status(500).send(_res.error);
+      return res.status(200).send(_res.data);
+    });
+  }
 }
+

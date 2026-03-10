@@ -471,7 +471,7 @@ export class DashboardService {
 
     const horaCount: Record<string, number> = {};
     (data ?? []).forEach((c: any) => {
-      const hora = ((c.hora_checkin as string)?.slice(0, 2) ?? 'ND') + 'h';
+      const hora = (Number(((c.hora_checkin as string)?.slice(0, 2)) ?? 'ND') - 3) + 'h';
       horaCount[hora] = (horaCount[hora] || 0) + 1;
     });
 

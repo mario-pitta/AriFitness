@@ -14,4 +14,5 @@ import { StorageService } from './storage.service';
   providers: [DataBaseService, StorageService],
   exports: [DataBaseService, StorageService]
 })
-export class DataBaseModule {}
+export class DataBaseModule { }
+

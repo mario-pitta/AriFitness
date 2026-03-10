@@ -1,0 +1,81 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar color="primary">
+        <ion-title class="fw-bold">Selecionar Exercício</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismiss()">
+                <ion-icon name="close"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar color="primary" class="pb-3 px-2">
+        <ion-searchbar placeholder="Buscar exercício por nome..." [(ngModel)]="searchText"
+            (ionInput)="filterExercises()" class="custom-searchbar-modal shadow-lg">
+        </ion-searchbar>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light">
+    <div class="container py-2">
+        <div class="list-group list-group-flush rounded-4 shadow-sm overflow-hidden bg-white mt-3">
+            <div *ngFor="let ex of filteredExercises" (click)="selectExercise(ex)"
+                class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3 border-light-subtle cursor-pointer">
+
+                <div class="exercise-icon-bg bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center"
+                    style="width: 48px; height: 48px;">
+                    <ion-icon name="fitness-outline" class="text-primary fs-4"></ion-icon>
+                </div>
+
+                <div class="flex-grow-1">
+                    <h6 class="mb-0 fw-bold text-dark">{{ex.nome}}</h6>
+                    <div class="d-flex gap-2 mt-1">
+                        <span class="badge bg-light text-muted small border">{{ex.grupo_muscular?.nome ||
+                            'Geral'}}</span>
+                        <span class="badge bg-light text-muted small border">{{ex.equipamento?.nome || 'Livre'}}</span>
+                    </div>
+                </div>
+
+                <ion-icon name="chevron-forward-outline" class="text-muted op-5"></ion-icon>
+            </div>
+        </div>
+
+        <div *ngIf="filteredExercises.length === 0" class="text-center py-5 text-muted">
+            <ion-icon name="search-outline" size="large" class="op-2 mb-2"></ion-icon>
+            <p>Nenhum exercício encontrado para "{{searchText}}"</p>
+        </div>
+    </div>
+</ion-content>
+
+<style>
+    .custom-searchbar-modal {
+        --background: #ffffff;
+        --border-radius: 12px;
+        --placeholder-color: #94a3b8;
+        --icon-color: var(--ion-color-primary);
+        padding: 0 8px;
+    }
+
+    .exercise-icon-bg {
+        transition: transform 0.2s;
+    }
+
+    .list-group-item:hover .exercise-icon-bg {
+        transform: scale(1.1);
+        background-color: var(--ion-color-primary) !important;
+    }
+
+    .list-group-item:hover .exercise-icon-bg ion-icon {
+        color: white !important;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .op-2 {
+        opacity: 0.2;
+    }
+
+    .op-5 {
+        opacity: 0.5;
+    }
+</style>

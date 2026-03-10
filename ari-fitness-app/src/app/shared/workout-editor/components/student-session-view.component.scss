@@ -1,0 +1,127 @@
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    scrollbar-width: none;
+}
+
+.student-session-pill {
+    min-width: 100px;
+    padding: 10px 16px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--ion-card-background, #ffffff);
+    transition: all 0.2s ease;
+}
+
+.student-session-pill.active {
+    background: var(--ion-color-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.bg-soft {
+    background-color: var(--ion-color-step-100, #f1f5f9) !important;
+}
+
+.bg-light-soft {
+    background-color: var(--ion-color-step-50, #f8fafc) !important;
+}
+
+.text-soft-muted {
+    color: var(--ion-color-step-500, #94a3b8) !important;
+}
+
+.badge-light-subtle {
+    background-color: var(--ion-color-step-100, #1a1d24) !important;
+    color: var(--ion-text-color, #e3e3e3) !important;
+}
+
+.badge-primary-subtle {
+    background-color: var(--ion-color-primary-subtle, rgba(var(--ion-color-primary-rgb), 0.1)) !important;
+    color: var(--ion-color-primary) !important;
+}
+
+.custom-border {
+    border-color: var(--ion-color-step-150, #e2e8f0) !important;
+}
+
+.sessao-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+}
+
+.sessao-name {
+    font-size: 1.1rem;
+    font-weight: 900;
+}
+
+.exercise-card-student {
+    background-color: var(--ion-card-background, #ffffff);
+}
+
+.exercise-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.fw-black {
+    font-weight: 800;
+}
+
+.text-main {
+    color: var(--ion-text-color, #1e293b) !important;
+}
+
+.ls-1 {
+    letter-spacing: 0.5px;
+}
+
+.workout-data-bar {
+    background-color: var(--ion-card-background, #ffffff);
+}
+
+.data-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--ion-color-step-500, #94a3b8) !important;
+}
+
+.data-value {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--ion-text-color, #1e293b) !important;
+}
+
+.highlight-bg {
+    background-color: var(--ion-color-primary-subtle, rgba(var(--ion-color-primary-rgb), 0.05)) !important;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.type-indicator {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+}
+
+.transition-all {
+    transition: all 0.2s ease;
+}

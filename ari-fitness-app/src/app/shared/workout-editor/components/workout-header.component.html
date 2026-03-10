@@ -1,0 +1,62 @@
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden workout-header-card">
+    <div class="card-body p-4 bg-white-dark transition-all">
+        <form [formGroup]="form">
+            <div class="row g-3">
+                <!-- NOME DO TREINO -->
+                <div class="col-12 col-md-8">
+                    <div class="form-floating-custom">
+                        <label class="small fw-bold premium-label mb-1 ls-1">NOME DO TREINO</label>
+                        <input type="text" formControlName="nome" class="form-control premium-input"
+                            placeholder="Ex: Hipertrofia Avançada">
+                    </div>
+                </div>
+
+                <!-- DIFICULDADE -->
+                <div class="col-12 col-md-4">
+                    <div class="form-floating-custom">
+                        <label class="small fw-bold premium-label mb-1 ls-1">NÍVEL</label>
+                        <ion-select interface="popover" formControlName="nivel_dificuldade" class="premium-input-ion">
+                            <ion-select-option value="1">Iniciante</ion-select-option>
+                            <ion-select-option value="2">Intermediário</ion-select-option>
+                            <ion-select-option value="3">Avançado</ion-select-option>
+                            <ion-select-option value="4">Elite</ion-select-option>
+                        </ion-select>
+                    </div>
+                </div>
+
+                <!-- DESCRIÇÃO -->
+                <div class="col-12">
+                    <div class="form-floating-custom">
+                        <label class="small fw-bold premium-label mb-1 ls-1">DESCRIÇÃO / OBSERVAÇÕES</label>
+                        <textarea formControlName="descricao" class="form-control premium-input" rows="2"
+                            placeholder="Instruções adicionais para este treino..."></textarea>
+                    </div>
+                </div>
+
+                <!-- GRUPO MUSCULAR -->
+                <div class="col-12 col-md-6">
+                    <div class="form-floating-custom">
+                        <label class="small fw-bold premium-label mb-1 ls-1">PARTE DO CORPO</label>
+                        <ion-select interface="popover" formControlName="parte_do_corpo_id" class="premium-input-ion">
+                            <ion-select-option [value]="null">Focar em...</ion-select-option>
+                            <ion-select-option *ngFor="let p of partesDoCorpo"
+                                [value]="p.id">{{p.nome}}</ion-select-option>
+                        </ion-select>
+                    </div>
+                </div>
+
+                <!-- PARTE DO CORPO -->
+                <div class="col-12 col-md-6">
+                    <div class="form-floating-custom">
+                        <label class="small fw-bold premium-label mb-1 ls-1">GRUPO MUSCULAR</label>
+                        <ion-select interface="popover" formControlName="grupo_muscular_id" class="premium-input-ion">
+                            <ion-select-option [value]="null">Selecione...</ion-select-option>
+                            <ion-select-option *ngFor="let g of gruposMusculares"
+                                [value]="g.id">{{g.nome}}</ion-select-option>
+                        </ion-select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

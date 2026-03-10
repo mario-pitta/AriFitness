@@ -1,5 +1,7 @@
 import { Treino } from './Treino';
 import { Usuario } from './Usuario';
+import { FichaSessao } from './FichaSessao';
+
 
 export interface FichaAluno {
   id?: number; //20;
@@ -29,4 +31,6 @@ export interface FichaAluno {
     treino: Treino[];
   }[];
   treinos?: Partial<Treino>[] | any;
+  sessoes?: FichaSessao[];
 }
+

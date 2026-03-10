@@ -1,0 +1,36 @@
+.bg-white-dark {
+    background-color: var(--ion-card-background, #ffffff);
+}
+
+.premium-label {
+    color: var(--ion-color-step-600, #475569) !important;
+}
+
+.premium-input,
+.premium-input-ion {
+    background-color: var(--ion-card-background, #ffffff) !important;
+    border: 1px solid var(--ion-color-step-200, #e2e8f0) !important;
+    border-radius: 12px !important;
+    color: var(--ion-text-color, #1e293b) !important;
+    padding: 5px 10px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+}
+
+.premium-input:focus,
+.premium-input-ion:focus {
+    border-color: var(--ion-color-primary) !important;
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.1) !important;
+}
+
+.premium-input-ion {
+    min-height: 52px;
+}
+
+.ls-1 {
+    letter-spacing: 0.5px;
+}
+
+.workout-header-card {
+    border: 1px solid var(--ion-color-step-100, rgba(var(--ion-text-color-rgb), 0.05)) !important;
+}

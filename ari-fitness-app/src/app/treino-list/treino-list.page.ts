@@ -1,8 +1,11 @@
 import { FichaAlunoService } from './../../core/services/ficha-aluno/ficha-aluno.service';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { IUsuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
+import { WorkoutTemplateStateService } from 'src/core/services/treino/state/workout-template-state.service';
+
 import { TreinoExercicioFormPage } from '../treino-exercicio-form/treino-exercicio-form.page';
 import { Treino } from 'src/core/models/Treino';
 import { TreinoService } from 'src/core/services/treino/treino.service';
@@ -12,7 +15,7 @@ import { ParteDoCorpoService } from 'src/core/services/parte-do-corpo/parte-do-c
 import { GrupoMuscularService } from 'src/core/services/grupo-muscular/grupo-muscular.service';
 import { ParteDoCorpo } from 'src/core/models/ParteDoCorpo';
 import { GrupoMuscular } from 'src/core/models/GrupoMuscular';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
 
 import { ActivatedRoute } from '@angular/router';
@@ -36,8 +39,10 @@ export class TreinosListPage implements OnInit {
   partesDoCorpo: ParteDoCorpo[] = [];
   gruposMusculares: GrupoMuscular[] = [];
   searchText: string = '';
+  sub$: Subscription = new Subscription();
   @Input() enableEdit: boolean = true;
   @Input() enableSelect: boolean = false;
+  isWorkoutValid$: Observable<boolean> = this.workoutState.isValid$;
 
   constructor(
     private aRoute: ActivatedRoute,
@@ -48,15 +53,21 @@ export class TreinosListPage implements OnInit {
     private parteDoCorpoService: ParteDoCorpoService,
     private grupoMuscularService: GrupoMuscularService,
     private toastr: ToastrService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private workoutState: WorkoutTemplateStateService
   ) { }
+
 
   ngOnInit() {
     this.user = this.auth.getUser;
     console.log(this.user);
     console.log('💻🔍🪲 - this.gridMode', this.gridMode);
 
-
+    this.sub$.add(this.workoutState.activeSession$.subscribe({
+      next: (session) => {
+        console.log('💻🔍🪲 - activeSession', session);
+      }
+    }))
     this.createForm();
     this.loadData();
     // this.selectedTreino = this.user.treinos && this.user.treinos[0];
@@ -135,14 +146,39 @@ export class TreinosListPage implements OnInit {
 
   @Input({ required: true }) gridMode: boolean = true;
   openTreinoEditor(treino: Treino) {
-    this.openModal = true;
+    this.loading = true;
+    this.treinoService.getTreinoCompleto(treino.id).subscribe({
+      next: (completo: any | { data: Treino, error: any }) => {
+        console.log('completo = ', completo)
 
-    console.log('treino patchValue', treino);
-    this.f.patchValue(treino);
-    treino.treino_exercicio.forEach((trex: any) => {
-      this.setNewExercicio(trex);
+        this.loading = false;
+        this.openModal = true;
+        this.workoutState.setWorkout(completo.data);
+        // We still keep the form for basic fields like name
+        this.f.patchValue(completo);
+      },
+      error: () => this.loading = false
     });
   }
+
+  addNewTreino() {
+    this.openModal = true;
+    const newWorkout: Treino = {
+      id: 0,
+      nome: '',
+      descricao: '',
+      exercicios: [],
+      sessoes: [],
+      nivel_dificuldade: 0,
+      empresa_id: this.user.empresa_id || '',
+      fl_ativo: true,
+      fl_publico: true
+    };
+
+    this.workoutState.setWorkout(newWorkout);
+    this.f.reset(newWorkout);
+  }
+
 
   listenItemEvents(event: { action: string; value: any }) {
     console.log(event);
@@ -260,26 +296,29 @@ export class TreinosListPage implements OnInit {
   }
 
   submitForm() {
-    console.log('Submitting form...', this.f.value);
-    const req = !this.f.value.id
-      ? this.treinoService.create(this.f.value)
-      : this.treinoService.update(this.f.value);
+    const workout = this.workoutState.getWorkoutValue();
+    if (!workout) return;
+
+    console.log('Submitting workout...', workout);
+    const req = (!workout.id || workout.id === 0)
+      ? this.treinoService.create(workout)
+      : this.treinoService.update(workout);
 
     this.loading = true;
     req.subscribe({
       next: (res) => {
         this.loading = false;
+        this.toastr.success('Treino salvo com sucesso!');
         this.closeModal();
         this.getTreinos();
       },
       error: (err) => {
         this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
-      },
+        this.toastr.error('Erro ao salvar treino');
+      }
     });
   }
+
 
 
   async excluirTreino(id: number) {
@@ -320,5 +359,6 @@ export class TreinosListPage implements OnInit {
 
   ngOnDestroy() {
     this.gridMode = false;
+    this.sub$.unsubscribe();
   }
 }

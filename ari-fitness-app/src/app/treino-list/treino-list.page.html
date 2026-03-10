@@ -1,24 +1,28 @@
 <ion-content>
-    <ion-fab *ngIf="user.flagAdmin && enableEdit" slot="fixed" vertical="bottom" horizontal="end" [edge]="false">
-        <ion-fab-button id="open-treino-modal" fill="outlined" (click)="openModal = !openModal">
+    <ion-fab *ngIf="user.tipo_usuario === 3" slot="fixed" vertical="top" horizontal="end" [edge]="false">
+        <ion-fab-button id="open-treino-modal" fill="outlined" color="success" (click)="addNewTreino()">
             <ion-icon name="add" size="large"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 
+
     <ion-grid fixed>
         <ion-row class="ion-align-items-center">
             <ion-col size="12">
-                <ion-searchbar placeholder="Pesquisar treinos..." [(ngModel)]="searchText" (keyup)="filterList()" (ionClear)="filteredTreinos = treinos" class="custom-searchbar">
+                <ion-searchbar placeholder="Pesquisar treinos..." [(ngModel)]="searchText" (keyup)="filterList()"
+                    (ionClear)="filteredTreinos = treinos" class="custom-searchbar">
                 </ion-searchbar>
             </ion-col>
         </ion-row>
 
-        <ion-row>
-            <ion-col *ngFor="let treino of filteredTreinos" [sizeXs]="12" [sizeMd]="gridMode ? 6 : 12" [sizeLg]="gridMode ? 4 : 12">
-                <app-treino-list-item [treino]="treino" [enableSelect]="enableSelect" [user]="user" [enableEdit]="enableEdit" (output)="listenItemEvents($event)">
+        <div class="row g-4 px-2">
+            <div *ngFor="let treino of filteredTreinos" class="col-12" [ngClass]="gridMode ? 'col-md-6 col-lg-4' : ''">
+                <app-treino-list-item [treino]="treino" [enableSelect]="enableSelect" [user]="user"
+                    [enableEdit]="enableEdit" (output)="listenItemEvents($event)">
                 </app-treino-list-item>
-            </ion-col>
-        </ion-row>
+            </div>
+        </div>
+
 
         <ion-row *ngIf="filteredTreinos.length === 0" class="ion-justify-content-center ion-padding">
             <ion-text color="medium">Nenhum treino encontrado.</ion-text>
@@ -37,85 +41,48 @@
 
 <ion-modal [isOpen]="openModal" (didDismiss)="openModal = false" class="modal-treino">
     <ng-template>
-        <ion-content class="ion-padding" [fullscreen]="false">
-            <ion-header>
-                <ion-toolbar>
-                    <ion-title>Cadastro de Treino</ion-title>
-                    <ion-buttons slot="end">
-                        <ion-button (click)="closeModal()">
-                            <ion-icon name="close"></ion-icon>
-                        </ion-button>
-                    </ion-buttons>
-                </ion-toolbar>
-            </ion-header>
+        <ion-header class="ion-border-bottom custom-border">
+            <ion-toolbar>
+                <ion-title class="fw-bold text-main">Editor de Treino</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button (click)="closeModal()" class="text-soft-muted">
+                        <ion-icon name="close" slot="icon-only"></ion-icon>
+                    </ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
 
-            <div class="ion-padding">
-                <form [formGroup]="form">
-                    <ion-list lines="full">
-                        <ion-item>
-                            <ion-input label="Nome do Treino" labelPlacement="floating" formControlName="nome" placeholder="Ex: Hipertrofia A"></ion-input>
-                        </ion-item>
-
-                        <ion-item>
-                            <ion-textarea label="Descrição" labelPlacement="floating" formControlName="descricao" rows="3" placeholder="Instruções gerais sobre o treino..."></ion-textarea>
-                        </ion-item>
-
-                        <ion-item>
-                            <ion-select label="Dificuldade" labelPlacement="floating" interface="popover" formControlName="nivel_dificuldade">
-                                <ion-select-option *ngFor="let d of ['Iniciante', 'Intermediária', 'Experiente', 'Avançado']" [value]="d">{{d}}</ion-select-option>
-                            </ion-select>
-                        </ion-item>
-
-                        <ion-row>
-                            <ion-col>
-                                <ion-item>
-                                    <ion-select label="Parte do Corpo" labelPlacement="floating" interface="popover" formControlName="parte_do_corpo_id">
-                                        <ion-select-option *ngFor="let p of partesDoCorpo" [value]="p.id">{{p.nome}}</ion-select-option>
-                                    </ion-select>
-                                </ion-item>
-                            </ion-col>
-                        </ion-row>
-
-                        <ion-item lines="none">
-                            <ion-checkbox formControlName="fl_publico">Disponibilizar como treino público</ion-checkbox>
-                        </ion-item>
-                    </ion-list>
-
-                    <div class="exercicios-header">
-                        <h3>Exercícios Selecionados</h3>
-                        <ion-button size="small" fill="outline" (click)="openTreinoForm()">
-                            <ion-icon name="add" slot="start"></ion-icon> Adicionar
-                        </ion-button>
+        <ion-content class="workout-editor-content">
+            <div class=" py-4 ">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <section class="editor-section px-2 px-md-3">
+                            <h6 class="section-title text-uppercase fw-bold mb-3 px-2">Informações Gerais</h6>
+                            <app-workout-header></app-workout-header>
+                        </section>
                     </div>
 
-                    <div formArrayName="exercicios">
-                        <ion-card *ngFor="let ex of exercicios.value; let i=index" class="exercicio-card">
-                            <ion-item lines="none">
-                                <ion-label>
-                                    <h2>{{ ex.exercicio?.nome || ex.exercicios?.nome }}</h2>
-                                    <p>{{ ex.equipamento?.nome || ex.equipamentos?.nome || 'Sem equipamento' }}</p>
-                                </ion-label>
-                                <ion-button slot="end" fill="clear" color="danger" (click)="removeExercicio(i)">
-                                    <ion-icon name="trash-outline"></ion-icon>
-                                </ion-button>
-                            </ion-item>
-
-                            <div class="exercicio-details ion-padding-horizontal ion-padding-bottom">
-                                <ion-badge color="light">{{ ex.series }} Séries</ion-badge>
-                                <ion-badge color="light" class="ion-margin-horizontal">{{ ex.repeticoes }} Reps</ion-badge>
-                                <ion-badge color="secondary" *ngIf="ex.carga">{{ ex.carga }}kg</ion-badge>
+                    <div class="col-12">
+                        <section class="editor-section px-2 px-md-3">
+                            <h6 class="section-title text-uppercase fw-bold mb-3 px-2">Sessões & Programação</h6>
+                            <app-session-tabs></app-session-tabs>
+                            <div class="mt-3">
+                                <app-exercise-table></app-exercise-table>
                             </div>
-                        </ion-card>
+                        </section>
                     </div>
-                </form>
+                </div>
             </div>
-
-            <ion-footer class="ion-no-border ion-padding">
-                <ion-button expand="block" (click)="submitForm()" [disabled]="loading || form.invalid">
-                    <ion-spinner *ngIf="loading"></ion-spinner>
-                    <span *ngIf="!loading">SALVAR TREINO</span>
-                </ion-button>
-            </ion-footer>
         </ion-content>
+
+        <ion-footer class="ion-no-border ion-border-top custom-border">
+            <ion-toolbar class="ion-padding">
+                <ion-button expand="block" shape="round" size="large" (click)="submitForm()"
+                    [disabled]="loading || !(isWorkoutValid$ | async)" class="main-submit-btn">
+                    <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+                    <span *ngIf="!loading" class="fw-bold">SALVAR E PUBLICAR TREINO</span>
+                </ion-button>
+            </ion-toolbar>
+        </ion-footer>
     </ng-template>
 </ion-modal>

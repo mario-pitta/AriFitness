@@ -1,12 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { forkJoin, tap, throwError } from 'rxjs';
 import {
   MaskitoOptions,
   MaskitoElementPredicate,
-  maskitoTransform,
 } from '@maskito/core';
-import { Maskito } from '@maskito/core';
 
 import Constants from 'src/core/Constants';
 
@@ -95,82 +92,49 @@ export class PessoaFormPage implements OnInit {
   }
 
   loadData() {
-    forkJoin([
-      this.getTipoUsuarioList(),
-      this.getActiveHorarios(),
-      this.getActivePlans(),
-    ]).subscribe({
-      next: (result) => {
-        console.log('tipoUsuario, horarios, planos: ', result);
-
-      },
-      error: (err) => {
-        this.loading = false;
-
-        throwError(err);
-      },
-    });
+    this.getTipoUsuarioList();
+    this.getActiveHorarios();
+    this.getActivePlans();
   }
 
   getActivePlans() {
-    return this.planoService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id }).subscribe({
+    this.planoService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id }).subscribe({
       next: (planos: Plano[]) => {
         this.planos = planos;
       },
       error: (err) => {
         this.loading = false;
-
         console.error(err);
-        throwError(err);
       },
     });
   }
 
   getActiveHorarios() {
-    return this.horarioService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id }).subscribe({
+    this.horarioService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id }).subscribe({
       next: (horarios: Horario[]) => {
         this.horarios = horarios;
       },
       error: (err) => {
         this.loading = false;
-
         console.error(err);
-        throwError(err);
       },
     });
   }
 
   getTipoUsuarioList() {
     this.loading = true;
-    return this.tipoUsuarioService.findAll().subscribe({
+    this.tipoUsuarioService.findAll().subscribe({
       next: (res: TipoUsuario[]) => {
         if (res) this.tiposUsuario = res;
         this.tipoUsuarioForm = this.tiposUsuario.find(t => t.id == this.aRoute.snapshot.data['tipoUsuario']) as TipoUsuario;
-        console.log(' this.tipoUsuarioForm = ', this.tipoUsuarioForm)
-        this.form.get('tipo_usuario')?.setValue(this.tipoUsuarioForm.id)
-        this.form.get('tipo_usuario')?.disable()
+        if (this.tipoUsuarioForm) {
+          this.form.get('tipo_usuario')?.setValue(this.tipoUsuarioForm.id);
+          this.form.get('tipo_usuario')?.disable();
+        }
       },
       error: (err) => {
         this.loading = false;
-
-
-        // this.aRoute.data.subscribe({
-        //   next: (data: any) => {
-        //     console.log('💻🔍🪲 - data', data);
-
-
-        //     if (!data) return;
-        //     this.tipoUsuarioForm = this.tiposUsuario.find(t => t.id == data.tipoUsuario) as TipoUsuario;
-        //     console.log('💻🔍🪲 - this.tipoUsuarioForm ', this.tipoUsuarioForm);
-
-
-        //     this.form.get('tipo_usuario')?.setValue(data.tipoUsuario)
-        //     // this.form.get('tipo_usuario')?.disable()
-
-        //     console.log(this.form)
-        //   }
-        // })
-        throwError(err);
+        console.error(err);
       },
       complete: () => {
         this.loading = false;
@@ -312,25 +276,32 @@ export class PessoaFormPage implements OnInit {
   }
 
   submitForm() {
-    // console.log('this.form: ', this.form);
-
     this.loading = true;
 
-    const msg = !this.form.value.id ? 'cadastrado' : 'atualizado';
-    const req = !this.form.value.id
-      ? this.usuarioService.create(this.form.value)
-      : this.usuarioService.update(this.form.value);
+    const rawValue = this.form.getRawValue();
+    const isNew = !rawValue.id;
+    const msg = isNew ? 'cadastrado' : 'atualizado';
+    const req = isNew
+      ? this.usuarioService.create(rawValue)
+      : this.usuarioService.update(rawValue);
 
     this.form.disable();
     req.subscribe({
       next: (res: any) => {
-        // console.log('ok');
         this.toastr.success(`Usuário ${msg} com sucesso!`);
         this.form.enable();
-        if (!this.form.value.id) {
+        if (isNew) {
           this.createForm();
         } else {
-          this.router.navigateByUrl('admin/membros')
+          // Redireciona para a rota correta conforme o tipo de usuário
+          const tipoId = this.tipoUsuarioForm?.id;
+          if (tipoId === Constants.INSTRUTOR_ID) {
+            this.router.navigateByUrl('admin/instrutores');
+          } else if (tipoId === Constants.ALUNO_ID) {
+            this.router.navigateByUrl('admin/membros');
+          } else {
+            this.router.navigateByUrl('admin/home');
+          }
         }
       },
       error: (err: any) => {

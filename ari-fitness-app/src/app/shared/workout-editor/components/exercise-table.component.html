@@ -1,0 +1,183 @@
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden exercise-container-card">
+    <div class="card-header border-0 py-3 px-4 d-flex justify-content-between align-items-center bg-card-header">
+        <div class="d-flex align-items-center gap-2">
+            <div class="header-icon-box p-2 rounded-3 text-primary">
+                <ion-icon name="list-outline" class="fs-4"></ion-icon>
+            </div>
+            <h5 class="mb-0 fw-black">Sessão {{activeSession?.nome}}</h5>
+        </div>
+        <button class="btn add-exercise-btn d-flex align-items-center gap-2 fw-bold" [disabled]="!activeSession"
+            (click)="addExercise()">
+            <ion-icon name="add-circle-outline" class="fs-5"></ion-icon>
+            <span class="d-none d-sm-inline">ADICIONAR</span>
+        </button>
+    </div>
+
+    <div class="card-body p-0">
+        <!-- DESKTOP TABLE VIEW -->
+        <div class="table-responsive d-none d-md-block no-scrollbar">
+            <table class="table-hover align-middle mb-0 custom-fitness-table">
+                <thead class="mobile-exercise-card">
+                    <tr>
+                        <th width="40" class="ps-4"></th>
+                        <th>Exercício</th>
+                        <th width="80" class="text-center">Séries</th>
+                        <th width="120" class="text-center">Reps</th>
+                        <th width="90" class="text-center">Carga</th>
+                        <th width="90" class="text-center">Descanso</th>
+                        <th width="140">Execução</th>
+                        <th width="60" class="pe-4 text-end"></th>
+                    </tr>
+                </thead>
+                <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                    <tr *ngFor="let ex of exercicios; let i = index" cdkDrag
+                        class="exercise-row-custom mobile-exercise-card">
+                        <td class="ps-4 text-muted cursor-grab" cdkDragHandle>
+                            <ion-icon name="reorder-two-outline" class="op-1"></ion-icon>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column position-relative">
+                                <input type="text"
+                                    class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
+                                    [placeholder]="'Buscar exercício...'"
+                                    [value]="activeSearchRow === i ? searchTerm : (ex.exercicios?.nome || '')"
+                                    (focus)="onSearchFocus(i, ex.exercicios?.nome?.toUpperCase() || '', $event)"
+                                    (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+
+                                <span class="pill-meta mt-1"
+                                    *ngIf="ex.exercicios">{{ex.exercicios?.equipamento?.nome?.toUpperCase() ||
+                                    'Livre'}}</span>
+                                <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicios">Não selecionado</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <input type="number" [(ngModel)]="ex.series" (change)="updateExercise(i, ex)"
+                                class="form-control table-input">
+                        </td>
+                        <td class="text-center">
+                            <input type="text" [(ngModel)]="ex.repeticoes" (change)="updateExercise(i, ex)"
+                                class="form-control table-input" placeholder="12">
+                        </td>
+                        <td class="text-center">
+                            <input type="number" [(ngModel)]="ex.carga" (change)="updateExercise(i, ex)"
+                                class="form-control table-input-primary">
+                        </td>
+                        <td class="text-center">
+                            <input type="number" [(ngModel)]="ex.intervalo" (change)="updateExercise(i, ex)"
+                                class="form-control table-input">
+                        </td>
+                        <td>
+                            <ion-select interface="popover" [(ngModel)]="ex.tipo_execucao"
+                                (change)="updateExercise(i, ex)">
+                                <ion-select-option [value]="1">Normal</ion-select-option>
+                                <ion-select-option [value]="2">Bi-set</ion-select-option>
+                                <ion-select-option [value]="3">Tri-set</ion-select-option>
+                                <ion-select-option [value]="4">Drop</ion-select-option>
+                                <ion-select-option [value]="5">Super-set</ion-select-option>
+                                <ion-select-option [value]="6">Ciclo</ion-select-option>
+                                <ion-select-option [value]="7">Intervalo</ion-select-option>
+                                <ion-select-option [value]="8">Progressão</ion-select-option>
+                            </ion-select>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <button class="btn-delete-row border-0 bg-transparent text-danger p-2"
+                                (click)="removeExercise(i)">
+                                <ion-icon name="trash-outline" class="fs-5"></ion-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MOBILE CARD VIEW -->
+        <div class="d-md-none p-3" cdkDropList (cdkDropListDropped)="drop($event)">
+            <div *ngFor="let ex of exercicios; let i = index" cdkDrag
+                class="mobile-exercise-card mb-3 p-3 rounded-4 shadow-sm custom-border position-relative">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center gap-2 w-100 pe-3">
+                        <ion-icon name="grid-outline" class="op-3" cdkDragHandle></ion-icon>
+                        <div class="d-flex flex-column position-relative w-100 ms-1">
+                            <input type="text"
+                                class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
+                                [placeholder]="'Buscar exercício...'"
+                                [value]="activeSearchRow === i ? searchTerm : (ex.exercicios?.nome || '')"
+                                (focus)="onSearchFocus(i, ex.exercicios?.nome?.toUpperCase() || '', $event)"
+                                (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+
+                            <span class="pill-meta mt-1"
+                                *ngIf="ex.exercicios">{{ex.exercicios?.equipamento?.nome?.toUpperCase() ||
+                                'Livre'}}</span>
+                            <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicios">Não selecionado</span>
+                        </div>
+                    </div>
+                    <button class="btn-delete-row border-0 bg-transparent text-danger p-0 mt-1"
+                        (click)="removeExercise(i)">
+                        <ion-icon name="trash-outline" class="fs-5"></ion-icon>
+                    </button>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-3">
+                        <label class="mobile-label">SÉRIES</label>
+                        <input type="number" [(ngModel)]="ex.series" class="form-control table-input">
+                    </div>
+                    <div class="col-4">
+                        <label class="mobile-label">REPS</label>
+                        <input type="number" [(ngModel)]="ex.repeticoes" class="form-control table-input">
+                    </div>
+                    <div class="col-5">
+                        <label class="mobile-label">TIPO</label>
+                        <select [(ngModel)]="ex.tipo_execucao" class="form-select table-select">
+                            <option [value]="1">Normal</option>
+                            <option [value]="2">Bi-set</option>
+                            <option [value]="3">Tri-set</option>
+                            <option [value]="4">Drop</option>
+                            <option [value]="5">Super-set</option>
+                            <option [value]="6">Ciclo</option>
+                            <option [value]="7">Intervalo</option>
+                            <option [value]="8">Progressão</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="mobile-label">CARGA (KG)</label>
+                        <input type="number" [(ngModel)]="ex.carga" class="form-control table-input-primary">
+                    </div>
+                    <div class="col-6">
+                        <label class="mobile-label">DESCANSO (S)</label>
+                        <input type="number" [(ngModel)]="ex.intervalo" class="form-control table-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div *ngIf="exercicios.length === 0" class="text-center py-5">
+            <div class="p-4">
+                <ion-icon name="fitness-outline" class="fs-1 text-primary op-2 mb-3"></ion-icon>
+                <h6 class="fw-bold text-soft-muted">Sessão Vazia</h6>
+                <p class="small text-soft-muted op-7">Adicione exercícios para montar este treino.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AUTOCOMPLETE GLOBAL DROPDOWN TEMPLATE -->
+<ng-template #dropdownTemplate>
+    <div class="autocomplete-dropdown-container">
+        <div class="dropdown-item py-2 px-3 cursor-pointer d-flex flex-column dropdown-hover"
+            *ngFor="let result of filteredExercises"
+            (click)="selectExercise(activeSearchRow!, exercicios[activeSearchRow!], result)">
+            <span class="fw-bold fs-6">{{result.nome}}</span>
+            <span class="pill-meta mt-1" style="font-size: 0.65rem;">{{result.equipamento?.nome || 'Livre'}}</span>
+        </div>
+        <div class="dropdown-item py-3 px-3 text-soft-muted small text-center" *ngIf="filteredExercises.length === 0">
+            Nenhum exercício encontrado.
+        </div>
+    </div>
+</ng-template>
+
+<div *ngIf="activeSearchRow !== null && isDropdownVisible" class="position-fixed autocomplete-dropdown"
+    [ngStyle]="dropdownStyle">
+    <ng-container *ngTemplateOutlet="dropdownTemplate"></ng-container>
+</div>

@@ -1,0 +1,58 @@
+<div class="student-session-container">
+    <!-- SESSION SELECTION -->
+    <div class="d-flex align-items-center gap-2 overflow-auto no-scrollbar py-3 px-1">
+        <button *ngFor="let sessao of sessoes" (click)="selectSession(sessao)"
+            class="student-session-pill border-0 transition-all"
+            [ngClass]="activeSession?.id === sessao.id ? 'active shadow-sm' : 'bg-soft text-soft-muted'">
+            <span class="sessao-label">SESSÃO</span>
+            <span class="sessao-name">{{sessao.nome}}</span>
+        </button>
+    </div>
+
+    <!-- EXERCISES LIST -->
+    <div class="exercises-container mt-2" *ngIf="activeSession">
+        <div *ngFor="let ex of activeSession.exercicios"
+            class="exercise-card-student mb-3 shadow-sm rounded-4 overflow-hidden border custom-border">
+            <div class="d-flex align-items-center p-3 gap-3">
+                <div
+                    class="exercise-icon badge-primary-subtle rounded-circle d-flex align-items-center justify-content-center">
+                    <ion-icon name="fitness-outline" class="fs-4"></ion-icon>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-black text-main mb-1 text-capitalize">{{ex.exercicio?.nome}}</h6>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge badge-light-subtle border-0 small text-uppercase ls-1">
+                            {{ex.exercicio?.equipamento?.nome || 'Livre'}}
+                        </span>
+                        <div class="type-indicator" *ngIf="ex.tipo_execucao > 1">
+                            <span class="dot bg-warning"></span>
+                            <span class="small fw-bold text-soft-muted">Avançado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKOUT DATA BAR -->
+            <div class="workout-data-bar d-flex border-top custom-border">
+                <div class="data-item flex-fill text-center p-2 border-end custom-border">
+                    <span class="data-label">SÉRIES</span>
+                    <span class="data-value">{{ex.series}}</span>
+                </div>
+                <div class="data-item flex-fill text-center p-2 border-end custom-border">
+                    <span class="data-label">REPETIÇÕES</span>
+                    <span class="data-value">{{ex.repeticoes}}</span>
+                </div>
+                <div class="data-item flex-fill text-center p-2 highlight-bg">
+                    <span class="data-label">CARGA</span>
+                    <span class="data-value text-primary font-weight-bold">{{ex.carga}}kg</span>
+                </div>
+            </div>
+
+            <div class="p-2 bg-light-soft text-center text-soft-muted small border-top custom-border"
+                *ngIf="ex.intervalo">
+                <ion-icon name="timer-outline" class="me-1"></ion-icon>
+                Descanso: <strong>{{ex.intervalo}}s</strong>
+            </div>
+        </div>
+    </div>
+</div>

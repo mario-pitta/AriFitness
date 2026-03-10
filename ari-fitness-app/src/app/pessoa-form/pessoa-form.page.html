@@ -68,7 +68,7 @@
             </ion-card>
 
             <!-- Collaborator Context (NOT ALUNO) -->
-            <ng-container *ngIf="form.getRawValue().tipo_usuario !== 5">
+            <ng-container *ngIf="form.getRawValue().tipo_usuario !== Constants.ALUNO_ID">
                 <ion-card class="modern-card">
                     <ion-card-header>
                         <ion-card-title>
@@ -77,12 +77,12 @@
                         </ion-card-title>
                     </ion-card-header>
                     <ion-card-content>
-                        <ion-item lines="none" class="checkbox-item" *ngIf="form.value.tipo_usuario">
+                        <ion-item lines="none" class="checkbox-item" *ngIf="form.getRawValue().tipo_usuario">
                             <ion-checkbox formControlName="flagAdmin" labelPlacement="end">Administrador do
                                 Sistema</ion-checkbox>
                         </ion-item>
 
-                        <ng-container *ngIf="form.value.tipo_usuario === Constants.INSTRUTOR_ID">
+                        <ng-container *ngIf="form.getRawValue().tipo_usuario === Constants.INSTRUTOR_ID">
                             <ion-row>
                                 <ion-col size="12" size-md="6">
                                     <ion-input formControlName="cref" label="Registro CREF *" labelPlacement="floating"
@@ -100,7 +100,7 @@
 
                         <!-- Other collaborators -->
                         <ng-container
-                            *ngIf="form.value.tipo_usuario !== Constants.INSTRUTOR_ID && form.value.tipo_usuario !== Constants.ALUNO_ID && form.value.tipo_usuario !== Constants.GERENCIA_ID">
+                            *ngIf="form.getRawValue().tipo_usuario !== Constants.INSTRUTOR_ID && form.getRawValue().tipo_usuario !== Constants.ALUNO_ID && form.getRawValue().tipo_usuario !== Constants.GERENCIA_ID">
                             <ion-row>
                                 <ion-col size="12" size-md="6">
                                     <ion-select formControlName="turno" label="Turno de Trabalho"
@@ -126,7 +126,7 @@
             </ng-container>
 
             <!-- Student Context (ALUNO) -->
-            <ng-container *ngIf="form.getRawValue().tipo_usuario === 5">
+            <ng-container *ngIf="form.getRawValue().tipo_usuario === Constants.ALUNO_ID">
                 <ion-card class="modern-card">
                     <ion-card-header>
                         <ion-card-title>

@@ -13,8 +13,9 @@ export interface Exercicio {
   musculo_id?: number;
   musculo?: Musculo;
   equipamento_id?: number;
-  equipamentos?: Equipamento;
+  equipamento?: Equipamento;
   midia_url?: string;
+  img_url?: string;
 }
 
 

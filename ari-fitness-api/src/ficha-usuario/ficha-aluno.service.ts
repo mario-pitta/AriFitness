@@ -6,10 +6,73 @@ https://docs.nestjs.com/providers#services
 import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import { IFichaAluno } from './FichaAluno.interface';
+import { TreinoSessaoService } from 'src/treino/treino-sessao.service';
+
 
 @Injectable()
 export class FichaAlunoService {
-  constructor(private database: DataBaseService) {}
+  constructor(
+    private database: DataBaseService,
+    private treinoSessaoService: TreinoSessaoService,
+  ) { }
+
+  async applyTemplateToStudent(treinoId: number, fichaId: number) {
+    // 1. Buscar o template completo
+    const { data: template, error: templateError } = await this.treinoSessaoService.getTreinoCompleto(treinoId);
+
+    if (templateError || !template) {
+      return { data: null, error: templateError || 'Template não encontrado' };
+    }
+
+    const { sessoes } = template;
+
+    // 2. Para cada sessão do template, duplicar para a ficha
+    for (const sessaoTemplate of (sessoes || [])) {
+      const { data: novaSessaoData, error: sessaoError } = await this.database.supabase
+        .from('ficha_sessao')
+        .insert({
+          ficha_id: fichaId,
+          nome: sessaoTemplate.nome,
+          ordem: sessaoTemplate.ordem,
+          created_at: new Date()
+        })
+        .select('*')
+        .single();
+
+      if (sessaoError) {
+        console.error('Erro ao criar ficha_sessao:', sessaoError);
+        continue;
+      }
+
+      // 3. Criar os exercícios da sessão
+      const exerciciosFicha = (sessaoTemplate.exercicios || []).map((exTemplate: any) => ({
+
+        ficha_sessao_id: novaSessaoData.id,
+        exercicio_id: exTemplate.exercicio_id,
+        series: exTemplate.series,
+        repeticoes: exTemplate.repeticoes,
+        carga: exTemplate.carga,
+        intervalo: exTemplate.intervalo,
+        ordem: exTemplate.ordem,
+        tipo_execucao: exTemplate.tipo_execucao,
+        grupo_execucao: exTemplate.grupo_execucao,
+        tipo_progressao: exTemplate.tipo_progressao,
+        carga_series: exTemplate.carga_series,
+        created_at: new Date()
+      }));
+
+      if (exerciciosFicha.length > 0) {
+        const { error: exError } = await this.database.supabase
+          .from('ficha_exercicio')
+          .insert(exerciciosFicha);
+
+        if (exError) console.error('Erro ao criar ficha_exercicio:', exError);
+      }
+    }
+
+    return { data: 'Template aplicado com sucesso', error: null };
+  }
+
 
   findAll(filters?: IFichaAluno | Partial<IFichaAluno>) {
     return this.database.supabase
@@ -44,19 +107,29 @@ export class FichaAlunoService {
                 treino(
                     *,
                     exercicios: treino_exercicio(
-                        *, 
-                        equipamentos(*),
-                        grupo_muscular(*),
-                        parte_do_corpo(*),
+                        *,
                         exercicio: exercicios(
                             *,
                             equipamento: equipamentos(*),
-                            grupo_muscular(*)                            
-                            )
+                            grupo_muscular(*)
                         )
                     )
                 )
+            ),
+            sessoes: ficha_sessao(
+                *,
+                exercicios: ficha_exercicio(
+                    *,
+                    exercicio: exercicios(
+                        *,
+                        equipamento: equipamentos(*),
+                        grupo_muscular(*)
+                    )
+                )
+            )
         `,
+
+
       )
       .eq('id', id)
       .then((res) => {
@@ -77,21 +150,30 @@ export class FichaAlunoService {
             aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome),
             treinos_cadastrados: ficha_aluno_treino(
                 treino(
-                     *,
+                    *,
                     exercicios: treino_exercicio(
-                        *, 
-                        equipamentos(*),
-                        grupo_muscular(*),
-                        parte_do_corpo(*),
+                        *,
                         exercicio: exercicios(
                             *,
                             equipamento: equipamentos(*),
-                            grupo_muscular(*)                            
-                            )
+                            grupo_muscular(*)
                         )
                     )
                 )
+            ),
+            sessoes: ficha_sessao(
+                *,
+                exercicios: ficha_exercicio(
+                    *,
+                    exercicio: exercicios(
+                        *,
+                        equipamento: equipamentos(*),
+                        grupo_muscular(*)
+                    )
+                )
+            )
         `,
+
       )
       .eq('usuario_id', userId)
       .match({ ...filters })
@@ -152,7 +234,7 @@ export class FichaAlunoService {
           console.log('vai voltar para o controller.... RETORNANDO');
           return res;
         });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   update(body: Partial<IFichaAluno>) {

@@ -5,3 +5,82 @@ ion-icon {
 .treino-card-actions {
     margin: auto 0;
 }
+
+.workout-item-card {
+    border-left: 2px solid #f1f5f9 !important;
+    position: relative;
+}
+
+.workout-item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-status-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #e2e8f0;
+}
+
+.card-status-indicator.Iniciante {
+    background: #10b981;
+}
+
+.card-status-indicator.Intermediário {
+    background: #3b82f6;
+}
+
+.card-status-indicator.Avançado {
+    background: #f59e0b;
+}
+
+.card-status-indicator.Elite {
+    background: #ef4444;
+}
+
+
+.fw-black {
+    font-weight: 800;
+}
+
+.custom-checkbox {
+    --size: 20px;
+    --border-radius: 6px;
+}
+
+.btn-action-icon {
+    background-color: var(--ion-color-step-50, #f8fafc) !important;
+    transition: all 0.2s;
+}
+
+.btn-action-icon:hover {
+    background-color: var(--ion-color-step-150, #f1f5f9) !important;
+    transform: scale(1.1);
+}
+
+.btn-action-icon:hover ion-icon[name="trash-outline"] {
+    color: var(--ion-color-danger) !important;
+}
+
+.btn-action-icon:hover ion-icon[name="create-outline"] {
+    color: var(--ion-color-primary) !important;
+}
+
+.text-main {
+    color: var(--ion-text-color, #1e293b) !important;
+}
+
+.text-soft-muted {
+    color: var(--ion-color-step-500, #94a3b8) !important;
+}
+
+.custom-border {
+    border-color: var(--ion-color-step-150, #e2e8f0) !important;
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}

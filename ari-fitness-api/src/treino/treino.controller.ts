@@ -1,6 +1,6 @@
-/* eslint-disable prettier/prettier */
 import { Response } from 'express';
 import { TreinoService } from './treino.service';
+import { TreinoSessaoService } from './treino-sessao.service';
 /*
 https://docs.nestjs.com/controllers#controllers
 */
@@ -16,11 +16,26 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { Treino } from './Treino.interface';
+import { Treino, TreinoSessao } from './Treino.interface';
+
 
 @Controller('treinos')
 export class TreinoController {
-  constructor(private treino: TreinoService) {}
+  constructor(
+    private treino: TreinoService,
+    private sessaoService: TreinoSessaoService,
+  ) { }
+
+  @Get(':id/completo')
+  getTreinoCompleto(@Param('id') id: number) {
+    return this.sessaoService.getTreinoCompleto(id);
+  }
+
+  @Post('sessao')
+  postSessao(@Body() body: Partial<TreinoSessao>) {
+    return this.sessaoService.createSessao(body);
+  }
+
 
   @Get()
   findAll(@Query() query: any, @Res() res: Response) {
@@ -56,9 +71,9 @@ export class TreinoController {
     });
   }
 
-  
+
   @Delete(':id')
-  delete(@Param() params: {id: number}, @Res() res: Response) {
+  delete(@Param() params: { id: number }, @Res() res: Response) {
     console.log("deleting treino: ", params.id);
 
 

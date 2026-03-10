@@ -1,0 +1,51 @@
+.bg-card {
+    background-color: var(--ion-card-background, #ffffff) !important;
+}
+
+.border-bottom {
+    border-bottom-color: var(--ion-color-step-100, #f1f5f9) !important;
+}
+
+.text-main {
+    color: var(--ion-text-color, #1e293b) !important;
+}
+
+.text-soft-muted {
+    color: var(--ion-color-step-500, #94a3b8) !important;
+}
+
+.badge-primary-subtle {
+    background-color: var(--ion-color-primary-subtle, rgba(var(--ion-color-primary-rgb), 0.1)) !important;
+    color: var(--ion-color-primary) !important;
+}
+
+.badge-light-subtle {
+    background-color: var(--ion-color-step-100, #1a1d24) !important;
+    color: var(--ion-text-color, #e3e3e3) !important;
+}
+
+.fw-black {
+    font-weight: 800;
+}
+
+.ls-1 {
+    letter-spacing: 0.5px;
+}
+
+.section-title {
+    font-size: 0.75rem;
+    letter-spacing: 1.2px;
+    color: var(--ion-color-step-600, #64748b) !important;
+    border-left: 3px solid var(--ion-color-primary);
+    padding-left: 10px;
+}
+
+.workout-editor-content {
+    --background: var(--ion-background-color, #f8fafc);
+}
+
+.main-submit-btn {
+    margin: 0;
+    --box-shadow: 0 8px 20px rgba(var(--ion-color-success-rgb), 0.3);
+    height: 56px;
+}

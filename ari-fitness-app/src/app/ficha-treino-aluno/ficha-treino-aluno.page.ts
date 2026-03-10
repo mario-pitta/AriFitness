@@ -6,6 +6,8 @@ import { AuthService } from 'src/core/services/auth/auth.service';
 import { TreinoExercicioFormPage } from '../treino-exercicio-form/treino-exercicio-form.page';
 import { TreinosListPage } from '../treino-list/treino-list.page';
 import { Treino } from 'src/core/models/Treino';
+import { WorkoutPreviewModalComponent } from '../shared/workout-editor/components/workout-preview-modal.component';
+
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { FichaAlunoService } from 'src/core/services/ficha-aluno/ficha-aluno.service';
@@ -225,38 +227,44 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
 
   openTreinoList() {
-    console.log('enviando treinos...', this.treinos.value);
-
-    this.modalController
-      .create({
-        component: TreinosListPage,
-        componentProps: {
-          enableEdit: true,
-          gridMode: false,
-          enableSelect: true,
-          selectedTreinos: this.treinos.value,
-        },
-      })
-      .then((m) => {
-        m.present();
-        m.onDidDismiss().then((res) => {
-          if (res.data) {
-            console.log('ADICIONAR OS TREINOS AO FORM ARRAY !!!!!!', res.data);
-            this.treinos.clear();
-            for (let _t of res.data?.treinos) {
-              const treino = {
-                treino: { ..._t },
-              };
-              console.log(treino);
-              this.treinos.setControl(
-                this.treinos.value.length || 0,
-                this.fb.group(treino)
-              );
-            }
-          }
-        });
+    this.modalController.create({
+      component: TreinosListPage,
+      componentProps: { enableEdit: false, gridMode: true, enableSelect: true }
+    }).then(modal => {
+      modal.present();
+      modal.onDidDismiss().then(res => {
+        if (res.data && res.data.treinos && res.data.treinos.length > 0) {
+          const selectedTreino = res.data.treinos[0];
+          this.previewAndApplyTemplate(selectedTreino.id);
+        }
       });
+    });
   }
+
+  async previewAndApplyTemplate(treinoId: number) {
+    const modal = await this.modalController.create({
+      component: WorkoutPreviewModalComponent,
+      componentProps: { treinoId }
+    });
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data === true) {
+      this.loading = true;
+      this.fichaService.applyTemplate(this.fichaAtual.id!, treinoId).subscribe({
+        next: () => {
+          this.loading = false;
+          this.toastr.success('Treino aplicado com sucesso!');
+          this.getFichaInfo(); // Refetch to show new sessions/exercises
+        },
+        error: () => {
+          this.loading = false;
+          this.toastr.error('Erro ao aplicar treino.');
+        }
+      });
+    }
+  }
+
 
   setInterval(e: any) {
     this.interval = e.value;

@@ -1,0 +1,69 @@
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    scrollbar-width: none;
+}
+
+.session-pill {
+    min-width: 140px;
+    border: 2px solid transparent !important;
+    background-color: var(--ion-card-background, #ffffff);
+}
+
+.bg-soft {
+    background-color: var(--ion-color-step-100, #f1f5f9);
+}
+
+.text-soft-muted {
+    color: var(--ion-color-step-600, #475569) !important;
+}
+
+.session-pill.active {
+    background: var(--ion-color-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pill-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.pill-name {
+    font-size: 1.1rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.add-session-card {
+    min-width: 80px;
+    height: 64px;
+    background: var(--ion-color-step-50, #1a1d24);
+    color: var(--ion-color-primary);
+    border: 2px dashed var(--ion-color-step-300, #3b3e45) !important;
+}
+
+.add-session-card:hover {
+    background: var(--ion-color-primary-subtle, rgba(77, 141, 255, 0.1));
+    border-color: var(--ion-color-primary) !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.op-5 {
+    opacity: 0.5;
+}
+
+.hover-op-10:hover {
+    opacity: 1;
+}
+
+.transition-all {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}

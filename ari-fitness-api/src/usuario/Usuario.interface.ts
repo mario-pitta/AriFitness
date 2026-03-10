@@ -32,6 +32,7 @@ export interface Usuario {
   objetivo: string | number;
   data_nascimento: Date | string;
   flagAdmin: boolean;
+  especialidade?: string;
   email?: string;
   data_ultimo_pagamento?: Date | string;
 }

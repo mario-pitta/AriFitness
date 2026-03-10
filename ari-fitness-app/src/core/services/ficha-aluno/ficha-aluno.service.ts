@@ -8,13 +8,13 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class FichaAlunoService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(filters?: Partial<FichaAluno> | FichaAluno) {
     const query = filters
       ? Object.keys(filters).map(
-          (k: string) => `${k}=${filters[k as keyof FichaAluno]}`
-        )
+        (k: string) => `${k}=${filters[k as keyof FichaAluno]}`
+      )
       : '';
     return this.http
       .get<FichaAluno[]>(environment.apiUrl + '/ficha-aluno?' + query)
@@ -23,8 +23,8 @@ export class FichaAlunoService {
   getByUser(userId: number, filters?: Partial<FichaAluno> | FichaAluno) {
     const query = filters
       ? Object.keys(filters).map(
-          (k: string) => `${k}=${filters[k as keyof FichaAluno]}`
-        )
+        (k: string) => `${k}=${filters[k as keyof FichaAluno]}`
+      )
       : '';
     return this.http
       .get<FichaAluno[]>(
@@ -35,8 +35,8 @@ export class FichaAlunoService {
   getById(id: number, filters?: Partial<FichaAluno> | FichaAluno) {
     const query = filters
       ? Object.keys(filters).map(
-          (k: string) => `${k}=${filters[k as keyof FichaAluno]}`
-        )
+        (k: string) => `${k}=${filters[k as keyof FichaAluno]}`
+      )
       : '';
     return this.http
       .get<FichaAluno[]>(
@@ -55,4 +55,11 @@ export class FichaAlunoService {
       .put<FichaAluno[]>(environment.apiUrl + '/ficha-aluno/', ficha)
       .pipe(take(1));
   }
+
+  applyTemplate(fichaId: number, treinoId: number) {
+    return this.http
+      .post(environment.apiUrl + `/ficha-aluno/${fichaId}/apply-template/${treinoId}`, {})
+      .pipe(take(1));
+  }
 }
+

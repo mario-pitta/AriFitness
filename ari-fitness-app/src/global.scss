@@ -71,6 +71,10 @@ $prefix: "mo-";
 
 
 
+// ── Admin Dashboard Styles ──────────────────────────────────────────────
+@import 'app/adm-page/admin-dashboard';
+
+
 /** SCROLLBAR */
 ion-content {
   // –offset-bottom: auto !important;
@@ -257,6 +261,3 @@ ion-card {
     transform: scale(1.02);
   }
 }
-
-// ── Admin Dashboard Styles ──────────────────────────────────────────────
-@import 'app/adm-page/admin-dashboard';
