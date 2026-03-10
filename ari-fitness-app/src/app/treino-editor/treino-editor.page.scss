@@ -1,0 +1,24 @@
+.workout-editor-content {
+    --background: var(--ion-background-color, #f4f7fa);
+}
+
+.editor-section {
+    .section-title {
+        color: var(--ion-color-step-600, #475569);
+        letter-spacing: 1px;
+        font-size: 0.75rem;
+    }
+}
+
+.custom-border {
+    border-color: var(--ion-color-step-150, #e2e8f0) !important;
+}
+
+.text-main {
+    color: var(--ion-text-color, #1e293b);
+}
+
+.main-submit-btn {
+    --box-shadow: 0 8px 20px rgba(var(--ion-color-primary-rgb), 0.3);
+    margin: 0;
+}

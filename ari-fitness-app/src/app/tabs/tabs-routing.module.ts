@@ -82,18 +82,12 @@ const routes: Routes = [
             (m) => m.TreinoFormPageModule
           ),
       },
+
       {
         path: 'treino-list',
         loadChildren: () =>
           import('../treino-list/treino-list.module').then(
             (m) => m.TreinoListPageModule
-          ),
-      },
-      {
-        path: 'treino-form/:id',
-        loadChildren: () =>
-          import('../treino-exercicio-form/treino-exercicio-form.module').then(
-            (m) => m.TreinoFormPageModule
           ),
       },
       {
