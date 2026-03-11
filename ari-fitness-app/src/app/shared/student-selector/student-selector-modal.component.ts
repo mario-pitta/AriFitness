@@ -5,6 +5,7 @@ import { FichaAlunoService } from 'src/core/services/ficha-aluno/ficha-aluno.ser
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { IUsuario } from 'src/core/models/Usuario';
 import { forkJoin } from 'rxjs';
+import Constants from 'src/core/Constants';
 
 @Component({
     selector: 'app-student-selector-modal',
@@ -35,7 +36,7 @@ export class StudentSelectorModalComponent implements OnInit {
         this.loading = true;
         // Fetch students for the same company
         this.usuarioService.findByFilters({
-            tipo_usuario: 1, // ALUNO
+            tipo_usuario: Constants.ALUNO_ID, // ALUNO
             empresa_id: this.currentUser.empresa_id
         }).subscribe({
             next: (students: any[]) => {
@@ -52,6 +53,7 @@ export class StudentSelectorModalComponent implements OnInit {
                     next: (fichasArray: any[]) => {
                         this.students = students.map((s, index) => ({
                             ...s,
+                            fichas: fichasArray,
                             ficha_ativa: fichasArray[index][0] || null
                         })).filter(s => s.ficha_ativa); // Only show students with active fichas to clone
 

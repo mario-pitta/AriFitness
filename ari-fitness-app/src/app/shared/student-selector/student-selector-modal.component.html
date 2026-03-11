@@ -20,18 +20,22 @@
 
     <ion-list lines="none" *ngIf="!loading">
         <ion-item *ngFor="let student of filteredStudents" class="student-item" (click)="selectStudent(student)">
+
             <div class="avatar-sm" slot="start">
                 <ion-icon name="person-circle-outline"></ion-icon>
             </div>
             <ion-label>
                 <h2 class="fw-bold">{{ student.nome }}</h2>
-                <p class="small" *ngIf="student.ficha_ativa">Ficha: {{ student.ficha_ativa.descricao || 'Sem descrição'
+                <p class="small" *ngIf="student.ficha_ativa">Ficha: {{ student.ficha_ativa.descricao || 'Sem
+                    descrição'
                     }}</p>
                 <p class="small text-danger" *ngIf="!student.ficha_ativa">Nenhuma ficha ativa</p>
             </ion-label>
             <ion-button fill="clear" slot="end" *ngIf="student.ficha_ativa" color="secondary">
                 Selecionar
             </ion-button>
+
+
         </ion-item>
     </ion-list>
 

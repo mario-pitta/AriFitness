@@ -409,6 +409,7 @@ export class FichaTreinoAlunoPage implements OnInit {
 
   ngOnDestroy() {
     console.log('destruindo ficha-treino-aluno...');
+    this.workoutState.setWorkout(null);
     this.form.reset();
     this.aluno?.reset();
     this.instrutor?.reset();

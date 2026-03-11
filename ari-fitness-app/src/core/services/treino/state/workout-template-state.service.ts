@@ -30,7 +30,12 @@ export class WorkoutTemplateStateService {
         })
     );
 
-    setWorkout(workout: Treino) {
+    setWorkout(workout: Treino | null) {
+
+        if (!workout) {
+            this.workoutSubject.next(null);
+            return;
+        }
         // Ensure at least one session for new workouts or empty templates
         if (!workout.sessoes || workout.sessoes.length === 0) {
             workout.sessoes = [{

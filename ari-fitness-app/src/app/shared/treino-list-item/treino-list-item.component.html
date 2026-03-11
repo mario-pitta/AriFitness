@@ -1,5 +1,5 @@
 <ion-card class="border-0 shadow-sm rounded-4 overflow-hidden workout-item-card mb-3 transition-all">
-    <div class="card-status-indicator" [ngClass]="treino.nivel_dificuldade"></div>
+    <div class="card-status-indicator" [ngClass]="treino.class"></div>
     <ion-card-content class="p-4">
         <div class="d-flex align-items-start justify-content-between">
             <div class="flex-grow-1">
@@ -7,13 +7,13 @@
                     <ion-checkbox *ngIf="enableSelect" [(ngModel)]="treino.checked" [id]="'treino_id_'+treino.id"
                         class="custom-checkbox" (ionChange)="output.emit({ action: 'check', value: treino })">
                     </ion-checkbox>
-                    <span class="badge rounded-pill bg-primary-subtle text-primary border-0 px-3 fw-bold small">
-                        {{ treino.nivel_dificuldade }}
+                    <span class="badge rounded-pill  border-0 px-3 fw-bold small" [ngClass]="treino.class">
+                        {{ treino.label }}
                     </span>
-                    <span *ngIf="treino.fl_publico"
+                    <!-- <span *ngIf="treino.fl_publico"
                         class="badge rounded-pill bg-success-subtle text-success border-0 px-3 fw-bold small">
                         Público
-                    </span>
+                    </span> -->
                 </div>
 
                 <ion-card-title class="fw-black mb-2 fs-5 text-capitalize">{{ treino.nome }}</ion-card-title>

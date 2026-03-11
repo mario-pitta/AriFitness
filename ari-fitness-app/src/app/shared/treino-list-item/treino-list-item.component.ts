@@ -17,8 +17,52 @@ export class TreinoListItemComponent implements OnInit {
   @Output() output: EventEmitter<any> = new EventEmitter();
   constructor(private treinoService: TreinoService, private alertController: AlertController) { }
 
-  ngOnInit() { }
+  ngOnInit() {
 
+    console.log('treino = ', this.treino)
+    if (this.treino) this.customizeTreino(this.treino)
+
+  }
+
+  customizeTreino(treino: Treino) {
+    const _treino = {
+      ...treino,
+      label: this.getTreinoLabel(treino.nivel_dificuldade),
+      color: this.getTreinoColor(treino.nivel_dificuldade),
+      class: this.getTreinoClass(treino.nivel_dificuldade)
+    }
+    this.treino = _treino;
+  }
+
+  getTreinoLabel(nivel: number) {
+    switch (nivel) {
+      case 1: return 'Iniciante';
+      case 2: return 'Intermediário';
+      case 3: return 'Avançado';
+      case 4: return 'Elite';
+      default: return '-';
+    }
+  }
+
+  getTreinoColor(nivel: number) {
+    switch (nivel) {
+      case 1: return 'success';
+      case 2: return 'info';
+      case 3: return 'warning';
+      case 4: return 'danger';
+      default: return '-';
+    }
+  }
+
+  getTreinoClass(nivel: number) {
+    switch (nivel) {
+      case 1: return ' bg-success text-light';
+      case 2: return ' bg-info text-light';
+      case 3: return ' bg-warning text-light';
+      case 4: return ' bg-danger text-light';
+      default: return '-';
+    }
+  }
 
   async deleteTreino(id: number) {
 
