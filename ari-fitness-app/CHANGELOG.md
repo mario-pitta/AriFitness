@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/mario-pitta/AriFitness/compare/v1.6.2...v1.7.0) (2026-03-11)
+
+
+### Features
+
+* Implement   user authentication, workout planning, and student workout customization. ([5010135](https://github.com/mario-pitta/AriFitness/commit/501013559ae4e00cd5901e6d980612bb61c46b73))
+
 ### [1.6.2](https://github.com/mario-pitta/AriFitness/compare/v1.6.1...v1.6.2) (2026-03-07)
 
 ### [1.6.1](https://github.com/mario-pitta/AriFitness/compare/v1.6.0...v1.6.1) (2026-03-07)
