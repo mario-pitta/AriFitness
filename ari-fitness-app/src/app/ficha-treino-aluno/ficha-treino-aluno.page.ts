@@ -7,6 +7,8 @@ import { TreinoExercicioFormPage } from '../treino-exercicio-form/treino-exercic
 import { TreinosListPage } from '../treino-list/treino-list.page';
 import { Treino } from 'src/core/models/Treino';
 import { WorkoutPreviewModalComponent } from '../shared/workout-editor/components/workout-preview-modal.component';
+import { TemplateSelectorModalComponent } from '../shared/workout-editor/components/template-selector-modal.component';
+import { StudentSelectorModalComponent } from '../shared/student-selector/student-selector-modal.component';
 
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
@@ -15,6 +17,8 @@ import { FichaAluno } from 'src/core/models/FichaAluno';
 import { forkJoin, Subscription } from 'rxjs';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
+import { WorkoutTemplateStateService } from 'src/core/services/treino/state/workout-template-state.service';
+import { TreinoService } from 'src/core/services/treino/treino.service';
 
 @Component({
   selector: 'app-ficha-treino-aluno',
@@ -45,7 +49,9 @@ export class FichaTreinoAlunoPage implements OnInit {
     private router: Router,
     private usuarioService: UsuarioService,
     private fichaService: FichaAlunoService,
-    private toastr: ToastrService
+    private treinoService: TreinoService,
+    private toastr: ToastrService,
+    public workoutState: WorkoutTemplateStateService
   ) {
     this.subs$.add(
       this.router.events.subscribe({
@@ -126,6 +132,14 @@ export class FichaTreinoAlunoPage implements OnInit {
           if (data.length) {
             this.fichaAtual = data[0];
             this.completeForm(this.fichaAtual);
+
+            // Sync with workout state editor
+            if (this.fichaAtual.sessoes) {
+              this.workoutState.setWorkout({
+                ...this.fichaAtual as any,
+                nome: this.fichaAtual.descricao || 'Ficha do Aluno'
+              });
+            }
           }
         },
       });
@@ -150,6 +164,10 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
   get cadastrado_por() {
     return this.f.get('cadastrado_por');
+  }
+
+  get isManagerOrInstructor(): boolean {
+    return this.user?.tipo_usuario === 3 || this.user?.tipo_usuario === 2;
   }
 
   createForm() {
@@ -228,20 +246,41 @@ export class FichaTreinoAlunoPage implements OnInit {
 
   openTreinoList() {
     this.modalController.create({
-      component: TreinosListPage,
-      componentProps: { enableEdit: false, gridMode: true, enableSelect: true }
+      component: TemplateSelectorModalComponent,
     }).then(modal => {
       modal.present();
       modal.onDidDismiss().then(res => {
-        if (res.data && res.data.treinos && res.data.treinos.length > 0) {
-          const selectedTreino = res.data.treinos[0];
-          this.previewAndApplyTemplate(selectedTreino.id);
+        console.log('res = ', res)
+
+        if (res.data) {
+          const selectedTemplate = res.data;
+          this.previewAndLoadTemplate(selectedTemplate.id);
         }
       });
     });
   }
 
-  async previewAndApplyTemplate(treinoId: number) {
+  openStudentImport() {
+    this.modalController.create({
+      component: StudentSelectorModalComponent,
+    }).then(modal => {
+      modal.present();
+      modal.onDidDismiss().then(res => {
+        if (res.data) {
+          const selectedFicha = res.data;
+          // Load sessions/exercises from another student's ficha into the current editor
+          this.workoutState.setWorkout({
+            ...this.fichaAtual as any,
+            nome: selectedFicha.descricao || 'Importado de Aluno',
+            sessoes: selectedFicha.sessoes || []
+          });
+          this.toastr.success('Ficha clonada! Você pode personalizar agora.');
+        }
+      });
+    });
+  }
+
+  async previewAndLoadTemplate(treinoId: number) {
     const modal = await this.modalController.create({
       component: WorkoutPreviewModalComponent,
       componentProps: { treinoId }
@@ -251,15 +290,20 @@ export class FichaTreinoAlunoPage implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data === true) {
       this.loading = true;
-      this.fichaService.applyTemplate(this.fichaAtual.id!, treinoId).subscribe({
-        next: () => {
+      this.treinoService.getTreinoCompleto(treinoId).subscribe({
+        next: (res: any) => {
+          const template = res.data;
+          // Load template data into the editor state instead of saving to DB
+          this.workoutState.setWorkout({
+            ...template,
+            id: this.fichaAtual?.id || 0 // Keep current ficha ID if editing
+          });
           this.loading = false;
-          this.toastr.success('Treino aplicado com sucesso!');
-          this.getFichaInfo(); // Refetch to show new sessions/exercises
+          this.toastr.success('Modelo carregado! Agora você pode personalizar.');
         },
         error: () => {
           this.loading = false;
-          this.toastr.error('Erro ao aplicar treino.');
+          this.toastr.error('Erro ao carregar modelo.');
         }
       });
     }
@@ -301,39 +345,54 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
 
   submitForm() {
-    console.log('submitting ficha', this.f.value);
+    const workoutData = this.workoutState.getWorkoutValue();
+    if (!workoutData) {
+      this.toastr.error('Erro ao coletar dados do treino.');
+      return;
+    }
+
+    console.log('submitting ficha', this.f.value, workoutData);
     this.loading = true;
 
-    const body = {
+    const body: any = {
       ...this.f.value,
       cadastrado_por: this.user.id,
-      instrutor_id: this.instrutor?.value.id,
+      instrutor_id: this.instrutor?.value.id || this.user.id,
       usuario_id: this.aluno?.value.id,
-      treinos: this.treinos.value.map((t: any) => {
-        return {
-          id: t.treino.id,
-        };
-      }),
+      sessoes: workoutData.sessoes
     };
 
+    // Cleanup redundant fields
     delete body.aluno;
     delete body.instrutor;
+    delete body.cadastrado_por;
+    delete body.treinos;
 
     const req = !body.id
       ? this.fichaService.create(body)
       : this.fichaService.update(body);
 
     req.subscribe({
-      next: (res) => {
-        this.toastr.success('Operação bem sucedida');
+      next: (res: any) => {
+        this.loading = false;
+        if (res.error) {
+          this.toastr.error('Erro ao salvar ficha: ' + (res.error.message || res.error));
+          return;
+        }
+
+        this.toastr.success('Ficha personalizada salva com sucesso!');
+
+        // If updating own ficha, refresh auth session
         if (this.aluno?.value.id == this.user.id) {
           this.auth.login(this.user.cpf, this.user.data_nascimento).subscribe();
         }
 
-        this.ngOnInit();
+        this.getFichaInfo(); // Refresh view
       },
       error: (err) => {
+        this.loading = false;
         console.error('erro', err);
+        this.toastr.error('Erro crítico ao salvar.');
       },
     });
   }

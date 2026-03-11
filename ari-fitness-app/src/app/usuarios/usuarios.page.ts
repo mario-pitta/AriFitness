@@ -132,7 +132,7 @@ export class UsuariosPage implements OnInit {
       .getDashboardMembersData({
         fl_ativo: true,
         tipo_usuario: Constants.ALUNO_ID,
-        empresa_id: this.user?.empresa?.id,
+        empresa_id: this.user?.empresa_id,
       })
       .subscribe({
         next: (res: {
@@ -248,7 +248,7 @@ export class UsuariosPage implements OnInit {
       .getByPeriod(
         new Date().toISOString(),
         new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
-        this.user?.empresa?.id as string,
+        this.user?.empresa_id as string,
         {
           fl_ativo: true,
           tr_categoria_id: Constants.TR_CATEGORIA_DIARIA,
@@ -331,7 +331,7 @@ export class UsuariosPage implements OnInit {
     this.usuarioService
       .findByFilters({
         tipo_usuario: tipoUsuario,
-        empresa_id: this.user?.empresa?.id,
+        empresa_id: this.user?.empresa_id,
       })
       .subscribe({
         next: (res) => {
@@ -733,10 +733,10 @@ export class UsuariosPage implements OnInit {
     return colors[color] || colors['primary'];
   }
   exportStudents() {
-    if (!this.user?.empresa?.id) return;
+    if (!this.user?.empresa_id) return;
 
     this.toastr.success('Gerando planilha...', 'top');
-    this.usuarioService.exportStudents(this.user.empresa.id).subscribe({
+    this.usuarioService.exportStudents(this.user?.empresa_id).subscribe({
       next: (blob: any) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');

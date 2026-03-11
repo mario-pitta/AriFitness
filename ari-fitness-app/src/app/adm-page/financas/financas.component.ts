@@ -166,7 +166,7 @@ export class FinancasComponent implements OnInit {
       .getDashboard(
         this.data_inicio,
         this.data_fim,
-        this.user?.empresa?.id as string
+        this.user?.empresa_id as string
       )
       .subscribe({
         next: (res: any) => {
@@ -207,7 +207,7 @@ export class FinancasComponent implements OnInit {
     this.transFinService
       .getTrasacoes({
         tr_tipo_id: 1,
-        empresa_id: this.user?.empresa?.id,
+        empresa_id: this.user?.empresa_id,
       })
       .subscribe({
         next: (res) => {
@@ -226,7 +226,7 @@ export class FinancasComponent implements OnInit {
     this.transFinService
       .getTrasacoes({
         tr_tipo_id: 2,
-        empresa_id: this.user?.empresa?.id,
+        empresa_id: this.user?.empresa_id,
       })
       .subscribe({
         next: (res) => {
@@ -288,7 +288,7 @@ export class FinancasComponent implements OnInit {
     this.transFinService
       .getTrasacoes({
         fl_ativo: true,
-        empresa_id: this.user?.empresa?.id,
+        empresa_id: this.user?.empresa_id,
         data_inicio: this.data_inicio,
         data_fim: this.data_fim,
       })
@@ -367,7 +367,7 @@ export class FinancasComponent implements OnInit {
 
   newAnaliseAI() {
     const data = {
-      empresa_id: this.user?.empresa?.id,
+      empresa_id: this.user?.empresa_id,
       data_inicio: this.data_inicio,
       data_fim: this.data_fim,
     };

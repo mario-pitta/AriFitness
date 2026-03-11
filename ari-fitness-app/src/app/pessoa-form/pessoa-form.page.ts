@@ -98,7 +98,7 @@ export class PessoaFormPage implements OnInit {
   }
 
   getActivePlans() {
-    this.planoService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id }).subscribe({
+    this.planoService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa_id }).subscribe({
       next: (planos: Plano[]) => {
         this.planos = planos;
       },
@@ -110,7 +110,7 @@ export class PessoaFormPage implements OnInit {
   }
 
   getActiveHorarios() {
-    this.horarioService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id }).subscribe({
+    this.horarioService.findByFilters({ fl_ativo: true, empresa_id: this.user?.empresa_id }).subscribe({
       next: (horarios: Horario[]) => {
         this.horarios = horarios;
       },

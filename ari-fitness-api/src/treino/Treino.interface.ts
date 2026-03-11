@@ -20,6 +20,7 @@ export interface Treino {
   parte_do_corpo?: ParteDoCorpo;
   cadastrado_por: number;
   carga: number;
+  empresa_id?: string;
 }
 
 export interface TreinoExercicioRelation {
@@ -48,6 +49,7 @@ export interface TreinoSessao {
   treino_id: number;
   nome: string; // A, B, C...
   ordem: number;
+  empresa_id?: string;
   exercicios?: TreinoExercicioRelation[];
 }
 

@@ -3,40 +3,62 @@ import { DataBaseService } from 'src/datasource/database.service';
 import md5 = require('md5');
 import { EmailService } from 'src/email/email.service';
 import { resetPasswordTemplate } from '../email/templates/reset-password.template';
+import { JwtService } from '@nestjs/jwt';
+import { UserRole } from 'src/core/Constants/UserRole';
 
 
 @Injectable()
 export class AuthService {
-  constructor(private supabase: DataBaseService, private emailService: EmailService) { }
+  constructor(
+    private supabase: DataBaseService,
+    private emailService: EmailService,
+    private jwtService: JwtService
+  ) { }
 
-  login(cpf: string, senha: string) {
+  async login(cpf: string, senha: string) {
     console.log('logando...', cpf, senha);
-    return this.supabase.supabase
+    const res = await this.supabase.supabase
       .from('usuario')
-      .select(
-        `
-          *, 
-          empresa: empresa(*),
-          ficha_aluno: ficha_aluno!ficha_aluno_usuario_id_fkey(
-            *, 
-            treinos: ficha_aluno_treino!ficha_aluno_treino_ficha_id_fkey(
-              *, 
-              treino(
-                *, 
-                treino_exercicio(
-                  *, 
-                  exercicio: exercicios(
-                    *
-                  )
-                )
-              )
-            )
-          )
-        `,
-      )
+      .select('*')
       .eq('cpf', cpf)
       .eq('senha', senha)
+      .eq('fl_ativo', true)
+      .single();
 
+    console.log('res = ', res)
+
+
+    if (res.error || !res.data) {
+      return { error: { message: 'Usuário ou senha inválidos' } };
+    }
+
+    const user = res.data;
+
+
+    console.log('user = ', user)
+
+    // Only Admin (1) and Instructor (2) can manage workouts, but we generate token for everyone
+    const payload = {
+      sub: user.id,
+      nome: user.nome,
+      empresa_id: user.empresa_id,
+      tipo_usuario: user.tipo_usuario,
+      expires_in: 60 * 60 * 24 // 1 day
+    };
+
+    console.log('payload = ', payload)
+
+    const token = this.jwtService.sign(payload);
+
+    console.log('token = ', token)
+
+    // Sanitize user before returning
+    if (user.senha) delete user.senha;
+
+    return {
+      data: user,
+      access_token: token
+    };
   }
   async register(registrationData: { user: any; company: any; planId?: number }) {
     const { user, company, planId } = registrationData;

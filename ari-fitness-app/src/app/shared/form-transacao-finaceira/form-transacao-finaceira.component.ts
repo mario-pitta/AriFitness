@@ -165,7 +165,7 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
       servico_id: transacao?.servico_id || null,
       produto_id: transacao?.produto_id || null,
       recebido_por: transacao?.recebido_por || this.user?.id,
-      empresa_id: transacao?.empresa_id || this.user?.empresa?.id,
+      empresa_id: transacao?.empresa_id || this.user?.empresa_id,
       quantidade: transacao?.quantidade || null,
       valor_final: transacao?.valor_final || null,
       comprovante_url: transacao?.comprovante_url || null,
@@ -198,7 +198,7 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
       .findByFilters({
         tipo_usuario: Constants.ALUNO_ID,
         fl_ativo: true,
-        empresa_id: this.user?.empresa?.id,
+        empresa_id: this.user?.empresa_id,
       })
       .subscribe({
         next: (res) => {

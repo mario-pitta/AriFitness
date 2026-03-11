@@ -40,17 +40,9 @@ export class TreinoListItemComponent implements OnInit {
             console.log('Confirm Okay');
             this.treinoService.delete(id).subscribe({
               next: () => {
-
-                this.treinoService.delete(id).subscribe({
-                  next: () => {
-                    this.output.emit({ action: 'reload', value: true });
-                  },
-                  error: (err) => console.error(err),
-                  complete: () => {
-
-                  }
-                })
+                this.output.emit({ action: 'reload', value: true });
               },
+              error: (err) => console.error(err)
             });
           },
         },

@@ -153,7 +153,7 @@ export class PlanejadorPage implements OnInit, OnDestroy {
         task?.posicao || this.getNumberOfTasksByStatus(status),
         [Validators.nullValidator],
       ],
-      empresa_id: [this.user?.empresa?.id, [Validators.nullValidator]],
+      empresa_id: [this.user?.empresa_id, [Validators.nullValidator]],
     });
 
     setTimeout(() => {
@@ -175,7 +175,7 @@ export class PlanejadorPage implements OnInit, OnDestroy {
   }
   loadTasks() {
     this.tarefaService
-      .getByFilters({ fl_ativo: true, empresa_id: this.user?.empresa?.id })
+      .getByFilters({ fl_ativo: true, empresa_id: this.user?.empresa_id })
       .subscribe((res) => {
         this.cols = [
           {

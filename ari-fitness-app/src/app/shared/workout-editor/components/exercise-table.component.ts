@@ -53,7 +53,6 @@ export class ExerciseTableComponent implements OnInit {
         const newEx: TreinoExercicio | any = {
             exercicio_id: null,
             exercicio: null,
-            exercicios: null,
             sessao_id: this.activeSession?.id,
             series: 3,
             repeticoes: 12,
@@ -138,7 +137,6 @@ export class ExerciseTableComponent implements OnInit {
     selectExercise(index: number, ex: TreinoExercicio, selectedExercise: Exercicio) {
         ex.exercicio_id = selectedExercise.id || 0;
         ex.exercicio = selectedExercise;
-        ex.exercicios = selectedExercise;
         this.isDropdownVisible = false;
         this.activeSearchRow = null;
         this.updateExercise(index, ex);

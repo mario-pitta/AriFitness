@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content class="workout-editor-content">
-    <div class="container py-4 px-3" *ngIf="treino">
+    <div class=" py-4 px-3" *ngIf="treino">
         <!-- HEADER INFO -->
         <div class="card bg-card border-0 shadow-sm rounded-4 p-4 mb-4">
             <h2 class="fw-black text-main mb-2">{{treino.nome}}</h2>
@@ -65,7 +65,6 @@
         <p class="text-soft-muted mt-2">Carregando detalhes...</p>
     </div>
 </ion-content>
-
 <ion-footer class="ion-no-border">
     <ion-toolbar class="ion-padding">
         <ion-button expand="block" shape="round" size="large" color="success" (click)="confirm()"

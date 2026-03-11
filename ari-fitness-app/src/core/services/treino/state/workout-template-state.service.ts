@@ -21,8 +21,8 @@ export class WorkoutTemplateStateService {
 
             return workout.sessoes.every(sessao => {
                 if (!sessao.exercicios || sessao.exercicios.length === 0) return false;
-                return sessao.exercicios.every(ex => {
-                    const hasId = !!(ex.exercicio_id || (ex as any).exercicios?.id || ex.exercicio?.id);
+                return sessao.exercicios.every((ex: any) => {
+                    const hasId = !!(ex.exercicio_id || ex.exercicio?.id);
                     const positiveValues = (ex.series >= 0) && (ex.repeticoes >= 0) && (ex.carga >= 0) && (ex.intervalo >= 0);
                     return hasId && positiveValues;
                 });

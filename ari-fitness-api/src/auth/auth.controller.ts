@@ -8,34 +8,32 @@ import { Usuario } from 'src/usuario/Usuario.interface';
 export class AuthController {
   constructor(private auth: AuthService) { }
 
-  @Get('login')
+  @Post('login')
   async login(
-    @Query() query: { cpf: string; senha: string },
+    @Body() body: { cpf: string; senha: string },
     @Res() res: Response,
   ) {
-    console.log(query);
-    return await this.auth.login(query.cpf, query.senha).then((_res) => {
-      if (_res.error)
-        return res.status(400).send({ status: 500, ..._res.error }); //throw new Error(_res.error.message);
+    console.log('Login attempt for CPF:', body.cpf);
+    const result = await this.auth.login(body.cpf, body.senha);
 
-      if (!_res.data.length)
-        return res
-          .status(401)
-          .send({ status: 401, message: 'Usuario/Senha inválidos' });
+    if (result.error) {
+      return res.status(401).send({ status: 401, message: result.error.message });
+    }
 
+    const { data: user, access_token } = result;
 
-      if (_res.data[0].tipo_usuario !== 3)
-        return res
-          .status(401)
-          .send({ status: 401, message: 'Você não tem permissão para acessar o sistema.' });
-
-      console.log('vai retornar ok?: ', _res);
-      _res.data.map(async (user: Usuario | any) => {
-        if (user.senha) delete user.senha;
-        return user;
+    // Based on user request: Only Admins can manage treinos.
+    // If we want to allow only them to log in to the manager:
+    if (user.tipo_usuario !== 3 && !user.flag_admin) {
+      return res.status(401).send({
+        status: 401,
+        message: 'Acesso restrito a Administradores e Instrutores.'
       });
+    }
 
-      return res.send(_res.data[0]);
+    return res.send({
+      user,
+      access_token
     });
   }
 

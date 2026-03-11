@@ -1,0 +1,41 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar color="secondary">
+        <ion-buttons slot="start">
+            <ion-button (click)="dismiss()">
+                <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>Importar de outro Aluno</ion-title>
+    </ion-toolbar>
+    <ion-toolbar color="secondary">
+        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterStudents()" placeholder="Nome do aluno..."
+            class="custom-searchbar"></ion-searchbar>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <div *ngIf="loading" class="ion-text-center ion-padding">
+        <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-list lines="none" *ngIf="!loading">
+        <ion-item *ngFor="let student of filteredStudents" class="student-item" (click)="selectStudent(student)">
+            <div class="avatar-sm" slot="start">
+                <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <ion-label>
+                <h2 class="fw-bold">{{ student.nome }}</h2>
+                <p class="small" *ngIf="student.ficha_ativa">Ficha: {{ student.ficha_ativa.descricao || 'Sem descrição'
+                    }}</p>
+                <p class="small text-danger" *ngIf="!student.ficha_ativa">Nenhuma ficha ativa</p>
+            </ion-label>
+            <ion-button fill="clear" slot="end" *ngIf="student.ficha_ativa" color="secondary">
+                Selecionar
+            </ion-button>
+        </ion-item>
+    </ion-list>
+
+    <div *ngIf="!loading && filteredStudents.length === 0" class="ion-text-center ion-padding">
+        <p>Nenhum aluno encontrado.</p>
+    </div>
+</ion-content>

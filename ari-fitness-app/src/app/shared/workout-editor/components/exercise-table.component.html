@@ -40,14 +40,14 @@
                                 <input type="text"
                                     class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
                                     [placeholder]="'Buscar exercício...'"
-                                    [value]="activeSearchRow === i ? searchTerm : (ex.exercicios?.nome || '')"
-                                    (focus)="onSearchFocus(i, ex.exercicios?.nome?.toUpperCase() || '', $event)"
+                                    [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
+                                    (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
                                     (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
 
                                 <span class="pill-meta mt-1"
-                                    *ngIf="ex.exercicios">{{ex.exercicios?.equipamento?.nome?.toUpperCase() ||
+                                    *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() ||
                                     'Livre'}}</span>
-                                <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicios">Não selecionado</span>
+                                <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicio">Não selecionado</span>
                             </div>
                         </td>
                         <td class="text-center">
@@ -101,14 +101,13 @@
                             <input type="text"
                                 class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
                                 [placeholder]="'Buscar exercício...'"
-                                [value]="activeSearchRow === i ? searchTerm : (ex.exercicios?.nome || '')"
-                                (focus)="onSearchFocus(i, ex.exercicios?.nome?.toUpperCase() || '', $event)"
+                                [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
+                                (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
                                 (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
 
                             <span class="pill-meta mt-1"
-                                *ngIf="ex.exercicios">{{ex.exercicios?.equipamento?.nome?.toUpperCase() ||
-                                'Livre'}}</span>
-                            <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicios">Não selecionado</span>
+                                *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() || 'Livre'}}</span>
+                            <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicio">Não selecionado</span>
                         </div>
                     </div>
                     <button class="btn-delete-row border-0 bg-transparent text-danger p-0 mt-1"

@@ -33,8 +33,8 @@ export class TreinoService {
     return this.http.delete(environment.apiUrl + '/treinos/' + id).pipe(take(1));
   }
 
-  getTreinoCompleto(id: number): Observable<Treino> {
-    return this.http.get<Treino>(environment.apiUrl + '/treinos/' + id + '/completo').pipe(take(1));
+  getTreinoCompleto(id: number) {
+    return this.http.get(environment.apiUrl + '/treinos/' + id + '/completo').pipe(take(1));
   }
 
   createSessao(sessao: any) {

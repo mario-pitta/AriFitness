@@ -14,7 +14,7 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private router: Router, private toastr: ToastrService) {}
+  constructor(private router: Router, private toastr: ToastrService) { }
 
   intercept(
     request: HttpRequest<any>,
@@ -39,8 +39,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           }
           throwError(err);
           this.toastr.error(
-            'Algo deu errado.' +
-              JSON.stringify(err.error.details || err.error.message)
+            JSON.stringify(err.error.details || err.error.message)
           );
         }
         return throwError(err);

@@ -1,25 +1,17 @@
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
+import { Treino, TreinoSessao } from './Treino.interface';
 import { TreinoService } from './treino.service';
 import { TreinoSessaoService } from './treino-sessao.service';
-/*
-https://docs.nestjs.com/controllers#controllers
-*/
-
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  Res,
-} from '@nestjs/common';
-import { Treino, TreinoSessao } from './Treino.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from 'src/core/Constants/UserRole';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 
 @Controller('treinos')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class TreinoController {
   constructor(
     private treino: TreinoService,
@@ -27,19 +19,22 @@ export class TreinoController {
   ) { }
 
   @Get(':id/completo')
-  getTreinoCompleto(@Param('id') id: number) {
-    return this.sessaoService.getTreinoCompleto(id);
+  getTreinoCompleto(@Param('id') id: number, @CurrentUser('empresa_id') empresa_id: string) {
+    return this.sessaoService.getTreinoCompleto(id, empresa_id);
   }
 
   @Post('sessao')
-  postSessao(@Body() body: Partial<TreinoSessao>) {
+  postSessao(@Body() body: Partial<TreinoSessao>, @CurrentUser('empresa_id') empresa_id: string) {
+    body.empresa_id = empresa_id;
     return this.sessaoService.createSessao(body);
   }
 
 
   @Get()
-  findAll(@Query() query: any, @Res() res: Response) {
-    return this.treino.findAll(query).then((_res) => {
+  findAll(@Query() query: any, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
+    // Force filters by user's company
+    const filters = { ...query, empresa_id: empresa_id };
+    return this.treino.findAll(filters).then((_res) => {
       if (_res.error) {
         res.status(500).send(_res.error);
         throw new Error(JSON.stringify(_res.error));
@@ -50,11 +45,10 @@ export class TreinoController {
   }
 
   @Post()
-  /* The `create` method in the `TreinoController` class is a controller method that handles POST
-    requests to create a new resource. However, there seems to be a mistake in the code provided. Both
-    the `create` and `put` methods have the same method signature and name, which is incorrect. The
-    `put` method should be used to update an existing resource, not to create a new one. */
-  create(@Body() body: Treino, @Res() res: Response) {
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  create(@Body() body: Treino, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
+    // Inject empresa_id from token to ensure isolation
+    body.empresa_id = empresa_id;
     return this.treino.create(body).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
 
@@ -62,8 +56,15 @@ export class TreinoController {
     });
   }
 
+
   @Put()
-  update(@Body() body: Treino, @Res() res: Response) {
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  update(@Body() body: Treino, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
+    // Ensure the updated workout belongs to the user's company
+
+    console.log('update Treino controller = ', body);
+
+    body.empresa_id = empresa_id;
     return this.treino.update(body).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
 
@@ -73,11 +74,11 @@ export class TreinoController {
 
 
   @Delete(':id')
-  delete(@Param() params: { id: number }, @Res() res: Response) {
-    console.log("deleting treino: ", params.id);
-
-
-    return this.treino.delete(params.id).then((_res) => {
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  delete(@Param('id') id: number, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
+    console.log("deleting treino: ", id);
+    // Passing empresa_id to service to ensure ownership before deletion
+    return this.treino.delete(id, empresa_id).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
 
       return res.send(_res.data);

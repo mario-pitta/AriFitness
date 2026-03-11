@@ -57,13 +57,13 @@ export class TreinoService {
   }
   create(body: Treino) {
     let exercicios = body.exercicios;
+    const sessions = body.sessoes;
+    delete body.sessoes;
     delete body.exercicios;
     delete body.grupo_muscular;
     delete body.parte_do_corpo;
     delete body.id;
 
-    const sessions = body.sessoes;
-    delete body.sessoes;
 
 
     console.log('body after exercicios delete....', body);
@@ -76,7 +76,7 @@ export class TreinoService {
       .then(async (res) => {
         if (res.error) {
           console.error(res.error);
-          return res;
+          throw res.error;
         }
 
         const treino_id = res.data[0].id;
@@ -87,9 +87,14 @@ export class TreinoService {
         if (sessions) {
           const sessionsToInsert = sessions.map((s: any) => {
             const { exercicios, ...rest } = s;
-            return { ...rest, treino_id };
+            const item = { ...rest, treino_id };
+            // Sanitize: ensure id and created_at are not sent as null/undefined
+            if (!item.id) delete item.id;
+            if (!item.created_at) delete item.created_at;
+            return item;
           });
 
+          console.log('sessions to insert', JSON.stringify(sessionsToInsert));
           const { data: sessionsData, error: sessionsError } = await this.database.supabase
             .from('treino_sessao')
             .insert(sessionsToInsert)
@@ -99,12 +104,14 @@ export class TreinoService {
           if (sessionsError) {
             console.error('Error inserting sessions, rolling back treino...', sessionsError);
             await this.database.supabase.from('treino').delete().eq('id', treino_id);
-            return { data: null, error: sessionsError };
+            throw sessionsError;
           }
 
           if (sessionsData) {
+            console.log('sessionsData', JSON.stringify(sessionsData));
             sessions.forEach((s: any) => {
               const dbSession = sessionsData.find(sd => sd.nome === s.nome);
+              s.id = dbSession?.id;
               if (s.exercicios && s.exercicios.length > 0) {
                 s.exercicios.forEach((ex: any) => {
                   ex.sessao_id = dbSession?.id;
@@ -117,10 +124,10 @@ export class TreinoService {
 
         if (allExercicios && allExercicios.length > 0) {
           const exerciciosToInsert = allExercicios.map((ex: TreinoExercicioRelation) => {
+            console.log('associating exercicios a sessão ' + JSON.stringify(ex.sessao_id) + ':', JSON.stringify(ex));
             return this.buidTreinoExercicioBody(ex, treino_id);
           });
 
-          console.log('associating exercicios', exerciciosToInsert);
 
           const { data, error } = await this.database.supabase
             .from('treino_exercicio')
@@ -159,6 +166,10 @@ export class TreinoService {
    * returned object is as follows:
    */
   update(body: Treino) {
+
+    console.log('updateTreino body = ', body)
+
+
     let exercicios: TreinoExercicioRelation[] = (body.exercicios as any[]) || [];
     const sessions = body.sessoes;
 
@@ -173,6 +184,7 @@ export class TreinoService {
       .from('treino')
       .update(body)
       .eq('id', body.id)
+      .eq('empresa_id', body.empresa_id)
       .select('*')
       .then(async (res) => {
         if (res.error) return res;
@@ -205,7 +217,11 @@ export class TreinoService {
 
           const sessionsToUpsert = sessions.map((s: any) => {
             const { exercicios, ...rest } = s;
-            return { ...rest, treino_id: body.id };
+            const item = { ...rest, treino_id: body.id };
+            // Sanitize: ensure id and created_at are not sent as null/undefined to avoid 23502
+            if (!item.id) delete item.id;
+            if (!item.created_at) delete item.created_at;
+            return item;
           });
 
           const { data: sessionsData, error: sessionsError } = await this.database.supabase
@@ -268,7 +284,17 @@ export class TreinoService {
       });
   }
 
-  async delete(id: number) {
+  async delete(id: number, empresa_id: string) {
+    // Verify ownership first to be safe
+    const { data: treino } = await this.database.supabase
+      .from('treino')
+      .select('id')
+      .eq('id', id)
+      .eq('empresa_id', empresa_id)
+      .single();
+
+    if (!treino) return { data: null, error: { message: 'Treino não encontrado ou sem permissão' } };
+
     // Delete exercises corresponding to the sessions of this treino
     const { data: existingSessions } = await this.database.supabase
       .from('treino_sessao')
@@ -288,6 +314,7 @@ export class TreinoService {
       .from('treino')
       .delete()
       .eq('id', id)
+      .eq('empresa_id', empresa_id)
       .select('*');
   }
 }

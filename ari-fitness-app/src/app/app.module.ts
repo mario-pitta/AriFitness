@@ -17,7 +17,7 @@ import { AppComponent } from './app.component';
 
 import { MaskitoDirective } from '@maskito/angular';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { HttpInterceptors } from 'src/core/interceptors/http.interceptor';
+import { AuthInterceptor } from 'src/core/interceptors/http.interceptor';
 import { ErrorInterceptor } from 'src/core/interceptors/error.interceptor';
 
 import { ExercicioFormModule } from './adm-page/exercicios/exercicio-form/exercicio-form.module';
@@ -62,7 +62,7 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
     httpProviders(),
     provideMarkdown(),
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    { provide: HTTP_INTERCEPTORS, useClass: HttpInterceptors, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     // ************************************
     { provide: LOCALE_ID, useValue: 'pt' },

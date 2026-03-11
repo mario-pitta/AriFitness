@@ -20,10 +20,19 @@ export class WorkoutPreviewModalComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.treinoService.getTreinoCompleto(this.treinoId).subscribe(res => {
-            this.treino = res;
-            this.loading = false;
-        });
+        this.treinoService.getTreinoCompleto(this.treinoId).subscribe(
+            {
+                next: (res: any) => {
+                    this.treino = res.data;
+                    this.loading = false;
+                    console.log(' this.treino = ', this.treino)
+                },
+                error: err => {
+                    console.error(err)
+                }
+
+            },
+        );
     }
 
     confirm() {

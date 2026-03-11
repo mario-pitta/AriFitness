@@ -6,18 +6,25 @@ https://docs.nestjs.com/controllers#controllers
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
   Put,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { FichaAlunoService } from './ficha-aluno.service';
 import { IFichaAluno } from './FichaAluno.interface';
 import { Response } from 'express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from 'src/core/Constants/UserRole';
 
 @Controller('/ficha-aluno')
+@UseGuards(JwtAuthGuard)
 export class FichaAlunoController {
   constructor(private fichaAlunoService: FichaAlunoService) { }
 
@@ -85,6 +92,7 @@ export class FichaAlunoController {
    * and the error message from `_res.error`.
    */
   @Get('aluno/:id')
+
   getByUser(@Param() param: { id: number }, @Query() query: Partial<IFichaAluno>, @Res() res: Response) {
     console.log('getting ficha by user...', param.id);
     return this.fichaAlunoService.getByUser(param.id, query).then((_res) => {
@@ -100,6 +108,7 @@ export class FichaAlunoController {
   }
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   create(@Body() body: IFichaAluno, @Res() res: Response) {
     console.log(body);
     return this.fichaAlunoService.create(body).then((_res) => {
@@ -118,6 +127,7 @@ export class FichaAlunoController {
   }
 
   @Put()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<IFichaAluno>, @Res() res: Response) {
     console.log(body);
     return this.fichaAlunoService.update(body).then((_res) => {
@@ -132,8 +142,13 @@ export class FichaAlunoController {
   }
 
   @Post(':fichaId/apply-template/:treinoId')
-  applyTemplate(@Param('fichaId') fichaId: number, @Param('treinoId') treinoId: number, @Res() res: Response) {
-    return this.fichaAlunoService.applyTemplateToStudent(treinoId, fichaId).then((_res) => {
+  applyTemplate(
+    @Param('fichaId') fichaId: number,
+    @Param('treinoId') treinoId: number,
+    @Res() res: Response,
+    @CurrentUser('empresa_id') empresa_id: string
+  ) {
+    return this.fichaAlunoService.applyTemplateToStudent(treinoId, fichaId, empresa_id).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
       return res.status(200).send(_res.data);
     });

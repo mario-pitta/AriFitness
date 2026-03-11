@@ -26,6 +26,9 @@ export class FichaAlunoEntity {
     @Column({ nullable: true })
     descricao: string;
 
+    @Column({ nullable: true })
+    empresa_id: string;
+
     @Column({ nullable: true, type: 'date' })
     ficha_data_inicio: Date;
 

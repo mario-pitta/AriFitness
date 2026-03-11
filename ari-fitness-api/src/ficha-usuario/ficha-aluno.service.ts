@@ -16,9 +16,9 @@ export class FichaAlunoService {
     private treinoSessaoService: TreinoSessaoService,
   ) { }
 
-  async applyTemplateToStudent(treinoId: number, fichaId: number) {
+  async applyTemplateToStudent(treinoId: number, fichaId: number, empresa_id: string) {
     // 1. Buscar o template completo
-    const { data: template, error: templateError } = await this.treinoSessaoService.getTreinoCompleto(treinoId);
+    const { data: template, error: templateError } = await this.treinoSessaoService.getTreinoCompleto(treinoId, empresa_id);
 
     if (templateError || !template) {
       return { data: null, error: templateError || 'Template não encontrado' };
@@ -72,7 +72,6 @@ export class FichaAlunoService {
 
     return { data: 'Template aplicado com sucesso', error: null };
   }
-
 
   findAll(filters?: IFichaAluno | Partial<IFichaAluno>) {
     return this.database.supabase
@@ -176,6 +175,8 @@ export class FichaAlunoService {
 
       )
       .eq('usuario_id', userId)
+      .order('created_at', { ascending: false })
+
       .match({ ...filters })
       .then(async (res) => {
         if (res.error) return res;
@@ -184,103 +185,122 @@ export class FichaAlunoService {
       });
   }
 
-  async create(body: IFichaAluno) {
-    let _treinos = body.treinos as any;
+  async create(body: IFichaAluno | any) {
+    const sessoes = body.sessoes;
+    delete body.sessoes;
+    delete body.id;
+    delete body.created_at;
+    delete body.updated_at;
     delete body.treinos;
+    delete body.treinos_cadastrados;
 
     try {
-      console.log('desativar afichas antigas...');
+      // 1. Deactivate old records
       await this.database.supabase
         .from('ficha_aluno')
         .update({ fl_ativo: false })
-        .eq('usuario_id', body.usuario_id);
+        .eq('usuario_id', body.usuario_id)
+        .eq('empresa_id', body.empresa_id);
 
-      return this.database.supabase
+      // 2. Insert main record
+      const { data: ficha, error: fichaError } = await this.database.supabase
         .from('ficha_aluno')
         .insert(body)
         .select('id')
-        .then(async (res) => {
-          if (res.error) return res;
+        .single();
 
-          console.log('cadastrou a ficha_treino: ', res.data);
-          const id = res.data[0].id;
-          if (_treinos) {
-            console.log('vai cadastrar os treinos...', _treinos);
-            _treinos = _treinos.map((_tr: { id: number }) => {
-              return {
-                ficha_id: id,
-                treino_id: _tr.id,
-              };
-            });
-            await this.database.supabase
-              .from('ficha_aluno_treino')
-              .insert(_treinos)
+      if (fichaError) throw fichaError;
+      const fichaId = ficha.id;
 
-              .select('*')
-              .then(async (_res) => {
-                if (_res.error) {
-                  await this.database.supabase
-                    .from('ficha_aluno')
-                    .delete()
-                    .eq('id', id);
-                  throw new Error(JSON.stringify(_res));
-                }
+      try {
+        if (sessoes && sessoes.length > 0) {
+          for (const sessao of sessoes) {
+            const exerciciosSessao = sessao.exercicios;
+            delete sessao.id;
+            delete sessao.created_at;
+            delete sessao.updated_at;
+            delete sessao.treino_id;
+            // Whitelist for ficha_sessao
+            const sessaoData = {
+              ficha_id: fichaId,
+              nome: sessao.nome,
+              ordem: sessao.ordem,
+              created_at: new Date(),
+            };
 
-                console.log('cadastrou os treinos fichas do aluno');
-                return _res;
+            const { data: novaSessao, error: sessaoError } = await this.database.supabase
+              .from('ficha_sessao')
+              .insert(sessaoData)
+              .select('id')
+              .single();
+
+            console.log('novaSessao = ', novaSessao)
+
+            if (sessaoError) throw sessaoError;
+
+            if (exerciciosSessao && exerciciosSessao.length > 0) {
+              const preparedExercicios = exerciciosSessao.map((ex: any) => {
+                // Whitelist for ficha_exercicio (only valid columns)
+
+                delete ex.id;
+                delete ex.created_at;
+                delete ex.updated_at;
+                delete ex.exercicio;
+                delete ex.grupo_muscular;
+                delete ex.equipamento;
+                delete ex.ficha_sessao;
+                delete ex.ficha_id;
+                delete ex.treino_id;
+
+                return {
+                  ficha_sessao_id: novaSessao.id,
+                  exercicio_id: ex.exercicio_id,
+                  series: ex.series,
+                  repeticoes: ex.repeticoes,
+                  carga: ex.carga,
+                  intervalo: ex.intervalo,
+                  ordem: ex.ordem,
+                  tipo_execucao: ex.tipo_execucao,
+                  grupo_execucao: ex.grupo_execucao,
+                  tipo_progressao: ex.tipo_progressao,
+                  carga_series: ex.carga_series,
+                  created_at: new Date()
+                };
               });
-          }
 
-          console.log('vai voltar para o controller.... RETORNANDO');
-          return res;
-        });
-    } catch (error) { }
+
+              console.log('preparedExercicios = ', preparedExercicios)
+
+              const { error: exError } = await this.database.supabase
+                .from('ficha_exercicio')
+                .insert(preparedExercicios);
+
+              if (exError) throw exError;
+            }
+          }
+        }
+        return { data: ficha, error: null };
+      } catch (innerError) {
+        // Rollback: delete the incomplete ficha
+        await this.database.supabase.from('ficha_aluno').delete().eq('id', fichaId);
+        throw innerError;
+      }
+    } catch (error) {
+      console.error('Error creating FichaAluno:', error);
+      return { data: null, error };
+    }
   }
 
-  update(body: Partial<IFichaAluno>) {
-    let _treinos = body.treinos as any;
+  async update(body: Partial<IFichaAluno> | any) {
+    // Treat an update as a new creation to maintain history.
+    // Clean up relational objects that might be sent from the frontend.
+    delete body.aluno;
+    delete body.instrutor;
+    delete body.cadastrado_por;
     delete body.treinos;
-    return this.database.supabase
-      .from('ficha_aluno')
-      .update(body)
-      .eq('id', body.id)
-      .then(async (res) => {
-        if (res.error) return res;
-        console.log('vai apagar ficha_aluno_treino antigos...');
-        await this.database.supabase
-          .from('ficha_aluno_treino')
-          .delete()
-          .eq('ficha_id', body.id);
+    delete body.treinos_cadastrados;
 
-        if (_treinos) {
-          console.log('vai cadastrar os treinos...', _treinos);
-          _treinos = _treinos.map((_tr: { id: number }) => {
-            return {
-              ficha_id: body.id,
-              treino_id: _tr.id,
-            };
-          });
-          await this.database.supabase
-            .from('ficha_aluno_treino')
-            .insert(_treinos)
-
-            .select('*')
-            .then(async (_res) => {
-              if (_res.error) {
-                await this.database.supabase
-                  .from('ficha_aluno')
-                  .delete()
-                  .eq('id', body.id);
-                throw new Error(JSON.stringify(_res));
-              }
-
-              console.log('cadastrou os treinos fichas do aluno');
-              return _res;
-            });
-        }
-
-        console.log('vai voltar para o controller.... RETORNANDO');
-        return res;
-      });
+    // The 'create' method handles deactivating old records, deleting the ID, and inserting the new ficha + sessions.
+    return this.create(body);
   }
 }

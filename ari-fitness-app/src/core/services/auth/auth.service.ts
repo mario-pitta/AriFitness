@@ -18,6 +18,10 @@ export class AuthService {
     this.user.set(this.userValue.value);
   }
 
+  get getToken(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
   get getUser(): IUsuario {
     return this.userValue.value;
   }
@@ -34,16 +38,21 @@ export class AuthService {
 
   login(cpf: string, senha: string | Date) {
     return this.http
-      .get(
-        environment.apiUrl +
-        `/auth/login?cpf=${cpf}&senha=${senha}`
-      )
+      .post<any>(`${environment.apiUrl}/auth/login`, { cpf, senha })
       .pipe(
-        map((u: Usuario | any) => {
-          u = {
-            ...u,
-            historico: u.historico || [],
-          } as Usuario
+        map((response: any) => {
+          const user = response.user;
+          const token = response.access_token;
+
+          if (token) {
+            localStorage.setItem('access_token', token);
+          }
+
+          const u = {
+            ...user,
+            historico: user.historico || [],
+          } as Usuario;
+
           this.setUser(u);
           return u;
         }),

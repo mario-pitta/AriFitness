@@ -87,7 +87,7 @@ export class CalendarioPage implements OnInit {
   buildFilters(filters?: Partial<Evento>) {
     this.filters = {
       ...filters,
-      empresa_id: this.user.empresa.id,
+      empresa_id: this.user?.empresa_id,
       data_inicio: new Date(
         this.currentDate.getFullYear(),
         this.currentDate.getMonth(),
@@ -109,7 +109,7 @@ export class CalendarioPage implements OnInit {
   getEventos(filters?: Partial<Evento>) {
     filters = {
       ...filters,
-      empresa_id: this.user.empresa.id,
+      empresa_id: this.user?.empresa_id,
     };
 
     this.eventoService.getEventos(filters).subscribe((eventos: Evento[]) => {
@@ -240,13 +240,13 @@ export class CalendarioPage implements OnInit {
       local: [event?.local || null, [Validators.nullValidator]],
       data_inicio: [
         event?.data_inicio ||
-          new Date(
-            this.currentDate.getFullYear(),
-            this.currentDate.getMonth(),
-            Number(this.selectedDay.toString().split('-')[2])
-          )
-            .toISOString()
-            .split('T')[0],
+        new Date(
+          this.currentDate.getFullYear(),
+          this.currentDate.getMonth(),
+          Number(this.selectedDay.toString().split('-')[2])
+        )
+          .toISOString()
+          .split('T')[0],
         [Validators.required],
       ],
       hora_inicio: [event?.hora_inicio || null, [Validators.nullValidator]],
@@ -259,7 +259,7 @@ export class CalendarioPage implements OnInit {
       fl_publico: [event?.fl_publico || true, [Validators.required]], // 0 - privado, 1 - publico
       status_evento_id: [event?.status_evento_id || 1, [Validators.required]], // 1 - agendado, 2 - realizado, 3 - cancelado
       banner: [event?.banner || null, [Validators.nullValidator]],
-      empresa_id: [this.user?.empresa?.id, [Validators.nullValidator]],
+      empresa_id: [this.user?.empresa_id, [Validators.nullValidator]],
     });
   }
 
@@ -290,7 +290,7 @@ export class CalendarioPage implements OnInit {
     }
 
     this.getEventos({
-      empresa_id: this.user?.empresa?.id,
+      empresa_id: this.user?.empresa_id,
       data_inicio: new Date(year, month, 1).toISOString().split('T')[0],
       data_fim: new Date(year, month + 1, 0).toISOString().split('T')[0],
     });

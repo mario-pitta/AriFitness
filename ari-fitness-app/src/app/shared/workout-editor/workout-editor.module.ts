@@ -11,8 +11,8 @@ import { ExerciseTableComponent } from './components/exercise-table.component';
 import { ExerciseSelectorModalComponent } from './components/exercise-selector-modal.component';
 import { WorkoutPreviewModalComponent } from './components/workout-preview-modal.component';
 import { StudentSessionViewComponent } from './components/student-session-view.component';
-
-
+import { TemplateSelectorModalComponent } from './components/template-selector-modal.component';
+import { StudentSelectorModalComponent } from '../student-selector/student-selector-modal.component';
 
 @NgModule({
     imports: [
@@ -28,7 +28,9 @@ import { StudentSessionViewComponent } from './components/student-session-view.c
         ExerciseTableComponent,
         ExerciseSelectorModalComponent,
         WorkoutPreviewModalComponent,
-        StudentSessionViewComponent
+        StudentSessionViewComponent,
+        TemplateSelectorModalComponent,
+        StudentSelectorModalComponent
     ],
 
     exports: [
@@ -37,7 +39,9 @@ import { StudentSessionViewComponent } from './components/student-session-view.c
         ExerciseTableComponent,
         ExerciseSelectorModalComponent,
         WorkoutPreviewModalComponent,
-        StudentSessionViewComponent
+        StudentSessionViewComponent,
+        TemplateSelectorModalComponent,
+        StudentSelectorModalComponent
     ]
 
 })

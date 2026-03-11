@@ -45,8 +45,8 @@ export class ImportarPage implements OnInit {
 
     ngOnInit() {
         const user = this.authService.getUser;
-        if (user?.empresa?.id) {
-            this.empresaId = user.empresa.id;
+        if (user?.empresa_id) {
+            this.empresaId = user.empresa_id;
             this.loadMappings();
         } else {
             this.toastr.error('Empresa não identificada.');

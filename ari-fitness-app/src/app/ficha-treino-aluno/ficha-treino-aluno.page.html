@@ -1,103 +1,138 @@
-<ion-header [translucent]="true">
-    <ion-toolbar>
-        <ion-title>Treinos Do Aluno</ion-title>
-    </ion-toolbar>
-</ion-header>
-<ion-grid>
-    <ion-card class="ion-padding">
-        <form [formGroup]="form">
-            <ion-item-group>
-                <ion-item [formGroupName]="'aluno'">
-                    <ion-input readonly labelPlacement="floating" formControlName="nome"
-                        label="Nome do Aluno"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-textarea [readonly]="!user.flagAdmin" labelPlacement="floating" formControlName="descricao"
-                        label="Descrição da Ficha"></ion-textarea>
-                </ion-item>
-            </ion-item-group>
+<ion-content class="premium-content">
+    <div class="content-container">
+        <!-- Student Header Card -->
+        <ion-card class="student-profile-card ion-no-margin ion-margin-bottom">
+            <ion-card-content>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-placeholder">
+                        <ion-icon name="person-outline"></ion-icon>
+                    </div>
+                    <div>
+                        <h2 class="student-name">{{ aluno?.value.nome || 'Selecione um Aluno' }}</h2>
+                        <p class="student-status">
+                            <ion-badge color="success" *ngIf="fichaAtual?.fl_ativo">Ativa</ion-badge>
+                            <ion-badge color="medium" *ngIf="!fichaAtual?.fl_ativo">Inativa</ion-badge>
+                            <span class="company-text" *ngIf="fichaAtual?.created_at">Desde {{ fichaAtual.created_at |
+                                date:'dd/MM/yyyy' }}</span>
+                        </p>
+                    </div>
+                </div>
+            </ion-card-content>
+        </ion-card>
 
-            <ion-row>
-                <ion-col size="12" size-md="6">
-                    <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin"
-                            formControlName="ficha_data_inicio" type="date" label="Início da Ficha"></ion-input>
+
+        <!-- Ficha Details (Accordion or Tabs?) -->
+        <ion-card class="details-card">
+            <ion-card-header (click)="enableEdit = !enableEdit">
+                <div class="d-flex justify-content-between align-items-center cursor-pointer">
+                    <ion-card-subtitle>INFORMAÇÕES DA FICHA</ion-card-subtitle>
+                    <ion-icon [name]="enableEdit ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                </div>
+            </ion-card-header>
+
+            <ion-card-content *ngIf="enableEdit">
+                <form [formGroup]="form">
+                    <ion-item class="custom-item">
+                        <ion-textarea label="Descrição / Observações" labelPlacement="floating"
+                            [readonly]="!isManagerOrInstructor" formControlName="descricao"
+                            placeholder="Ex: Focar em amplitude de movimento..."></ion-textarea>
                     </ion-item>
-                </ion-col>
-                <ion-col size="12" size-md="6">
-                    <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin"
-                            formControlName="ficha_data_fim" type="date" label="Validade da Ficha"></ion-input>
+
+                    <ion-row>
+                        <ion-col size="6">
+                            <ion-item class="custom-item">
+                                <ion-input label="Início" labelPlacement="floating" [readonly]="!isManagerOrInstructor"
+                                    formControlName="ficha_data_inicio" type="date"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col size="6">
+                            <ion-item class="custom-item">
+                                <ion-input label="Validade" labelPlacement="floating"
+                                    [readonly]="!isManagerOrInstructor" formControlName="ficha_data_fim"
+                                    type="date"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+
+                    <ion-item class="custom-item">
+                        <ion-input label="ObjetivoPrincipal" labelPlacement="floating"
+                            [readonly]="!isManagerOrInstructor" formControlName="objetivo"
+                            placeholder="Ex: Hipertrofia, Emagrecimento..."></ion-input>
                     </ion-item>
-                </ion-col>
-            </ion-row>
 
-            <ion-item>
-                <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="objetivo"
-                    label="Objetivo"></ion-input>
-            </ion-item>
+                    <ion-row>
+                        <ion-col size="6">
+                            <ion-item class="custom-item">
+                                <ion-input label="Peso Atual" labelPlacement="floating"
+                                    [readonly]="!isManagerOrInstructor" formControlName="peso_inicial" type="number"
+                                    step="0.1" suffix="kg"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col size="6">
+                            <ion-item class="custom-item">
+                                <ion-input label="Meta" labelPlacement="floating" [readonly]="!isManagerOrInstructor"
+                                    formControlName="peso_meta" type="number" step="0.1" suffix="kg"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                </form>
+            </ion-card-content>
+        </ion-card>
 
-            <ion-row>
-                <ion-col size="12" size-md="6">
-                    <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="peso_inicial"
-                            type="number" min="0" step="0.2" maxlength="5" label="Peso Atual"></ion-input>
-                    </ion-item>
-                </ion-col>
-                <ion-col size="12" size-md="6">
-                    <ion-item>
-                        <ion-input labelPlacement="floating" [readonly]="!user.flagAdmin" formControlName="peso_meta"
-                            type="number" min="0" step="0.2" maxlength="5" label="Meta de Peso"></ion-input>
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-
-            <ion-item [formGroupName]="'instrutor'">
-                <ion-select formControlName="id" [disabled]="!user.flagAdmin" labelPlacement="floating"
-                    label="Instrutor(a):">
-                    <ion-select-option *ngFor="let instrutor of instrutores" [value]="instrutor.id">{{ instrutor.nome
-                        }}</ion-select-option>
-                </ion-select>
-            </ion-item>
-        </form>
-
-        <ion-list>
-            <ion-row class="ion-justify-content-around ion-align-items-center">
-                <h5>Treinos e Sessões: </h5>
-                <ion-button fill="clear" *ngIf="user.flagAdmin || user.id === aluno?.value.id"
-                    (click)="openTreinoList()">
-                    <ion-icon name="add"></ion-icon>
+        <!-- Quick Start / Zero State Wizard -->
+        <ion-card class="quick-start-card ion-padding" *ngIf="!fichaAtual?.sessoes?.length && !loading">
+            <div class="ion-text-center">
+                <div class="empty-icon-container">
+                    <ion-icon name="rocket-outline" class="hero-icon"></ion-icon>
+                </div>
+                <h2>Vamos turbinar esse treino?</h2>
+                <p>Este aluno ainda não possui uma ficha de exercícios configurada. Escolha um modelo para começar em
+                    segundos!</p>
+                <ion-button expand="block" class="cta-button ion-margin-top" (click)="openTreinoList()">
+                    <ion-icon slot="start" name="flash-outline"></ion-icon>
+                    Escolher Modelo Pronto
                 </ion-button>
-            </ion-row>
+            </div>
+        </ion-card>
 
-            <!-- New Session-based View -->
-            <app-student-session-view *ngIf="fichaAtual?.sessoes?.length"
-                [sessoes]="fichaAtual.sessoes!"></app-student-session-view>
+        <!-- Workout Sessions Editor -->
+        <div class="sessions-section ion-margin-top">
+            <div class="d-flex justify-content-between align-items-center ion-padding-horizontal ion-margin-bottom">
+                <h5 class="section-title">Treinos da Ficha</h5>
+                <div class="d-flex gap-2">
+                    <ion-button fill="clear" color="primary" size="small" (click)="openTreinoList()"
+                        *ngIf="isManagerOrInstructor">
+                        <ion-icon slot="start" name="download-outline"></ion-icon>
+                        Modelo
+                    </ion-button>
+                    <ion-button fill="clear" color="secondary" size="small" (click)="openStudentImport()"
+                        *ngIf="isManagerOrInstructor">
+                        <ion-icon slot="start" name="people-outline"></ion-icon>
+                        Outro Aluno
+                    </ion-button>
+                </div>
+            </div>
 
-            <!-- Legacy Flat List (Only if no sessions) -->
-            <ion-reorder-group *ngIf="!fichaAtual?.sessoes?.length" [disabled]="!user.flagAdmin"
-                (ionItemReorder)="handleReorder($any($event))">
+            <!-- Integrated Editor Components -->
+            <div class="editor-wrapper">
+                <app-session-tabs></app-session-tabs>
+                <div class="table-container ion-margin-top">
+                    <app-exercise-table></app-exercise-table>
+                </div>
+            </div>
+        </div>
 
-                <ion-card *ngFor="let tr of treinos.value; let i = index" [attr.data-item]="stringfy(tr)">
-                    <ion-card-content class="d-flex ion-justify-content-between ion-align-items-center">
-                        <div class="d-flex ion-align-items-center gap-2">
-                            <ion-reorder slot="start" [id]="'reorder_tr_' + tr.id"></ion-reorder>
-                            <strong class="text-uppercase">{{ tr.treino.nome }}</strong>
-                        </div>
-                        <div class="icons ion-padding-end">
-                            <ion-icon name="play-outline" color="primary" *ngIf="user.id === aluno?.value.id"
-                                (click)="onTreinoSelected(tr.treino)"></ion-icon>
-                            <ion-icon size="small" name="close" color="danger"
-                                *ngIf="user.flagAdmin || user.id !== aluno?.value.id"
-                                (click)="removeTreino(tr.treino.id)"></ion-icon>
-                        </div>
-                    </ion-card-content>
-                </ion-card>
-            </ion-reorder-group>
-        </ion-list>
+        <!-- Botão de salvar -->
+        <div class="ion-padding footer-action" *ngIf="isManagerOrInstructor">
+            <ion-button expand="block" color="success" (click)="submitForm()"
+                [disabled]="loading || (workoutState?.isValid$ | async) === false" class="save-button">
+                <ion-icon slot="start" name="save-outline"></ion-icon>
+                Finalizar e Salvar Ficha
+            </ion-button>
+        </div>
 
-        <ion-button class="success" size="block" color="primary" *ngIf="user.flagAdmin || user.id === aluno?.value.id"
-            (click)="submitForm()">SALVAR</ion-button>
-    </ion-card>
-</ion-grid>
-<router-outlet></router-outlet>
+
+
+    </div>
+
+</ion-content>

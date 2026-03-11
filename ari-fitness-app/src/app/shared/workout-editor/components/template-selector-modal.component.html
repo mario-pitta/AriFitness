@@ -1,0 +1,66 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button (click)="dismiss()">
+                <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>Selecionar Modelo</ion-title>
+    </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterTemplates()"
+            placeholder="Pesquisar por nome ou objetivo..." class="custom-searchbar"></ion-searchbar>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <!-- Categories/Chips -->
+    <div class="category-scroll ion-margin-bottom">
+        <ion-chip [color]="selectedLevel === -1 ? 'primary' : 'medium'" (click)="setLevel(-1)">Todos</ion-chip>
+        <ion-chip [color]="selectedLevel === 1 ? 'success' : 'medium'" (click)="setLevel(1)">Iniciante</ion-chip>
+        <ion-chip [color]="selectedLevel === 2 ? 'warning' : 'medium'" (click)="setLevel(2)">Intermediário</ion-chip>
+        <ion-chip [color]="selectedLevel === 3 ? 'danger' : 'medium'" (click)="setLevel(3)">Avançado</ion-chip>
+    </div>
+
+    <div *ngIf="loading" class="ion-text-center ion-padding">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Buscando os melhores treinos...</p>
+    </div>
+
+    <div *ngIf="!loading && filteredTemplates.length === 0" class="empty-state">
+        <ion-icon name="search-outline"></ion-icon>
+        <h3>Nenhum modelo encontrado</h3>
+        <p>Tente ajustar seus filtros ou busca.</p>
+    </div>
+
+    <ion-grid *ngIf="!loading && filteredTemplates.length > 0">
+        <ion-row>
+            <ion-col size="12" size-md="6" size-lg="4" *ngFor="let template of filteredTemplates">
+                <ion-card class="template-card" (click)="selectTemplate(template)">
+                    <div class="card-gradient" [ngClass]="template.class"></div>
+                    <ion-card-header>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <ion-badge [color]="template.color">
+                                {{ template.label }}
+                            </ion-badge>
+                            <span class="sessao-count">{{ template.sessoes?.length || 0 }} Sessões</span>
+                        </div>
+                        <ion-card-title class="ion-margin-top">{{ template.nome }}</ion-card-title>
+                    </ion-card-header>
+                    <ion-card-content>
+                        <p class="description">{{ template.descricao || 'Nenhuma descrição fornecida.' }}</p>
+                        <div class="tags ion-margin-top">
+                            <ion-chip outline size="small" color="primary">
+                                <ion-icon name="fitness-outline"></ion-icon>
+                                <ion-label>{{ template.grupo_muscular?.nome || 'Geral' }}</ion-label>
+                            </ion-chip>
+                        </div>
+                    </ion-card-content>
+                    <div class="card-footer">
+                        <ion-button fill="clear" size="small">Visualizar e Aplicar</ion-button>
+                    </div>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

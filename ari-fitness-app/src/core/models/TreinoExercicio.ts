@@ -6,7 +6,6 @@ export interface TreinoExercicio {
     sessao_id?: number;
     exercicio_id: number;
     exercicio?: Exercicio;
-    exercicios?: Exercicio;
     series: number;
     repeticoes: number;
     carga: number;

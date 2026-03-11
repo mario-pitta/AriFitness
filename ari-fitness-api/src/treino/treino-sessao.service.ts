@@ -21,15 +21,24 @@ export class TreinoSessaoService {
             .select('*');
     }
 
-    async getTreinoCompleto(treinoId: number) {
+    async getTreinoCompleto(treinoId: number, empresa_id: string) {
+        if (!empresa_id) return { data: null, error: 'Empresa não identificada' };
+
+
         // Busca o treino básico
         const { data: treino, error } = await this.database.supabase
             .from('treino')
             .select('*, grupo_muscular(*), parte_do_corpo(*)')
             .eq('id', treinoId)
+            .eq('empresa_id', empresa_id)
             .single();
 
-        if (error || !treino) return { data: null, error };
+        if (error || !treino) throw new Error('Erro ao buscar treino');
+
+        if (treino.empresa_id !== empresa_id) {
+            throw new Error('Treino não pertence a esta empresa do usuario');
+        }
+
 
         // Busca sessoes
         const { data: sessoes, error: sessoesError } = await this.database.supabase
@@ -38,16 +47,16 @@ export class TreinoSessaoService {
             .eq('treino_id', treinoId)
             .order('ordem', { ascending: true });
 
-        if (sessoesError) return { data: null, error: sessoesError };
+        if (sessoesError) throw new Error('Erro ao buscar sessões do treino');
 
         // Busca exercícios vinculados a sessões
         const { data: exercicios, error: exError } = await this.database.supabase
             .from('treino_exercicio')
-            .select('*, exercicios(*), equipamentos(*), grupo_muscular(*), parte_do_corpo(*)')
+            .select('*, exercicio: exercicios(*), equipamentos(*), grupo_muscular(*), parte_do_corpo(*)')
             .in('sessao_id', sessoes.map(s => s.id))
             .order('ordem', { ascending: true });
 
-        if (exError) return { data: null, error: exError };
+        if (exError) throw new Error('Erro ao buscar exercícios do treino');
 
         // Agrupa exercícios por sessão
         const sessoesComExercicios = sessoes.map(sessao => ({
