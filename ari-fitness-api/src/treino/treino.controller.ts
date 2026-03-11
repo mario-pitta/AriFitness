@@ -3,11 +3,11 @@ import { Response } from 'express';
 import { Treino, TreinoSessao } from './Treino.interface';
 import { TreinoService } from './treino.service';
 import { TreinoSessaoService } from './treino-sessao.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { UserRole } from 'src/core/Constants/UserRole';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../core/Constants/UserRole';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 
 @Controller('treinos')

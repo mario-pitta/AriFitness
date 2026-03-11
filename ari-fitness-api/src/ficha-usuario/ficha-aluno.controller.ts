@@ -18,10 +18,10 @@ import {
 import { FichaAlunoService } from './ficha-aluno.service';
 import { IFichaAluno } from './FichaAluno.interface';
 import { Response } from 'express';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { UserRole } from 'src/core/Constants/UserRole';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../core/Constants/UserRole';
 
 @Controller('/ficha-aluno')
 @UseGuards(JwtAuthGuard)
