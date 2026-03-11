@@ -32,8 +32,8 @@
                 <tbody cdkDropList (cdkDropListDropped)="drop($event)">
                     <tr *ngFor="let ex of exercicios; let i = index" cdkDrag
                         class="exercise-row-custom mobile-exercise-card">
-                        <td class="ps-4 text-muted cursor-grab" cdkDragHandle>
-                            <ion-icon name="reorder-two-outline" class="op-1"></ion-icon>
+                        <td class="ps-4  cursor-grab" cdkDragHandle>
+                            <ion-icon name="reorder-two-outline" class="text-info op-5"></ion-icon>
                         </td>
                         <td>
                             <div class="d-flex flex-column position-relative">
@@ -96,7 +96,7 @@
                 class="mobile-exercise-card mb-3 p-3 rounded-4 shadow-sm custom-border position-relative">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div class="d-flex align-items-center gap-2 w-100 pe-3">
-                        <ion-icon name="grid-outline" class="op-3" cdkDragHandle></ion-icon>
+                        <ion-icon name="grid-outline" class="text-info op-5" cdkDragHandle></ion-icon>
                         <div class="d-flex flex-column position-relative w-100 ms-1">
                             <input type="text"
                                 class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
