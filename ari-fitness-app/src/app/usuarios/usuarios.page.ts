@@ -105,6 +105,8 @@ export class UsuariosPage implements OnInit {
   recibo: any;
   pagamentosLoading: boolean = false;
   searchText: string = '';
+  alunosRiscoIds: number[] = [];
+  selectedFilter: string = 'todos';
   constructor(
     private usuarioService: UsuarioService,
     private router: Router,
@@ -156,40 +158,99 @@ export class UsuariosPage implements OnInit {
           this.memberDataCard = []; // Clear current cards before rebuild
           this.buildTotalMembersChartCard(res);
           this.buildNovosMembrosChartCard(res);
-          // this.buildDiariasChartCard(res);
-          this.buildHorariosChartCard(res);
+          this.buildPaymentStatusChartCard(res);
+          this.buildPlanDistChartCard(res);
+          this.buildAgeDistChartCard(res);
+          this.fetchAndBuildRiskCard();
         },
       });
   }
 
-  buildHorariosChartCard(res: any) {
+  fetchAndBuildRiskCard() {
+    if (!this.user?.empresa_id) return;
+
+    this.dashboardMembersService.getAlunosSemCheckin(this.user.empresa_id).subscribe({
+      next: (res) => {
+        this.alunosRiscoIds = res.alunos.map((a: any) => a.id);
+        const cardData = {
+          title: 'Alunos em Risco',
+          subtitle: 'Sem check-in (+14 dias)',
+          size: 4,
+          iconColor: 'medium',
+          chartType: null,
+          value: res.total,
+          cardIconName: 'trending-down-outline',
+          filter: 'risco',
+          data: []
+        };
+        this.memberDataCard.push(cardData);
+      }
+    });
+  }
+
+  buildAgeDistChartCard(res: any) {
     const cardData = {
-      title: 'Horários de Pico',
-      subtitle: 'Alunos por faixa horária',
+      title: 'Faixa Etária',
+      subtitle: 'Perfil de idade dos alunos',
       size: 4,
-      iconColor: 'danger',
+      iconColor: 'warning',
       chartType: 'bar',
       value: null,
-      cardIconName: 'alarm-outline',
-      tendency: 'down',
-      tendencyValue: -28,
-      data: Object.keys(res.horarios)
-        .map((key) => ({
-          name: key,
-          value: res.horarios[key],
-        }))
-        .sort((a, b) => {
-          if (a.name < b.name) {
-            return -1;
-          }
-          if (a.name > b.name) {
-            return 1;
-          }
-          return 0;
-        }),
+      cardIconName: 'calendar-outline',
+      data: Object.keys(res.ageDist).map(key => ({
+        name: key,
+        value: res.ageDist[key]
+      }))
     };
-
     this.memberDataCard.push(cardData);
+  }
+
+  buildPlanDistChartCard(res: any) {
+    const cardData = {
+      title: 'Distribuição por Plano',
+      subtitle: 'Popularidade das adesões',
+      size: 4,
+      iconColor: 'success',
+      chartType: 'pie',
+      value: null,
+      cardIconName: 'card-outline',
+      data: Object.keys(res.planDist).map(key => ({
+        name: key,
+        value: res.planDist[key]
+      }))
+    };
+    this.memberDataCard.push(cardData);
+  }
+
+  buildPaymentStatusChartCard(res: any) {
+    const cardData = {
+      title: 'Status de Pagamento',
+      subtitle: 'Saúde financeira (Mês Atual)',
+      size: 4,
+      iconColor: 'danger',
+      chartType: 'pie',
+      value: null,
+      cardIconName: 'cash-outline',
+      filter: 'inadimplentes',
+      data: Object.keys(res.paymentStatusDist).map(key => ({
+        name: key,
+        value: res.paymentStatusDist[key]
+      }))
+    };
+    this.memberDataCard.push(cardData);
+  }
+
+  onCardClick(card: any) {
+    if (card.filter) {
+      this.selectedFilter = card.filter;
+      this.filterMember({ detail: { value: card.filter } });
+      setTimeout(() => {
+        const element = document.querySelector('.members-section');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
   }
 
   buildTotalMembersChartCard(res: any) {
@@ -227,6 +288,7 @@ export class UsuariosPage implements OnInit {
       value: res.newMembers.total,
       cardIconName: 'person-add',
       tendency: 'up',
+      filter: 'novos',
       tendencyValue: res.newMembers.tendency?.toFixed(1) || 0,
       data: [
         {
@@ -666,6 +728,19 @@ export class UsuariosPage implements OnInit {
         this.usuarioList = this.usuarios.filter(
           (u) => u.status_pagamento.label !== 'Em Dia' && u.fl_ativo
         );
+        break;
+      case 'risco':
+        this.usuarioList = this.usuarios.filter(
+          (u) => u.id && this.alunosRiscoIds.includes(u.id)
+        );
+        break;
+      case 'novos':
+        this.usuarioList = this.usuarios.filter((u) => {
+          const dataCadastro = new Date(u.created_at as string);
+          const hoje = new Date();
+          return dataCadastro.getMonth() === hoje.getMonth() &&
+            dataCadastro.getFullYear() === hoje.getFullYear();
+        });
         break;
       case 'input':
         this.usuarioList = this.usuarios.filter((u) => {

@@ -6,7 +6,8 @@
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card" *ngFor="let card of memberDataCard" [class.full-width]="card.size === 12">
+      <div class="stat-card" *ngFor="let card of memberDataCard" [class.full-width]="card.size === 12"
+        (click)="onCardClick(card)">
         <div class="card-glow" [style.background]="getGlowColor(card.iconColor)"></div>
         <div class="card-content">
           <div class="card-top">
@@ -66,10 +67,12 @@
         <div class="filter-box">
           <ion-icon name="funnel-outline"></ion-icon>
           <ion-select label="Filtrar por" labelPlacement="hidden" (ionChange)="filterMember($event)" interface="popover"
-            value="todos" toggleIcon="caret-down-outline">
+            [(ngModel)]="selectedFilter" toggleIcon="caret-down-outline">
             <ion-select-option [value]="'todos'">Todos</ion-select-option>
             <ion-select-option [value]="'ativos'">Ativos</ion-select-option>
+            <ion-select-option [value]="'novos'">Novos Alunos</ion-select-option>
             <ion-select-option [value]="'inadimplentes'">Inadimplentes</ion-select-option>
+            <ion-select-option [value]="'risco'">Em Risco</ion-select-option>
             <ion-select-option [value]="'inativos'">Inativos</ion-select-option>
           </ion-select>
         </div>
@@ -260,36 +263,86 @@
       </ion-header>
       <ion-content>
         <ng-container *ngIf="selectedUsuario">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>{{selectedUsuario.nome}}</ion-card-title>
-              <ion-card-subtitle>Vencimento: {{selectedUsuario.data_vencimento}}º dia</ion-card-subtitle>
-            </ion-card-header>
-          </ion-card>
+          <div class="user-history-header">
+            <div class="user-profile">
+              <div class="avatar-large">
+                <img [src]="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + selectedUsuario.nome" alt="Avatar">
+              </div>
+              <div class="user-info">
+                <h2>{{selectedUsuario.nome}}</h2>
+                <div class="user-stats-row">
+                  <div class="stat-item">
+                    <span class="label">Membro Desde</span>
+                    <span class="value">{{selectedUsuario.created_at | date: 'dd/MM/yyyy'}}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="label">Vencimento</span>
+                    <span class="value">{{selectedUsuario.data_vencimento}}º dia</span>
+                  </div>
+                </div>
+                <div class="last-payment-badge" *ngIf="selectedUsuario.data_ultimo_pagamento">
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                  <span>Último Pagamento: {{selectedUsuario.data_ultimo_pagamento | date: 'dd/MM/yyyy'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <ion-list [inset]="true">
-            <ion-item>
-              <ion-label>Filtrar por Ano</ion-label>
+          <ion-list [inset]="true" class="history-list">
+            <ion-item class="filter-item">
+              <ion-icon name="calendar-outline" slot="start"></ion-icon>
+              <ion-label>Ano de Referência</ion-label>
               <ion-select interface="popover" [placeholder]="anos[0].value" (ionChange)="filterAno($event)">
                 <ion-select-option *ngFor="let ano of anos" [value]="ano">{{ ano.value }}</ion-select-option>
               </ion-select>
             </ion-item>
 
-            <ion-item *ngFor="let pagamento of pagamentos">
-              <ion-checkbox slot="start" *ngIf="!pagamento.pago" [(ngModel)]="pagamento.checked"></ion-checkbox>
-              <ion-label>
-                <h3>{{ pagamento.nome_mes.label }}/{{ pagamento.ano }}</h3>
-                <p *ngIf="pagamento.pago">Pago em: {{ pagamento.transacao?.data_lancamento | date: 'dd/MM/yyyy' }}</p>
-                <ion-badge [color]="pagamento.pago ? 'success' : 'warning'">{{ pagamento.pago ? 'Pago' : 'Pendente'
-                  }}</ion-badge>
-              </ion-label>
-            </ion-item>
+            <ng-container *ngIf="!pagamentosLoading; else historySkeleton">
+              <ion-item *ngFor="let pagamento of pagamentos" class="payment-item" [ngClass]="{'paid': pagamento.pago}">
+                <ion-checkbox slot="start" *ngIf="!pagamento.pago" [(ngModel)]="pagamento.checked"
+                  mode="ios"></ion-checkbox>
+                <ion-icon [name]="pagamento.pago ? 'checkmark-circle' : 'time-outline'" slot="start"
+                  [color]="pagamento.pago ? 'success' : 'warning'" *ngIf="pagamento.pago"></ion-icon>
+                <ion-label>
+                  <h3>{{ pagamento.nome_mes.label }}/{{ pagamento.ano }}</h3>
+                  <p class="payment-date" *ngIf="pagamento.pago">
+                    <ion-icon name="calendar-clear-outline"></ion-icon>
+                    Pago em: {{ pagamento.transacao?.data_lancamento | date: 'dd/MM/yyyy' }}
+                  </p>
+                  <ion-badge [color]="pagamento.pago ? 'success' : 'warning'" mode="ios">
+                    {{ pagamento.pago ? 'Pago' : 'Pendente' }}
+                  </ion-badge>
+                </ion-label>
+              </ion-item>
+            </ng-container>
 
-            <ion-row class="ion-padding">
-              <ion-col size="6"><ion-button expand="block" color="warning"
-                  (click)="registrarPagamentos('isentar')">Isentar</ion-button></ion-col>
-              <ion-col size="6"><ion-button expand="block" color="primary"
-                  (click)="registrarPagamentos('registrar')">Registrar</ion-button></ion-col>
+            <ng-template #historySkeleton>
+              <ion-item *ngFor="let i of [1,2,3,4,5,6]" class="payment-item skeleton-item">
+                <ion-thumbnail slot="start">
+                  <ion-skeleton-text [animated]="true"
+                    style="width: 24px; height: 24px; border-radius: 50%;"></ion-skeleton-text>
+                </ion-thumbnail>
+                <ion-label>
+                  <h3><ion-skeleton-text [animated]="true" style="width: 40%;"></ion-skeleton-text></h3>
+                  <p><ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text></p>
+                  <ion-skeleton-text [animated]="true"
+                    style="width: 60px; height: 18px; border-radius: 8px;"></ion-skeleton-text>
+                </ion-label>
+              </ion-item>
+            </ng-template>
+
+            <ion-row class="ion-padding footer-actions">
+              <ion-col size="6">
+                <ion-button expand="block" color="warning" fill="outline" shape="round"
+                  (click)="registrarPagamentos('isentar')">
+                  Isentar
+                </ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button expand="block" color="primary" shape="round" (click)="registrarPagamentos('registrar')">
+                  Registrar
+                </ion-button>
+              </ion-col>
             </ion-row>
           </ion-list>
         </ng-container>

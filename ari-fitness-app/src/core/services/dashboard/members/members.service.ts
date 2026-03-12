@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class DashboardMembersService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getDashboardMembersData(filters: Partial<IUsuario>): Observable<{
     totalMembers: {
@@ -26,6 +26,9 @@ export class DashboardMembersService {
     horarios: {
       [key: string]: number;
     };
+    planDist: { [key: string]: number };
+    ageDist: { [key: string]: number };
+    paymentStatusDist: { [key: string]: number };
   }> {
     const query = Object.keys(filters)
       .map((k: string) => `${k}=${filters[k as keyof IUsuario]}`)
@@ -46,6 +49,13 @@ export class DashboardMembersService {
       horarios: {
         [key: string]: number;
       };
+      planDist: { [key: string]: number };
+      ageDist: { [key: string]: number };
+      paymentStatusDist: { [key: string]: number };
     }>(environment.apiUrl + '/dashboard/total-members-data?' + query);
+  }
+
+  getAlunosSemCheckin(empresaId: string, dias: number = 14): Observable<{ total: number, alunos: any[] }> {
+    return this.http.get<{ total: number, alunos: any[] }>(`${environment.apiUrl}/dashboard/alunos-sem-checkin/${empresaId}?dias=${dias}`);
   }
 }

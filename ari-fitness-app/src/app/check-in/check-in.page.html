@@ -46,7 +46,8 @@
                             <h2>{{ checkin.nome_completo || 'Nome não informado' }}</h2>
                             <p>CPF: {{ checkin.cpf_aluno }}</p>
                             <p class="ion-text-wrap">
-                                <ion-badge [color]="checkin.status_acesso === 'Visitante' ? 'warning' : 'success'"
+                                <ion-badge
+                                    [color]="checkin.status_acesso === 'Visitante' ? 'warning' : checkin.tipo_usuario_desc === 'Funcionário' ? 'secondary' :'success'"
                                     class="ion-margin-end">
                                     <ion-icon
                                         [name]="checkin.status_acesso === 'Visitante' ? 'person-outline' : 'checkmark-circle-outline'"

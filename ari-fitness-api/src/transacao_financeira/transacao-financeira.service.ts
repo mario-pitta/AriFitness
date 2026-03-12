@@ -66,7 +66,8 @@ export class TransacaoFinanceiraService {
     }
 
     switch (transacaoFinanceira.tr_categoria_id) {
-      case 1 || 14: //MENSALIDADE
+      case 1:
+      case 14: //MENSALIDADE E MATRICULA
         if (!transacaoFinanceira.pago_por) {
           throw new HttpException('Membro da transação financeira não informado', HttpStatus.BAD_REQUEST);
         }
@@ -161,7 +162,8 @@ export class TransacaoFinanceiraService {
 
     switch (transacaoFinanceira.tr_categoria_id) {
       case 1: //MENSALIDADE
-        console.log('MENSALIDADE: ');
+      case 14: //MATRICULA
+        console.log('MENSALIDADE/MATRICULA: ');
 
         await this.usuarioService.update({
           id: transacaoFinanceira.pago_por,

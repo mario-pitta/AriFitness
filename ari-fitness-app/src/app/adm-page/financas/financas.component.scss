@@ -240,6 +240,99 @@ $danger-rgb: rgb(235, 68, 90);
   color: var(--ion-color-danger) !important;
 }
 
+.glow-primary {
+  box-shadow: 0 8px 32px rgba(var(--ion-color-primary-rgb), 0.15);
+  border-color: rgba(var(--ion-color-primary-rgb), 0.3);
+}
+
+.bg-primary-light {
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+.color-primary {
+  color: var(--ion-color-primary) !important;
+}
+
+.glow-secondary {
+  box-shadow: 0 8px 32px rgba(var(--ion-color-secondary-rgb), 0.15);
+  border-color: rgba(var(--ion-color-secondary-rgb), 0.3);
+}
+
+.bg-secondary-light {
+  background: rgba(var(--ion-color-secondary-rgb), 0.1);
+}
+
+.color-secondary {
+  color: var(--ion-color-secondary) !important;
+}
+
+// Insight Cards
+.insight-card-mini {
+  background: var(--ion-background-color);
+  border-radius: 16px;
+  border: 1px solid var(--ion-color-step-100);
+  margin: 0;
+
+  .insight-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .insight-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .insight-details {
+      display: flex;
+      flex-direction: column;
+
+      .insight-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ion-color-medium);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .insight-value {
+        font-size: 1.25rem;
+        font-weight: 800;
+
+        small {
+          font-size: 0.8rem;
+          opacity: 0.6;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}
+
+.anim-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Prominent Add Button
 .add-tx-btn {
   --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
@@ -248,13 +341,39 @@ $danger-rgb: rgb(235, 68, 90);
 }
 
 // Chart Legends Text Color Fix for Dark/Light Mode
+// Skeletons
+.skeleton-card {
+  pointer-events: none;
+
+  .icon-wrapper,
+  .tx-icon {
+    background: transparent !important;
+  }
+
+  ion-skeleton-text {
+    --background: rgba(var(--ion-color-step-200-rgb), 0.1);
+    --background-focused: rgba(var(--ion-color-step-200-rgb), 0.2);
+    border-radius: 4px;
+  }
+}
+
 ::ng-deep {
   .ngx-charts {
 
     .legend-labels text,
     .legend-title-text {
       fill: var(--ion-text-color) !important;
-      font-weight: 500;
+    }
+  }
+
+  .chart-legend {
+    .legend-labels {
+      background: transparent !important;
+      color: var(--ion-text-color) !important;
+    }
+
+    .legend-item-name {
+      color: var(--ion-text-color) !important;
     }
   }
 }

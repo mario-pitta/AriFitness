@@ -34,6 +34,11 @@ export class DashboardService {
           female: 0,
         };
         const horarios = {} as any;
+        const planDist: Record<string, number> = {};
+        const ageDist = { 'Até 18': 0, '19-30': 0, '31-50': 0, '50+': 0 } as Record<string, number>;
+        const paymentStatusDist: Record<string, number> = {};
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         res.data.forEach((user: Usuario) => {
           const dataCadastro = new Date(user.created_at);
@@ -48,22 +53,50 @@ export class DashboardService {
           if (dataCadastro.getMonth() == new Date().getMonth()) newMembers++;
           if (dataCadastro.getMonth() == new Date().getMonth() - 1)
             newMembersTendency++;
-          if (
-            user.genero === 'M' &&
-            dataCadastro.getMonth() == new Date().getMonth()
-          )
-            newMemberGender.male++;
-          if (
-            user.genero === 'F' &&
-            dataCadastro.getMonth() == new Date().getMonth()
-          )
-            newMemberGender.female++;
 
-          const hora = user?.horario?.hora_inicio.slice(0, 5);
-          if (!horarios[hora]) {
-            horarios[hora] = 1;
-          } else {
-            horarios[hora]++;
+          if (dataCadastro.getMonth() == new Date().getMonth()) {
+            if (user.genero === 'M') newMemberGender.male++;
+            if (user.genero === 'F') newMemberGender.female++;
+          }
+
+          // Age calculation
+          if (user.data_nascimento) {
+            const birthDate = new Date(user.data_nascimento);
+            const age = new Date().getFullYear() - birthDate.getFullYear();
+            if (age <= 18) ageDist['Até 18']++;
+            else if (age <= 30) ageDist['19-30']++;
+            else if (age <= 50) ageDist['31-50']++;
+            else ageDist['50+']++;
+          }
+
+          // Plan distribution
+          const planName = (user as any).plano?.descricao || 'Sem Plano';
+          planDist[planName] = (planDist[planName] || 0) + 1;
+
+          // Payment Status (using the virtual label or status if available)
+          console.log("USER", user.nome)
+          const dataUltimoPagamento = (user as any).data_ultimo_pagamento?.label || (user as any).data_ultimo_pagamento || 'N/A';
+          console.log('thirtyDaysAgo: ', thirtyDaysAgo);
+
+          let status = 'Inadimplente';
+          if (dataUltimoPagamento && dataUltimoPagamento !== 'N/A') {
+            const lastPayment = new Date(dataUltimoPagamento);
+            console.log('lastPayment = ', lastPayment)
+
+            if (!isNaN(lastPayment.getTime())) {
+              status = lastPayment < thirtyDaysAgo ? 'Último Pagamento a mais de 30 dias' : 'Já pagou este mes';
+            }
+          }
+          console.log('status: ', status);
+          paymentStatusDist[status] = (paymentStatusDist[status] || 0) + 1;
+
+          const hora = (user as any).horario?.hora_inicio?.slice(0, 5);
+          if (hora) {
+            if (!horarios[hora]) {
+              horarios[hora] = 1;
+            } else {
+              horarios[hora]++;
+            }
           }
         });
 
@@ -81,6 +114,9 @@ export class DashboardService {
           },
           memberAtLastMonth,
           horarios,
+          planDist,
+          ageDist,
+          paymentStatusDist,
         };
       });
   }

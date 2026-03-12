@@ -52,9 +52,11 @@ export class FinancasComponent implements OnInit {
   totalReceitas: number | string = 0;
   totalDespesas: number | string = 0;
   saldo: number | string = 0;
+  ticketMedio: number | string = 0;
+  totalProjetado: number | string = 0;
   isSaldoPositivo: boolean = true;
-  totalReceitasPorCategoria: CategoryChart[] = [];
-  totalDespesasPorCategoria: CategoryChart[] = [];
+  totalReceitasPorCategoria: any[] = [];
+  totalDespesasPorCategoria: any[] = [];
   periodo = new FormControl(0, [Validators.required]);
   loading: boolean = true;
   isMobile = false;
@@ -178,6 +180,8 @@ export class FinancasComponent implements OnInit {
           // Lucro Líquido: Receitas - Despesas
           this.saldo = (res.totalReceitas - res.totalDespesas).toFixed(2);
           this.isSaldoPositivo = (res.totalReceitas - res.totalDespesas) >= 0;
+          this.ticketMedio = res.totalPagadores > 0 ? (res.totalReceitas / res.totalPagadores).toFixed(2) : 0;
+          this.totalProjetado = res.totalProjetado.toFixed(2);
 
           this.totalReceitasPorCategoria = res.totalReceitasPorCategoria.map(
             (i: any) => {
@@ -188,14 +192,17 @@ export class FinancasComponent implements OnInit {
             }
           );
 
-          this.totalDespesasPorCategoria = res.totalDespesasPorCategoria.map(
-            (i: any) => {
-              return {
-                name: i.descricao.toUpperCase(),
-                value: i.valor_final,
-              };
-            }
-          );
+          this.totalDespesasPorCategoria = res.totalDespesasPorCategoria
+            .sort((a: any, b: any) => b.valor_final - a.valor_final)
+            .slice(0, 5)
+            .map(
+              (i: any) => {
+                return {
+                  name: i.descricao.toUpperCase(),
+                  value: i.valor_final,
+                };
+              }
+            );
         },
         complete: () => {
           this.loading = false;
