@@ -797,6 +797,12 @@ export class UsuariosPage implements OnInit {
   }
 
 
+  async openTreinoHistoryModal(member: Usuario | null | undefined) {
+    if (!member) return;
+    this.isOpen = false;
+    this.router.navigate(['/admin/membros/historico', member.id]);
+  }
+
   getGlowColor(color: string): string {
     const colors: { [key: string]: string } = {
       primary: 'rgba(var(--ion-color-primary-rgb), 0.1)',

@@ -1,0 +1,173 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button (click)="goBack()">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>Histórico do Aluno</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <!-- User Profile Header -->
+    <div class="user-header-container" *ngIf="aluno">
+        <div class="profile-card animate__animated animate__fadeInDown">
+            <div class="avatar-wrapper">
+                <!-- <img [src]="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + aluno.nome" alt="Avatar"> -->
+                <span class="avatar-letter">{{aluno.nome.charAt(0)}}</span>
+            </div>
+            <div class="profile-info">
+                <h2>{{aluno.nome}}</h2>
+                <p>{{aluno.planos?.descricao}} • {{aluno.whatsapp}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Perspective Switcher -->
+    <div class="segment-container ion-padding-horizontal">
+        <ion-segment (ionChange)="segmentChanged($event)" [value]="activeSegment" mode="ios">
+            <ion-segment-button value="frequencia">
+                <ion-label>Frequência</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="evolucao">
+                <ion-label>Evolução</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="fichas">
+                <ion-label>Fichas</ion-label>
+            </ion-segment-button>
+        </ion-segment>
+    </div>
+
+    <!-- Content Areas -->
+    <div class="history-content ion-padding animate__animated animate__fadeIn">
+
+        <!-- FREQUENCY VIEW -->
+        <div *ngIf="activeSegment === 'frequencia'" class="view-container">
+            <div class="stats-row">
+                <div class="stat-box glass-card">
+                    <span class="label">Total de Acessos</span>
+                    <span class="value">{{getAttendanceCount()}}</span>
+                </div>
+                <div class="stat-box glass-card">
+                    <span class="label">Este Mês</span>
+                    <span class="value">{{getMonthlyAttendance()}}</span>
+                </div>
+            </div>
+
+            <div class="logs-container">
+                <h3 class="section-title">Log de Presença</h3>
+                <div class="loading-state" *ngIf="loadingFrequency">
+                    <ion-spinner name="crescent"></ion-spinner>
+                </div>
+
+                <div class="empty-state" *ngIf="!loadingFrequency && treinoHistory.length === 0">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <p>Nenhum acesso registrado.</p>
+                </div>
+
+                <div class="log-list" *ngIf="!loadingFrequency && treinoHistory.length > 0">
+                    <div class="log-item glass-card" *ngFor="let log of treinoHistory">
+                        <div class="date-info">
+                            <span class="day">{{log.data_hora | date: 'EEEE' | titlecase}}</span>
+                            <span class="full-date">{{log.data_hora | date: 'dd/MM/yyyy'}}</span>
+                        </div>
+                        <div class="time-info">
+                            <ion-icon name="time-outline"></ion-icon>
+                            <span>{{log.data_hora | date: 'HH:mm'}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVOLUTION VIEW -->
+        <div *ngIf="activeSegment === 'evolucao'" class="view-container">
+            <div class="loading-state" *ngIf="loadingEvolution">
+                <ion-spinner name="crescent"></ion-spinner>
+            </div>
+
+            <div class="empty-state" *ngIf="!loadingEvolution && workoutLogs.length === 0">
+                <ion-icon name="trending-up-outline"></ion-icon>
+                <p>Nenhum dado de carga registrado.</p>
+            </div>
+
+            <div class="evolution-container" *ngIf="!loadingEvolution && chartData.length > 0">
+                <h3 class="section-title">Evolução Prescrita (Cargas)</h3>
+                <p class="section-subtitle">Progresso baseado nos pesos definidos nas fichas ao longo do tempo.</p>
+
+                <div class="exercise-card glass-card" *ngFor="let exercise of chartData">
+                    <div class="card-header">
+                        <h4>{{exercise.name}}</h4>
+                        <span class="evolution-badge">+{{exercise.series[exercise.series.length-1].value -
+                            exercise.series[0].value}}kg</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <ngx-charts-line-chart [results]="[exercise]" [xAxis]="true" [yAxis]="true"
+                            [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true" [gradient]="true"
+                            [animations]="true" [view]="[300, 150]">
+                        </ngx-charts-line-chart>
+                    </div>
+                </div>
+
+                <h3 class="section-title ion-margin-top">Últimas Execuções</h3>
+                <p class="section-subtitle">Cargas reais registradas durante os treinos.</p>
+                <div class="detailed-log">
+                    <div class="detail-item glass-card" *ngFor="let h of workoutLogs">
+                        <div class="detail-header">
+                            <span class="date">{{h.data | date: 'dd/MM/yyyy HH:mm'}}</span>
+                            <span class="exercise">{{h.exercicio?.nome}}</span>
+                        </div>
+                        <div class="detail-body">
+                            <div class="metric">
+                                <span class="label">Carga</span>
+                                <span class="value">{{h.carga}} kg</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Séries/Rep</span>
+                                <span class="value">{{h.series}}x{{h.repeticao}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FICHAS HISTORY VIEW -->
+        <div *ngIf="activeSegment === 'fichas'" class="view-container">
+            <div class="loading-state" *ngIf="loadingFichas">
+                <ion-spinner name="crescent"></ion-spinner>
+            </div>
+
+            <div class="empty-state" *ngIf="!loadingFichas && fichasHistory.length === 0">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <p>Nenhuma ficha encontrada.</p>
+            </div>
+
+            <div class="fichas-container" *ngIf="!loadingFichas && fichasHistory.length > 0">
+                <h3 class="section-title">Fichas de Treino</h3>
+
+                <div class="ficha-item glass-card" *ngFor="let ficha of fichasHistory"
+                    [class.inactive]="!ficha.fl_ativo">
+                    <div class="ficha-status">
+                        <ion-badge [color]="ficha.fl_ativo ? 'success' : 'medium'">
+                            {{ficha.fl_ativo ? 'Ativa' : 'Anterior'}}
+                        </ion-badge>
+                        <span class="date">{{ficha.created_at | date: 'dd/MM/yyyy'}}</span>
+                    </div>
+                    <h4 class="ficha-name">{{ficha.descricao}}</h4>
+                    <p class="ficha-objective"><strong>Objetivo:</strong> {{ficha.objetivo}}</p>
+                    <div class="ficha-footer">
+                        <span class="dates">
+                            {{ficha.ficha_data_inicio | date: 'dd/MM/yy'}} ➔ {{ficha.ficha_data_fim | date: 'dd/MM/yy'}}
+                        </span>
+                        <ion-button fill="clear" size="small" disabled>
+                            VER FICHA
+                        </ion-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ion-content>

@@ -8,6 +8,7 @@ import { ConfettiService } from 'src/core/services/confetti/confetti.service';
 
 import { Exercicio } from 'src/core/models/Exercicio';
 import { Historico } from 'src/core/models/Historico';
+import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 
 @Component({
   selector: 'app-treinos',
@@ -26,7 +27,8 @@ export class TreinosPage implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private aRoute: ActivatedRoute,
-    private confettiService: ConfettiService
+    private confettiService: ConfettiService,
+    private usuarioService: UsuarioService
   ) {
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {
@@ -195,6 +197,19 @@ export class TreinosPage implements OnInit {
     };
 
     console.log('historico: ', historico);
+
+    // Persist to backend
+    this.usuarioService.registrarTreinoHistorico({
+      usuario_id: this.user.id,
+      treino_id: this.selectedTreino.id,
+      exercicio_id: this.selectedExercicio.exercicio.id,
+      series: historico.series,
+      repeticao: historico.repeticao,
+      carga: historico.carga,
+      intervalo: historico.intervalo,
+      nivel_dificuldade: historico.nivel_dificuldade,
+      empresa_id: this.user.empresa_id
+    }).subscribe();
 
     this.historico.push(historico);
 

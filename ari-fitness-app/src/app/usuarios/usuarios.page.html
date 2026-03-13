@@ -160,6 +160,10 @@
           <ion-icon aria-hidden="true" size="small" name="cash" slot="start"></ion-icon>
           <ion-text size="small">Histórico de Pagamento</ion-text>
         </ion-item>
+        <ion-item [button]="true" lines="full" (click)="openTreinoHistoryModal(selectedUsuario)">
+          <ion-icon aria-hidden="true" size="small" name="bar-chart" slot="start"></ion-icon>
+          <ion-text size="small">Histórico de Treino</ion-text>
+        </ion-item>
         <ion-item [button]="true" lines="full" (click)="showCobrancaModal = true">
           <ion-icon aria-hidden="true" size="small" name="logo-whatsapp" slot="start"></ion-icon>
           <ion-text size="small">Enviar Cobrança</ion-text>

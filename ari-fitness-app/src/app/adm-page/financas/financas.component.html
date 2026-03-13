@@ -204,9 +204,8 @@
             </ion-card-header>
             <ion-card-content class="d-flex justify-content-center">
               <ngx-charts-pie-chart [view]="chartViewSize" [results]="totalReceitasPorCategoria" [gradient]="true"
-                [animations]="true" [labels]="true" labelType="percent">
-                <!-- <ngx-charts-legend [animations]="true">
-              </ngx-charts-legend> -->
+                [animations]="true" [legend]="true" [labels]="true">
+
               </ngx-charts-pie-chart>
             </ion-card-content>
           </ion-card>
@@ -220,7 +219,7 @@
             </ion-card-header>
             <ion-card-content class="d-flex justify-content-center">
               <ngx-charts-pie-chart [view]="chartViewSize" [results]="totalDespesasPorCategoria" [gradient]="true"
-                [animations]="true" [labels]="true" labelType="percent">
+                [animations]="true" [labels]="true" [legend]="true">
               </ngx-charts-pie-chart>
             </ion-card-content>
           </ion-card>

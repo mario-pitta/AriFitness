@@ -261,3 +261,28 @@ ion-card {
     transform: scale(1.02);
   }
 }
+
+
+// Adjust ngx-charts legends for small screens and theme adaptation
+::ng-deep ngx-charts {
+
+  .legend-labels text,
+  .legend-title-text {
+    fill: var(--ion-text-color) !important;
+  }
+
+  .pie-legend {
+    color: var(--ion-text-color) !important;
+  }
+
+  .chart-legend {
+    .legend-labels {
+      background: transparent !important;
+      color: var(--ion-text-color) !important;
+    }
+
+    .legend-item-name {
+      color: var(--ion-text-color) !important;
+    }
+  }
+}

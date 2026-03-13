@@ -356,24 +356,3 @@ $danger-rgb: rgb(235, 68, 90);
     border-radius: 4px;
   }
 }
-
-::ng-deep {
-  .ngx-charts {
-
-    .legend-labels text,
-    .legend-title-text {
-      fill: var(--ion-text-color) !important;
-    }
-  }
-
-  .chart-legend {
-    .legend-labels {
-      background: transparent !important;
-      color: var(--ion-text-color) !important;
-    }
-
-    .legend-item-name {
-      color: var(--ion-text-color) !important;
-    }
-  }
-}

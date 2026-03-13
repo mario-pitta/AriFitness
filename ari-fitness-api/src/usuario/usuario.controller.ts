@@ -183,8 +183,8 @@ export class UsuarioController {
 
 
   /** Obter frequencia pelo CPF */
-  @Get('frequency-by-cpf/:cpf')
-  async getFrequencyByCPF(@Res() res: Response, @Query('cpf') cpf: string) {
+  @Post('frequency-by-cpf')
+  async getFrequencyByCPF(@Res() res: Response, @Body('cpf') cpf: string) {
     console.log('Obtendo frequência para o CPF:', cpf);
     return this.usuarioService.getFrequencyByCPF(cpf).then((_res: any) => {
       if (_res.error) {
@@ -207,6 +207,22 @@ export class UsuarioController {
         res.status(500).send(_res.error);
       }
       return res.status(201).send(_res.data);
+    });
+  }
+
+  @Get('treino-historico/:id')
+  getTreinoHistorico(@Param('id') id: number, @Res() res: Response) {
+    return this.usuarioService.getTreinoHistorico(id).then((_res) => {
+      if (_res.error) res.status(500).send(_res.error);
+      return res.status(200).send(_res.data);
+    });
+  }
+
+  @Post('treino-historico')
+  registrarTreinoHistorico(@Body() body: any, @Res() res: Response) {
+    return this.usuarioService.registrarTreinoHistorico(body).then((_res) => {
+      if (_res.error) res.status(500).send(_res.error);
+      return res.status(200).send(_res.data);
     });
   }
 

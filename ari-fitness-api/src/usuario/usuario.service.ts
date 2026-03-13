@@ -355,6 +355,34 @@ export class UsuarioService {
       .order('data_hora', { ascending: false });
   }
 
+  async getTreinoHistorico(usuarioId: number) {
+    return await this.database.supabase
+      .from('historico_treino')
+      .select('*, exercicio:exercicios(*)')
+      .eq('usuario_id', usuarioId)
+      .order('data', { ascending: false });
+  }
+
+  async registrarTreinoHistorico(body: any) {
+    // Sanitize body for DB
+    const insertData = {
+      usuario_id: body.usuario_id,
+      treino_id: body.treino_id,
+      exercicio_id: body.exercicio_id,
+      series: body.series,
+      repeticao: body.repeticao,
+      carga: body.carga,
+      intervalo: body.intervalo,
+      nivel_dificuldade: body.nivel_dificuldade,
+      empresa_id: body.empresa_id,
+      data: new Date()
+    };
+    return await this.database.supabase
+      .from('historico_treino')
+      .insert(insertData)
+      .select('*');
+  }
+
   async importStudents(empresaId: string, students: any[]) {
     const studentsToInsert = students.map(s => ({
       ...s,

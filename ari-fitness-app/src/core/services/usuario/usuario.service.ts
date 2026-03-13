@@ -58,7 +58,15 @@ export class UsuarioService {
       .pipe(take(1));
   }
   getFrequencyByCPF(cpf: string) {
-    return this.http.post<any>(environment.apiUrl + `/usuario/frequency-by-cpf/`, { cpf }).pipe(take(1));
+    return this.http.post<any>(environment.apiUrl + `/usuario/frequency-by-cpf`, { cpf }).pipe(take(1));
+  }
+
+  getTreinoHistorico(usuarioId: number) {
+    return this.http.get<any[]>(environment.apiUrl + `/usuario/treino-historico/${usuarioId}`).pipe(take(1));
+  }
+
+  registrarTreinoHistorico(body: any) {
+    return this.http.post(environment.apiUrl + `/usuario/treino-historico`, body).pipe(take(1));
   }
 
   deleteCheckinById(checkinId: number) {

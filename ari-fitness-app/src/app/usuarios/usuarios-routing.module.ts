@@ -19,6 +19,10 @@ const routes: Routes = [
     data: {
       tipoUsuario: Constants.ALUNO_ID
     }
+  },
+  {
+    path: 'historico/:id',
+    loadChildren: () => import('./historico-aluno/historico-aluno.module').then(m => m.HistoricoAlunoPageModule)
   }
 ];
 
