@@ -7,8 +7,9 @@
                     <div class="avatar-placeholder">
                         <ion-icon name="person-outline"></ion-icon>
                     </div>
-                    <div>
+                    <div class="flex-grow-1">
                         <h2 class="student-name">{{ aluno?.value.nome || 'Selecione um Aluno' }}</h2>
+
                         <p class="student-status">
                             <ion-badge color="success" *ngIf="fichaAtual?.fl_ativo">Ativa</ion-badge>
                             <ion-badge color="medium" *ngIf="!fichaAtual?.fl_ativo">Inativa</ion-badge>
@@ -33,6 +34,16 @@
             <ion-card-content *ngIf="enableEdit">
                 <form [formGroup]="form">
                     <ion-item class="custom-item">
+                        <ion-select label="Instrutor Responsável *" labelPlacement="floating"
+                            [disabled]="!isManagerOrInstructor" formControlName="instrutor_id" interface="popover"
+                            placeholder="Selecione o instrutor">
+                            <ion-select-option *ngFor="let inst of instrutores" [value]="inst.id">
+                                {{ inst.nome }}
+                            </ion-select-option>
+                        </ion-select>
+                    </ion-item>
+
+                    <ion-item class="custom-item">
                         <ion-textarea label="Descrição / Observações" labelPlacement="floating"
                             [readonly]="!isManagerOrInstructor" formControlName="descricao"
                             placeholder="Ex: Focar em amplitude de movimento..."></ion-textarea>
@@ -55,7 +66,7 @@
                     </ion-row>
 
                     <ion-item class="custom-item">
-                        <ion-input label="ObjetivoPrincipal" labelPlacement="floating"
+                        <ion-input label="Objetivo Principal" labelPlacement="floating"
                             [readonly]="!isManagerOrInstructor" formControlName="objetivo"
                             placeholder="Ex: Hipertrofia, Emagrecimento..."></ion-input>
                     </ion-item>

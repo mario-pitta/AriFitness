@@ -96,6 +96,10 @@ export class TreinosListPage implements OnInit {
     this.router.navigate(['admin/treinos/treino-editor', 'new']);
   }
 
+  goToImportacao() {
+    this.router.navigate(['admin/treinos/importacao']);
+  }
+
 
   listenItemEvents(event: { action: string; value: any }) {
     console.log(event);

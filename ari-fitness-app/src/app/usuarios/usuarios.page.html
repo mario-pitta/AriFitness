@@ -140,8 +140,8 @@
     </div>
   </div>
 
-  <ion-popover [isOpen]="isOpen" (didDismiss)="isOpen = false" reference="trigger"
-    [trigger]="selectedUsuario?.id + '_memberOptionsBtn'">
+  <ion-popover [isOpen]="isOpen" (didDismiss)="isOpen = false" reference="trigger" dismissOnBackdropTap="true"
+    dismissOnClick="true" [trigger]="selectedUsuario?.id + '_memberOptionsBtn'">
     <ng-template>
       <ion-list [inset]="true">
         <ion-item [button]="true" lines="full" (click)="navigate('/admin/membros/cadastro-usuario', selectedUsuario)">

@@ -233,6 +233,7 @@ export class FichaTreinoAlunoPage implements OnInit {
       ficha_data_inicio: ficha.ficha_data_inicio,
       ficha_data_fim: ficha.ficha_data_fim,
       objetivo: ficha.objetivo,
+      instrutor_id: ficha.instrutor_id || (ficha.instrutor as any)?.id,
       peso_inicial: ficha.peso_inicial,
       peso_meta: ficha.peso_meta,
     });
@@ -358,7 +359,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     const body: any = {
       ...this.f.value,
       cadastrado_por: this.user.id,
-      instrutor_id: this.instrutor?.value.id || this.user.id,
+      instrutor_id: this.f.get('instrutor_id')?.value || this.user.id,
       usuario_id: this.aluno?.value.id,
       sessoes: workoutData.sessoes
     };

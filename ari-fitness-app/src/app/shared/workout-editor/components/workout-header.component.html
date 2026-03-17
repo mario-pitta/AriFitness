@@ -5,9 +5,14 @@
                 <!-- NOME DO TREINO -->
                 <div class="col-12 col-md-8">
                     <div class="form-floating-custom">
-                        <label class="small fw-bold premium-label mb-1 ls-1">NOME DO TREINO</label>
+                        <label class="small fw-bold premium-label mb-1 ls-1">NOME DO TREINO <span
+                                class="text-danger">*</span></label>
                         <input type="text" formControlName="nome" class="form-control premium-input"
+                            [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched"
                             placeholder="Ex: Hipertrofia Avançada">
+                        <div class="invalid-feedback" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
+                            O nome do treino é obrigatório.
+                        </div>
                     </div>
                 </div>
 

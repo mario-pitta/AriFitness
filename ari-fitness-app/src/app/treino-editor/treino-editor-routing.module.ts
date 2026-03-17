@@ -3,10 +3,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { TreinoEditorPage } from './treino-editor.page';
 
 
+import { PendingChangesGuard } from 'src/core/guards/pending-changes.guard';
+
 const routes: Routes = [
     {
         path: '',
-        component: TreinoEditorPage
+        component: TreinoEditorPage,
+        canDeactivate: [PendingChangesGuard]
     }
 ];
 

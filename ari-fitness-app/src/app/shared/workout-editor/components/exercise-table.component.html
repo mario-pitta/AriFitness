@@ -21,8 +21,8 @@
                     <tr>
                         <th width="40" class="ps-4"></th>
                         <th>Exercício</th>
-                        <th width="80" class="text-center">Séries</th>
-                        <th width="120" class="text-center">Reps</th>
+                        <th width="80" class="text-center">Séries <span class="text-danger">*</span></th>
+                        <th width="120" class="text-center">Reps <span class="text-danger">*</span></th>
                         <th width="90" class="text-center">Carga</th>
                         <th width="90" class="text-center">Descanso</th>
                         <th width="140">Execução</th>
@@ -39,7 +39,7 @@
                             <div class="d-flex flex-column position-relative">
                                 <input type="text"
                                     class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
-                                    [placeholder]="'Buscar exercício...'"
+                                    [class.text-danger]="!ex.exercicio" [placeholder]="'Buscar exercício...'"
                                     [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
                                     (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
                                     (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
@@ -52,11 +52,11 @@
                         </td>
                         <td class="text-center">
                             <input type="number" [(ngModel)]="ex.series" (change)="updateExercise(i, ex)"
-                                class="form-control table-input">
+                                class="form-control table-input" required>
                         </td>
                         <td class="text-center">
                             <input type="text" [(ngModel)]="ex.repeticoes" (change)="updateExercise(i, ex)"
-                                class="form-control table-input" placeholder="12">
+                                class="form-control table-input" placeholder="12" required>
                         </td>
                         <td class="text-center">
                             <input type="number" [(ngModel)]="ex.carga" (change)="updateExercise(i, ex)"
@@ -118,12 +118,12 @@
 
                 <div class="row g-2">
                     <div class="col-3">
-                        <label class="mobile-label">SÉRIES</label>
-                        <input type="number" [(ngModel)]="ex.series" class="form-control table-input">
+                        <label class="mobile-label">SÉRIES <span class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="ex.series" class="form-control table-input" required>
                     </div>
                     <div class="col-4">
-                        <label class="mobile-label">REPS</label>
-                        <input type="number" [(ngModel)]="ex.repeticoes" class="form-control table-input">
+                        <label class="mobile-label">REPS <span class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="ex.repeticoes" class="form-control table-input" required>
                     </div>
                     <div class="col-5">
                         <label class="mobile-label">TIPO</label>

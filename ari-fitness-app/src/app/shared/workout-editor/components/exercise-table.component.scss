@@ -29,6 +29,12 @@
     font-weight: 700;
 }
 
+.text-danger {
+    color: var(--ion-color-danger) !important;
+}
+
+.table-input.ng-invalid.ng-touched,
+.table-input-primary.ng-invalid.ng-touched,
 .table-input:invalid,
 .table-input-primary:invalid {
     border-color: var(--ion-color-danger) !important;

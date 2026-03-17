@@ -6,15 +6,17 @@ import { ToastrService } from 'src/core/services/toastr/toastr.service';
 import { Treino } from 'src/core/models/Treino';
 import { Observable } from 'rxjs';
 import { AuthService } from 'src/core/services/auth/auth.service';
+import { CanComponentDeactivate } from 'src/core/guards/pending-changes.guard';
 
 @Component({
     selector: 'app-treino-editor',
     templateUrl: './treino-editor.page.html',
     styleUrls: ['./treino-editor.page.scss'],
 })
-export class TreinoEditorPage implements OnInit {
+export class TreinoEditorPage implements OnInit, CanComponentDeactivate {
     loading: boolean = false;
     isWorkoutValid$: Observable<boolean> = this.workoutState.isValid$;
+    private isSaved = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -30,7 +32,13 @@ export class TreinoEditorPage implements OnInit {
         if (id && id !== 'new') {
             this.loadTreino(parseInt(id));
         } else {
-            this.initNewTreino();
+            // If we already have a workout in state (e.g. from import), don't reset it
+            const current = this.workoutState.getWorkoutValue();
+            if (current && (current as any).isImporting) {
+                // Keep the imported data
+            } else {
+                this.initNewTreino();
+            }
         }
     }
 
@@ -76,6 +84,7 @@ export class TreinoEditorPage implements OnInit {
         this.loading = true;
         req.subscribe({
             next: () => {
+                this.isSaved = true;
                 this.loading = false;
                 this.toastr.success('Treino salvo com sucesso!');
                 this.goBack();
@@ -88,6 +97,14 @@ export class TreinoEditorPage implements OnInit {
     }
 
     goBack() {
-        this.router.navigate(['/admin/treinos']);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/treinos';
+        this.router.navigate([returnUrl]);
+    }
+
+    canDeactivate(): boolean {
+        if (!this.isSaved) {
+            return confirm('Você tem alterações não salvas. Deseja realmente sair?');
+        }
+        return true;
     }
 }

@@ -27,6 +27,23 @@
     min-height: 52px;
 }
 
+.premium-input.is-invalid {
+    border-color: var(--ion-color-danger) !important;
+    background-image: none !important; // Remove default bootstrap icons if any
+}
+
+.invalid-feedback {
+    display: block;
+    color: var(--ion-color-danger);
+    font-size: 0.75rem;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.text-danger {
+    color: var(--ion-color-danger) !important;
+}
+
 .ls-1 {
     letter-spacing: 0.5px;
 }

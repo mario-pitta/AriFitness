@@ -16,17 +16,33 @@ export class WorkoutTemplateStateService {
 
     isValid$ = this.workout$.pipe(
         map(workout => {
-            if (!workout || !workout.nome || workout.nome.trim() === '') return false;
-            if (!workout.sessoes || workout.sessoes.length === 0) return false;
+            if (!workout) return false;
 
-            return workout.sessoes.every(sessao => {
-                if (!sessao.exercicios || sessao.exercicios.length === 0) return false;
+            if (!workout.nome || workout.nome.trim() === '') {
+                console.log('Validation: Name is missing');
+                return false;
+            }
+            if (!workout.sessoes || workout.sessoes.length === 0) {
+                console.log('Validation: No sessions');
+                return false;
+            }
+
+            const hasExercises = workout.sessoes.some(s => s.exercicios && s.exercicios.length > 0);
+            if (!hasExercises) {
+                console.log('Validation: No exercises found in any session');
+                return false;
+            }
+
+            const allExercisesValid = workout.sessoes.every(sessao => {
+                if (!sessao.exercicios) return true;
                 return sessao.exercicios.every((ex: any) => {
-                    const hasId = !!(ex.exercicio_id || ex.exercicio?.id);
-                    const positiveValues = (ex.series >= 0) && (ex.repeticoes >= 0) && (ex.carga >= 0) && (ex.intervalo >= 0);
-                    return hasId && positiveValues;
+                    const valid = !!(ex.exercicio_id || ex.exercicio?.id);
+                    if (!valid) console.log('Validation: Exercise missing ID', ex);
+                    return valid;
                 });
             });
+
+            return allExercisesValid;
         })
     );
 

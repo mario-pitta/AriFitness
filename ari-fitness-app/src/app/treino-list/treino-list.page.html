@@ -1,8 +1,16 @@
 <ion-content>
     <ion-fab *ngIf="user.tipo_usuario === 3" slot="fixed" vertical="top" horizontal="end" [edge]="false">
-        <ion-fab-button id="open-treino-modal" fill="outlined" color="success" (click)="addNewTreino()">
-            <ion-icon name="add" size="large"></ion-icon>
+        <ion-fab-button color="primary">
+            <ion-icon name="menu-outline"></ion-icon>
         </ion-fab-button>
+        <ion-fab-list side="bottom">
+            <ion-fab-button (click)="addNewTreino()" color="success" title="Novo Treino">
+                <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button (click)="goToImportacao()" color="secondary" title="Importar Planilha">
+                <ion-icon name="cloud-upload-outline"></ion-icon>
+            </ion-fab-button>
+        </ion-fab-list>
     </ion-fab>
 
 
