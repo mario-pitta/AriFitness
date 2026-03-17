@@ -85,4 +85,14 @@ export class ExercicioController {
   update(@Body() body: Partial<Exercicio>) {
     return this.musculoService.update(body);
   }
+
+  @Get('niveis')
+  getNiveis(@Res() res: Response) {
+    return this.musculoService.findNiveis().then((_res) => {
+      if (_res.error) {
+        return res.status(500).send(_res.error);
+      }
+      return res.send(_res.data);
+    });
+  }
 }

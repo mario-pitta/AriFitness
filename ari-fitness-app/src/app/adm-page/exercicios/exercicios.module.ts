@@ -8,6 +8,7 @@ import { ExerciciosPageRoutingModule } from './exercicios-routing.module';
 
 import { ExerciciosPage } from './exercicios.page';
 import { FilterByNamePipe } from "../../../core/pipes/filter-by-name.pipe";
+import { ExercicioDetailComponent } from './components/exercicio-detail/exercicio-detail.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { FilterByNamePipe } from "../../../core/pipes/filter-by-name.pipe";
     IonicModule,
     ExerciciosPageRoutingModule,
     FilterByNamePipe
-],
-  declarations: [ExerciciosPage]
+  ],
+  declarations: [ExerciciosPage, ExercicioDetailComponent]
 })
-export class ExerciciosPageModule {}
+export class ExerciciosPageModule { }

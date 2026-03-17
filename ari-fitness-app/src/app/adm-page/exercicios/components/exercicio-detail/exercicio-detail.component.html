@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar color="light">
+        <ion-title class="text-capitalize">{{ exercicio.nome }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismiss()">
+                <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg-light">
+    <div class="detail-container">
+        <div class="image-section" (click)="nextImage()">
+            <div class="image-container">
+                <img [src]="currentMedia" alt="{{ exercicio.nome }}" class="main-image shadow-lg">
+                <div class="image-counter" *ngIf="exercicio.midias_url && exercicio.midias_url.length > 1">
+                    <ion-badge color="dark">{{ currentImageIndex + 1 }} / {{ exercicio.midias_url.length }}</ion-badge>
+                    <span class="click-hint">Clique para alternar</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper mt-3">
+            <div class="info-card shadow-sm p-3 mb-4 rounded bg-white">
+                <h3 class="section-title "><ion-icon name="information-circle-outline" class="me-2"></ion-icon>Sobre
+                </h3>
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        <ion-col size="6">
+                            <div class="info-item">
+                                <small class="text-muted d-block uppercase-text">Equipamento</small>
+                                <strong>{{ exercicio.equipamento?.nome || 'Peso Livre' }}</strong>
+                            </div>
+                        </ion-col>
+                        <ion-col size="6">
+                            <div class="info-item">
+                                <small class="text-muted d-block uppercase-text">Nível</small>
+                                <ion-badge
+                                    [color]="exercicio['nivel'].id == 1 ? 'success' : exercicio['nivel'].id == 2 ? 'warning' : 'danger'"
+                                    *ngIf="exercicio['nivel']">{{ exercicio['nivel'].nome
+                                    }}</ion-badge>
+                                <strong *ngIf="!exercicio['nivel']">Não informado</strong>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </div>
+
+            <div class="info-card shadow-sm p-3 mb-4 rounded bg-white"
+                *ngIf="exercicio.musculos && exercicio.musculos.length > 0">
+                <h3 class="section-title"><ion-icon name="body-outline" class="me-2"></ion-icon>Músculos
+                    Alvo</h3>
+                <div class="muscle-tags d-flex flex-wrap gap-2">
+                    <ion-badge *ngFor="let m of exercicio.musculos"
+                        [color]="m.tipo === 'primario' ? 'primary' : 'medium'" class="tag-badge">
+                        {{ m.grupo_muscular?.nome }}
+                        <span class="opacity-75 ms-1">({{ m.tipo === 'primario' ? '1º' : '2º' }})</span>
+                    </ion-badge>
+                </div>
+            </div>
+
+            <div class="info-card shadow-sm p-3 mb-4 rounded bg-white"
+                *ngIf="exercicio.instrucoes && exercicio.instrucoes.length > 0">
+                <h3 class="section-title"><ion-icon name="list-outline" class="me-2"></ion-icon>Como
+                    Executar</h3>
+                <div class="instructions-list">
+                    <div class="instruction-step mb-3 d-flex" *ngFor="let step of exercicio.instrucoes; let i = index">
+                        <div class="step-num bg-secondary text-white me-3">{{ i + 1 }}</div>
+                        <p class="mb-0 text-dark">{{ step }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-content>

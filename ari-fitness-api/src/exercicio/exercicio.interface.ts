@@ -60,6 +60,7 @@ export interface Exercicio {
   forca_tipo_id?: number;
   forca_tipo?: ExercicioForcaTipo;
   instrucoes?: string[];
+  midias_url?: string[];
 
   // Junction table (requer script 07)
   musculos?: ExercicioMusculo[];

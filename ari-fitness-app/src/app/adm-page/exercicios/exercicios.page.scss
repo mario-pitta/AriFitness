@@ -1,0 +1,150 @@
+@import "src/theme/variables.scss";
+
+.bg-light {
+    background-color: var(--ion-color-light-tint) !important;
+}
+
+// Header & Search
+.custom-searchbar {
+    --border-radius: 12px;
+    --box-shadow: none;
+    --background: var(--ion-color-white);
+    padding: 0;
+}
+
+.filter-btn {
+    --padding-start: 12px;
+    --padding-end: 12px;
+}
+
+.filter-panel {
+    border: 1px solid var(--ion-color-light-shade);
+    transition: all 0.3s ease;
+    animation: fadeInDown 0.3s ease;
+    background-color: white;
+}
+
+.filter-item {
+    --background: var(--ion-color-light-tint);
+    --border-radius: 8px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+// Premium Card
+.premium-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: white;
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    .card-media-wrapper {
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+    }
+
+    &:hover .card-media-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .level-badge-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+
+    .media-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        z-index: 2;
+    }
+
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 4px 8px;
+        border-radius: 8px;
+        color: white;
+    }
+
+    .card-title {
+        color: var(--ion-color-dark);
+        font-size: 1.05rem;
+    }
+
+    .muscle-pill {
+        font-size: 0.65rem;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .more-muscles {
+        font-size: 0.7rem;
+        color: var(--ion-color-medium);
+        align-self: center;
+    }
+}
+
+// Dark Mode Adjustments
+@media (prefers-color-scheme: dark) {
+    .premium-card {
+        background-color: var(--ion-color-step-100, #1e1e1e) !important;
+
+        .card-title {
+            color: white;
+        }
+    }
+
+    .filter-panel {
+        background-color: var(--ion-color-step-100, #1e1e1e) !important;
+        border-color: var(--ion-color-step-200);
+    }
+
+    .filter-item {
+        --background: var(--ion-color-step-150);
+    }
+
+    .custom-searchbar {
+        --background: var(--ion-color-step-100);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-state {
+    padding: 40px 20px;
+
+    ion-icon {
+        font-size: 4rem;
+        margin-bottom: 10px;
+    }
+}

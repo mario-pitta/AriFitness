@@ -14,12 +14,10 @@ export class ExercicioService {
    * @returns An array of all records from the specified table in the database with all columns
    * selected.
    */
-  async findAll(filter: Partial<Exercicio> | Exercicio) {
-    console.log('findAll = ', filter)
+  async findAll(filter: Partial<Exercicio> | Exercicio | any) {
+    const { limit, offset, ...otherFilters } = filter;
 
-    return await this.database.supabase
-      .from(tableName)
-      .select(`
+    let query = this.database.supabase.from(tableName).select(`
         id, 
         nome, 
         fl_ativo,
@@ -55,13 +53,48 @@ export class ExercicioService {
           grupo_muscular (
             id, nome
           )
-        )
-      `)
-      .match({ ...filter })
-      .order('nome', {
-        ascending: true,
-      });
+        ),
+        instrucoes
+      `);
 
+    if (otherFilters.nivel_id) query = query.eq('nivel_id', otherFilters.nivel_id);
+    if (otherFilters.equipamento_id) query = query.eq('equipamento_id', otherFilters.equipamento_id);
+    if (otherFilters.grupo_muscular_id) query = query.eq('grupo_muscular_id', otherFilters.grupo_muscular_id);
+    if (otherFilters.musculo_id) query = query.eq('musculo_id', otherFilters.musculo_id);
+    if (otherFilters.parte_do_corpo_id) {
+      // Filtering through the legacy musculo -> grupo_muscular relationship
+      query = query.eq('musculo.grupo_muscular.parte_do_corpo_id', otherFilters.parte_do_corpo_id);
+    }
+    if (otherFilters.nome) query = query.ilike('nome', `%${otherFilters.nome}%`);
+    if (otherFilters.fl_ativo !== undefined) query = query.eq('fl_ativo', otherFilters.fl_ativo);
+
+    // If other filters are generic, use match (caution: may conflict with specific ones above)
+    const remainingFilters = { ...otherFilters };
+    delete remainingFilters.nivel_id;
+    delete remainingFilters.equipamento_id;
+    delete remainingFilters.grupo_muscular_id;
+    delete remainingFilters.musculo_id;
+    delete remainingFilters.parte_do_corpo_id;
+    delete remainingFilters.nome;
+    delete remainingFilters.fl_ativo;
+
+    if (Object.keys(remainingFilters).length > 0) {
+      query = query.match(remainingFilters);
+    }
+
+    if (limit) {
+      query = query.limit(Number(limit));
+    }
+
+    if (offset) {
+      const from = Number(offset);
+      const to = from + (Number(limit) || 10) - 1;
+      query = query.range(from, to);
+    }
+
+    return await query.order('nome', {
+      ascending: true,
+    });
   }
 
   /**
@@ -94,5 +127,9 @@ export class ExercicioService {
       .from(tableName)
       .update(body)
       .eq('id', body.id);
+  }
+
+  async findNiveis() {
+    return await this.database.supabase.from('exercicio_nivel').select('*');
   }
 }

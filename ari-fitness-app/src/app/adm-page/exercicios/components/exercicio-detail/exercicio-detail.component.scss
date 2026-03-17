@@ -1,0 +1,108 @@
+.detail-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.image-section {
+    position: relative;
+    cursor: pointer;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 75%; // 4:3 Aspect Ratio
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: #54808d 0 0 6px 0px;
+
+    .main-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    &:active .main-image {
+        transform: scale(0.98);
+    }
+}
+
+.image-counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+
+    .click-hint {
+        font-size: 0.65rem;
+        color: white;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.uppercase-text {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+}
+
+.info-item {
+    margin-bottom: 8px;
+
+    strong {
+        font-size: 0.95rem;
+    }
+}
+
+.tag-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.step-num {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.instruction-step p {
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+// Dark mode adjustments implicitly handled by Ionic variables if possible, 
+// but adding some background control
+:host-context(.dark) {
+    .bg-white {
+        background-color: var(--ion-color-step-150, #222) !important;
+    }
+
+    .text-dark {
+        color: var(--ion-color-step-850, #ddd) !important;
+    }
+}

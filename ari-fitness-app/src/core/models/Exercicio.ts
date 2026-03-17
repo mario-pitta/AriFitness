@@ -7,7 +7,7 @@ export interface Exercicio {
   id?: number;
   created_at: string | Date;
   nome: string;
-  fl_ativo: true;
+  fl_ativo: boolean;
   grupo_muscular_id?: number;
   grupo_muscular?: GrupoMuscular
   musculo_id?: number;
@@ -15,8 +15,12 @@ export interface Exercicio {
   equipamento_id?: number;
   equipamento?: Equipamento;
   midia_url?: string;
+  midias_url?: string[];
   img_url?: string;
   musculos?: ExercicioMusculo[];
+  nivel_id?: number;
+  nivel?: any;
+  instrucoes?: string[];
 }
 
 export interface ExercicioMusculo {
