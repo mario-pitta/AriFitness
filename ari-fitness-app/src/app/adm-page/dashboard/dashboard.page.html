@@ -178,8 +178,11 @@
                                 {{ alerta.nome }}
                                 <div class="dash-alert-sub">{{ alerta.plano?.descricao }}</div>
                             </div>
-                            <ion-button fill="clear" color="primary" [href]="'https://wa.me/55' + alerta.whatsapp"
-                                target="_blank">
+                            <ion-button *ngIf="alerta.whatsapp" fill="clear" color="primary"
+                                [href]="'https://wa.me/55' + alerta.whatsapp" target="_blank">
+                                <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+                            </ion-button>
+                            <ion-button *ngIf="!alerta.whatsapp" fill="clear" color="primary">
                                 <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
                             </ion-button>
                         </div>

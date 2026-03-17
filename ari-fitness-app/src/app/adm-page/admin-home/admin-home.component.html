@@ -100,17 +100,16 @@
                     <ion-label>Configurações</ion-label>
                 </ion-item>
             </ion-list>
+            <ion-footer class="ion-no-border sidebar-footer">
+                <ion-item button (click)="logout()" lines="none" class="logout-item">
+                    <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+                    <ion-label color="danger">Sair do Sistema</ion-label>
+                </ion-item>
+                <div class="app-version">
+                    v{{ appVersion }} • MVK Gym
+                </div>
+            </ion-footer>
         </ion-content>
-
-        <ion-footer class="ion-no-border sidebar-footer">
-            <ion-item button (click)="logout()" lines="none" class="logout-item">
-                <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
-                <ion-label color="danger">Sair do Sistema</ion-label>
-            </ion-item>
-            <div class="app-version">
-                v{{ appVersion }} • MVK Gym
-            </div>
-        </ion-footer>
     </ion-menu>
 
     <div class="ion-page" id="main">

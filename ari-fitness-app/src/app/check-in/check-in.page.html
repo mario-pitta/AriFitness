@@ -13,7 +13,7 @@
 
 <ion-content>
     <ng-container *ngIf="viewMode === 'list'">
-        <ion-content class="ion-padding">
+        <div class="ion-padding">
             <div *ngIf="empresaId; else noEmpresaId">
 
                 <ion-card>
@@ -81,7 +81,7 @@
                     </ion-card>
                 </ng-template>
             </div>
-        </ion-content>
+        </div>
     </ng-container>
 
     <ng-container *ngIf="viewMode === 'checkin'">

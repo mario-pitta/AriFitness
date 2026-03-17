@@ -207,50 +207,54 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <div class="ion-padding">
-        <form [formGroup]="cobrancaForm">
-          <ion-row>
-            <ion-col>
-              <ion-input type="text" label="Nome" labelPlacement="floating" [value]="selectedUsuario?.nome"
-                readonly="true" />
-            </ion-col>
-            <ion-col>
-              <ion-input type="text" label="WhatsApp" labelPlacement="floating" [value]="selectedUsuario?.whatsapp"
-                readonly="true" />
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-item>
-                <ng-content *ngTemplateOutlet="mesesSelector; context: {$implicit: cobrancaForm};"></ng-content>
-              </ion-item>
+      <ion-content>
+        <div class="ion-padding">
+          <form [formGroup]="cobrancaForm">
+            <ion-row>
+              <ion-col>
+                <ion-input type="text" label="Nome" labelPlacement="floating" [value]="selectedUsuario?.nome"
+                  readonly="true" />
+              </ion-col>
+              <ion-col>
+                <ion-input type="text" label="WhatsApp" labelPlacement="floating" [value]="selectedUsuario?.whatsapp"
+                  readonly="true" />
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <ion-item>
+                  <ng-content *ngTemplateOutlet="mesesSelector; context: {$implicit: cobrancaForm};"></ng-content>
+                </ion-item>
 
-            </ion-col>
-            <ion-col>
-              <ion-item>
-                <ng-content *ngTemplateOutlet="anosSelector; context: {$implicit: cobrancaForm};"></ng-content>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </form>
+              </ion-col>
+              <ion-col>
+                <ion-item>
+                  <ng-content *ngTemplateOutlet="anosSelector; context: {$implicit: cobrancaForm};"></ng-content>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </form>
 
-        <div class="ion-padding" id="message">
-          {{message}}
+          <div class="ion-padding" id="message">
+            {{message}}
+          </div>
         </div>
-      </div>
 
-      <ion-row class="ion-justify-content-center">
-        <ion-col size="auto">
-          <ion-button color="primary" fill="clear" shape="round" (click)="copyMessage()"
-            [disabled]="!cobrancaForm.valid">
-            <ion-icon slot="icon-only" name="copy"></ion-icon>
-          </ion-button>
-          <ion-button color="success" fill="clear" shape="round" (click)="sendMessage()"
-            [disabled]="!cobrancaForm.valid">
-            <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
-          </ion-button>
-        </ion-col>
-      </ion-row>
+        <ion-footer class="ion-no-border">
+          <ion-row class="ion-justify-content-center">
+            <ion-col size="auto">
+              <ion-button color="primary" fill="clear" shape="round" (click)="copyMessage()"
+                [disabled]="!cobrancaForm.valid">
+                <ion-icon slot="icon-only" name="copy"></ion-icon>
+              </ion-button>
+              <ion-button color="success" fill="clear" shape="round" (click)="sendMessage()"
+                [disabled]="!cobrancaForm.valid">
+                <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-footer>
+      </ion-content>
     </ng-template>
   </ion-modal>
 
@@ -334,22 +338,23 @@
                 </ion-label>
               </ion-item>
             </ng-template>
-
-            <ion-row class="ion-padding footer-actions">
-              <ion-col size="6">
-                <ion-button expand="block" color="warning" fill="outline" shape="round"
-                  (click)="registrarPagamentos('isentar')">
-                  Isentar
-                </ion-button>
-              </ion-col>
-              <ion-col size="6">
-                <ion-button expand="block" color="primary" shape="round" (click)="registrarPagamentos('registrar')">
-                  Registrar
-                </ion-button>
-              </ion-col>
-            </ion-row>
           </ion-list>
         </ng-container>
+        <ion-footer class="ion-no-border">
+          <ion-row class="ion-padding footer-actions">
+            <ion-col size="6">
+              <ion-button expand="block" color="warning" fill="outline" shape="round"
+                (click)="registrarPagamentos('isentar')">
+                Isentar
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" color="primary" shape="round" (click)="registrarPagamentos('registrar')">
+                Registrar
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-footer>
       </ion-content>
     </ng-template>
   </ion-modal>

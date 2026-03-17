@@ -133,11 +133,13 @@ export class DashboardPage implements OnInit {
         alertas: res.alertas.map((a: any) => (
           {
             ...a,
-            //remove os caracteres especiais do telefone
-            whatsapp: a.usuario?.whatsapp.replace(/[^0-9]/g, '')
+            //remove os caracteres especiais do telefone e adciona o texto de que o plano está vencendo
+            whatsapp: a.whatsapp?.replace(/[^0-9]/g, '')
           }
         ))
       }
+
+
     });
     this.transFinServ.getAlunosSemCheckin(empresaId).subscribe(res => this.alunosChurn = res);
     this.transFinServ.getReceitasPendentes(empresaId).subscribe(res => this.receitasPendentes = res);

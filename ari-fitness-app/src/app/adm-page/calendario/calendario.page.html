@@ -106,84 +106,89 @@
 
 <ion-modal [isOpen]="openEventForm" (didDismiss)="openEventForm = false; selectedDay = ''">
   <ng-template>
-    <div class="ion-padding">
-      <h4>Evento</h4>
+    <ion-content>
+      <div class="ion-padding">
+        <h4>Evento</h4>
 
-      <form [formGroup]="eventForm" class="ion-text-left" (ionChange)="onFormChange($event)">
-        <ion-grid>
-          <ion-row>
-            <ion-col size="6">
-              <ion-input class="ion-text-left" formControlName="titulo" label="Titulo" labelPlacement="floating">
-              </ion-input>
-            </ion-col>
-            <!-- tipo_evento_id -->
-            <ion-col size="6">
-              <ion-select class="ion-text-left" formControlName="tipo_evento_id" label="Tipo de Evento"
-                interface="popover" labelPlacement="floating">
-                <ion-select-option *ngFor="let tipo of tiposEventos" [value]="tipo.id">
-                  {{tipo.name}}
-                </ion-select-option>
-              </ion-select>
-            </ion-col>
-            <ion-col size="12">
-              <ion-input class="ion-text-left" formControlName="descricao" label="Descrição" labelPlacement="floating">
-              </ion-input>
-            </ion-col>
-            <ion-col size="6">
-              <ion-input class="ion-text-left" type="date" formControlName="data_inicio" label="Começa em"
-                labelPlacement="floating">
-              </ion-input>
-            </ion-col>
-            <ion-col size="6">
-              <ion-input class="ion-text-left" type="time" formControlName="hora_inicio" label="Hora"
-                labelPlacement="floating"></ion-input>
-            </ion-col>
-            <ion-col size="6">
-              <ion-input class="ion-text-left" type="date" formControlName="data_fim" label="Termina em"
-                labelPlacement="floating">
-              </ion-input>
-            </ion-col>
-            <ion-col size="6">
-              <ion-input class="ion-text-left" type="time" formControlName="hora_fim" label="Hora"
-                labelPlacement="floating"></ion-input>
-            </ion-col>
-
-            <div class="d-flex justify-content-between align-items-center gap-3">
-
-              <!-- Evento publico -->
-              <ion-col size="6" class="ion-text-left">
-                <ion-checkbox labelPlacement="end" formControlName="fl_publico">Evento Público</ion-checkbox>
+        <form [formGroup]="eventForm" class="ion-text-left" (ionChange)="onFormChange($event)">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-input class="ion-text-left" formControlName="titulo" label="Titulo" labelPlacement="floating">
+                </ion-input>
+              </ion-col>
+              <!-- tipo_evento_id -->
+              <ion-col size="6">
+                <ion-select class="ion-text-left" formControlName="tipo_evento_id" label="Tipo de Evento"
+                  interface="popover" labelPlacement="floating">
+                  <ion-select-option *ngFor="let tipo of tiposEventos" [value]="tipo.id">
+                    {{tipo.name}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+              <ion-col size="12">
+                <ion-input class="ion-text-left" formControlName="descricao" label="Descrição"
+                  labelPlacement="floating">
+                </ion-input>
+              </ion-col>
+              <ion-col size="6">
+                <ion-input class="ion-text-left" type="date" formControlName="data_inicio" label="Começa em"
+                  labelPlacement="floating">
+                </ion-input>
+              </ion-col>
+              <ion-col size="6">
+                <ion-input class="ion-text-left" type="time" formControlName="hora_inicio" label="Hora"
+                  labelPlacement="floating"></ion-input>
+              </ion-col>
+              <ion-col size="6">
+                <ion-input class="ion-text-left" type="date" formControlName="data_fim" label="Termina em"
+                  labelPlacement="floating">
+                </ion-input>
+              </ion-col>
+              <ion-col size="6">
+                <ion-input class="ion-text-left" type="time" formControlName="hora_fim" label="Hora"
+                  labelPlacement="floating"></ion-input>
               </ion-col>
 
+              <div class="d-flex justify-content-between align-items-center gap-3">
 
-            </div>
-            <ion-col size="12">
-              <ion-input class="ion-text-left" formControlName="local" label="Local" labelPlacement="floating">
-              </ion-input>
-            </ion-col>
-            <!-- banner -->
-            <ion-col size="12">
-              <ion-input type="file" class="ion-text-left" formControlName="banner" (change)="onBannerChange($event)"
-                label="Banner" labelPlacement="floating" accept="image/*">
-              </ion-input>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+                <!-- Evento publico -->
+                <ion-col size="6" class="ion-text-left">
+                  <ion-checkbox labelPlacement="end" formControlName="fl_publico">Evento Público</ion-checkbox>
+                </ion-col>
 
-      </form>
-      <ion-row class="position-fixed bottom-0 d-flex mb-2 me-2 end-0">
-        <ion-col>
-          <ion-button expand="block" type="submit" color="light" (click)="openEventForm = false">
-            Cancelar
-          </ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button expand="block" type="submit" (click)="onSaveButtonClick()" [disabled]="!eventForm.valid">
-            Salvar
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </div>
+
+              </div>
+              <ion-col size="12">
+                <ion-input class="ion-text-left" formControlName="local" label="Local" labelPlacement="floating">
+                </ion-input>
+              </ion-col>
+              <!-- banner -->
+              <ion-col size="12">
+                <ion-input type="file" class="ion-text-left" formControlName="banner" (change)="onBannerChange($event)"
+                  label="Banner" labelPlacement="floating" accept="image/*">
+                </ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+        </form>
+      </div>
+      <ion-footer class="ion-no-border">
+        <ion-row class="d-flex mb-2 me-2 end-0">
+          <ion-col>
+            <ion-button expand="block" type="submit" color="light" (click)="openEventForm = false">
+              Cancelar
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" type="submit" (click)="onSaveButtonClick()" [disabled]="!eventForm.valid">
+              Salvar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-footer>
+    </ion-content>
   </ng-template>
 
 </ion-modal>
