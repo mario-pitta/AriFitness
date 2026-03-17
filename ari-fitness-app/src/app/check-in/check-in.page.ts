@@ -11,6 +11,7 @@ import { ConfettiService } from 'src/core/services/confetti/confetti.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
 import { Subscription } from 'rxjs';
 import { ActionSheetController } from '@ionic/angular';
+import { ToastrService } from 'src/core/services/toastr/toastr.service';
 
 @Component({
   selector: 'app-check-in',
@@ -48,7 +49,8 @@ export class CheckInPage implements OnInit {
     private confettiService: ConfettiService,
     private mobileService: PageSizeService,
     private userService: UsuarioService,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private toastService: ToastrService
   ) {
 
     this.subs$.add(
@@ -138,11 +140,12 @@ export class CheckInPage implements OnInit {
           localStorage.setItem('checkin_data', JSON.stringify(payload));
         }
         this.confettiService.showConfetti();
-        alert('Check-in registrado com sucesso!');
+        this.toastService.success('Check-in registrado com sucesso!', 'top');
         this.cpf = '';
       },
       error: (err) => {
         console.error('Erro ao registrar check-in:', err);
+        this.toastService.error('Erro ao registrar check-in!');
       },
     });
   }
@@ -256,7 +259,7 @@ export class CheckInPage implements OnInit {
 
 
   getUserFrequency(cpf: string) {
-    this.userService.getFrequencyByCPF(cpf).subscribe({
+    this.userService.getFrequencyByCPF(cpf, this.empresaId as string).subscribe({
       next: (res: any) => {
         console.log('Frequência do usuário:', res);
       }

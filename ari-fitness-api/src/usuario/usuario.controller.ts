@@ -183,10 +183,10 @@ export class UsuarioController {
 
 
   /** Obter frequencia pelo CPF */
-  @Post('frequency-by-cpf')
-  async getFrequencyByCPF(@Res() res: Response, @Body('cpf') cpf: string) {
+  @Get('frequency-by-cpf')
+  async getFrequencyByCPF(@Res() res: Response, @Query('cpf') cpf: string, @Query('empresaId') empresaId: string) {
     console.log('Obtendo frequência para o CPF:', cpf);
-    return this.usuarioService.getFrequencyByCPF(cpf).then((_res: any) => {
+    return this.usuarioService.getFrequencyByCPFandEmpresaId(cpf, empresaId).then((_res: any) => {
       if (_res.error) {
         console.error('erro no usuario/frequency-by-cpf', _res.error);
         res.status(500).send({

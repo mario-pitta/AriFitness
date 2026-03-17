@@ -87,7 +87,7 @@
                 <ion-spinner name="crescent"></ion-spinner>
             </div>
 
-            <div class="empty-state" *ngIf="!loadingEvolution && workoutLogs.length === 0">
+            <div class="empty-state" *ngIf="!loadingEvolution && chartData.length === 0">
                 <ion-icon name="trending-up-outline"></ion-icon>
                 <p>Nenhum dado de carga registrado.</p>
             </div>
@@ -96,19 +96,23 @@
                 <h3 class="section-title">Evolução Prescrita (Cargas)</h3>
                 <p class="section-subtitle">Progresso baseado nos pesos definidos nas fichas ao longo do tempo.</p>
 
-                <div class="exercise-card glass-card" *ngFor="let exercise of chartData">
-                    <div class="card-header">
-                        <h4>{{exercise.name}}</h4>
-                        <span class="evolution-badge">+{{exercise.series[exercise.series.length-1].value -
-                            exercise.series[0].value}}kg</span>
-                    </div>
-                    <div class="chart-wrapper">
-                        <ngx-charts-line-chart [results]="[exercise]" [xAxis]="true" [yAxis]="true"
-                            [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true" [gradient]="true"
-                            [animations]="true" [view]="[300, 150]">
-                        </ngx-charts-line-chart>
-                    </div>
-                </div>
+                <ion-row>
+
+                    <ion-card class="exercise-card glass-card" *ngFor="let exercise of chartData">
+                        <div class="card-header">
+                            <h4>{{exercise.name | titlecase}}</h4>
+                            <span class="badge"
+                                [ngClass]="exercise.evolution > 0 ? 'bg-success' : exercise.evolution == 0 ? 'bg-secondary' : 'bg-danger'">{{
+                                exercise.evolution}}kg</span>
+                        </div>
+                        <div class="chart-wrapper">
+                            <ngx-charts-line-chart [results]="[exercise]" [xAxis]="true" [yAxis]="true"
+                                [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true" [gradient]="true"
+                                [animations]="true" [view]="[300, 150]">
+                            </ngx-charts-line-chart>
+                        </div>
+                    </ion-card>
+                </ion-row>
 
                 <h3 class="section-title ion-margin-top">Últimas Execuções</h3>
                 <p class="section-subtitle">Cargas reais registradas durante os treinos.</p>

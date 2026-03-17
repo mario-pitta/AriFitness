@@ -51,9 +51,14 @@ export class HistoricoAlunoPage implements OnInit {
         // Fetch User Info first to get CPF
         this.usuarioService.findByFilters({ id: this.userId! }).subscribe({
             next: (res: any) => {
-                if (res.data && res.data.length > 0) {
-                    this.aluno = res.data[0];
+
+
+                console.log('res = ', res)
+                if (res && res.length > 0) {
+                    this.aluno = res[0];
                     this.userCpf = this.aluno!.cpf;
+
+                    console.log('this.userCpf = ', this.userCpf)
 
                     // Parallel loads
                     this.getTreinoHistory(); // Frequency
@@ -71,9 +76,9 @@ export class HistoricoAlunoPage implements OnInit {
 
     getTreinoHistory() {
         this.loadingFrequency = true;
-        this.usuarioService.getFrequencyByCPF(this.userCpf!).subscribe({
+        this.usuarioService.getFrequencyByCPF(this.userCpf!, this.aluno!.empresa_id as string).subscribe({
             next: (res: any) => {
-                this.treinoHistory = res.data || [];
+                this.treinoHistory = res || [];
                 this.loadingFrequency = false;
             },
             error: (err) => {
@@ -84,26 +89,32 @@ export class HistoricoAlunoPage implements OnInit {
     }
 
     getWorkoutLogs() {
-        this.loadingEvolution = true;
-        this.usuarioService.getTreinoHistorico(this.userId!).subscribe({
-            next: (res: any) => {
-                this.workoutLogs = res || [];
-                this.processEvolutionData();
-                this.loadingEvolution = false;
-            },
-            error: (err) => {
-                console.error(err);
-                this.loadingEvolution = false;
-            }
-        });
+        this.loadingEvolution = false;
+        // this.usuarioService.getTreinoHistorico(this.userId!).subscribe({
+        //     next: (res: any) => {
+
+        //         console.log('getTreinoHistorico res = ', res)
+
+        //         this.workoutLogs = res || [];
+        //         this.processEvolutionData();
+        //         this.loadingEvolution = false;
+        //     },
+        //     error: (err) => {
+        //         console.error(err);
+        //         this.loadingEvolution = false;
+        //     }
+        // });
     }
 
     getFichasHistory() {
         this.loadingFichas = true;
         this.fichaAlunoService.getByUser(this.userId!).subscribe({
             next: (data: any) => {
+
+                console.log('fichaAlunoService data = ', data)
+
                 this.fichasHistory = (data || []).sort((a: any, b: any) =>
-                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                 );
                 this.processEvolutionData();
                 this.loadingFichas = false;
@@ -121,7 +132,11 @@ export class HistoricoAlunoPage implements OnInit {
             return;
         }
 
-        const groups = new Map<string, { date: number, label: string, value: number }[]>();
+
+        console.log(' this.fichasHistory = ', this.fichasHistory)
+
+
+        const groups = new Map<string, { date: number, label: string, value: number, evolution: number }[]>();
 
         this.fichasHistory.forEach(ficha => {
             const date = new Date(ficha.created_at).getTime();
@@ -141,17 +156,35 @@ export class HistoricoAlunoPage implements OnInit {
                     if (entryIdx >= 0) {
                         groups.get(name)![entryIdx].value = Math.max(groups.get(name)![entryIdx].value, carga);
                     } else {
-                        groups.get(name)!.push({ date, label, value: carga });
+                        groups.get(name)!.push({ date, label, value: carga, evolution: 0 });
                     }
+
+
+                    console.log('ex = ', ex)
                 });
             });
         });
 
+        const _exercises = Array.from(groups.entries()).map(([name, points], index) => {
+            let evolution = points[points.length - 1].value - points[0].value
+
+            return {
+                name: name,
+                series: points,
+                evolution: evolution
+            }
+
+        })
+
+
+        console.log('exercises = ', _exercises)
+
         // Convert Map to ngx-charts format, filtering for exercises with at least 2 data points for evolution
-        this.chartData = Array.from(groups.entries())
-            .map(([name, points]) => ({
-                name,
-                series: points
+        this.chartData = _exercises
+            .map(ex => ({
+                name: ex.name,
+                evolution: ex.evolution,
+                series: ex.series
                     .sort((a, b) => a.date - b.date)
                     .map(p => ({
                         name: p.label,
@@ -160,6 +193,10 @@ export class HistoricoAlunoPage implements OnInit {
             }))
             .filter(g => g.series.length > 1)
             .slice(0, 5); // Limit to top 5 evolved exercises to avoid clutter
+
+
+        console.log('this.chartData = ', this.chartData)
+
     }
 
     segmentChanged(ev: any) {

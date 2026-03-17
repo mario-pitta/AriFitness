@@ -347,11 +347,14 @@ export class UsuarioService {
       .eq('id', checkinId);
   }
 
-  async getFrequencyByCPF(cpf: string) {
+  async getFrequencyByCPFandEmpresaId(cpf: string, empresaId: string) {
+
+    console.log('💻🔍🪲 - cpf', cpf);
     return await this.database.supabase
       .from('checkin_acesso')
       .select('*')
       .eq('cpf_aluno', cpf)
+      .eq('empresa_id', empresaId)
       .order('data_hora', { ascending: false });
   }
 

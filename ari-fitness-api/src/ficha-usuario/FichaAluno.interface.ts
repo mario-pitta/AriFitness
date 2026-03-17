@@ -11,4 +11,5 @@ export interface IFichaAluno {
   objetivo: string;
   instrutor_id: number;
   treinos?: Partial<Treino>[];
+  empresa_id: string;
 }
