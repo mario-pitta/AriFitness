@@ -9,7 +9,7 @@ import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
 const controller = 'exercicios'
 @Controller(controller)
 export class ExercicioController {
-  constructor(private musculoService: ExercicioService) {}
+  constructor(private musculoService: ExercicioService) { }
 
   /**
    * The function `findAll` retrieves all users and sends the data or an error response using the
@@ -28,6 +28,8 @@ export class ExercicioController {
     @Query() filter: Partial<Exercicio> | Exercicio,
   ) {
     console.log('getting all ...', controller);
+    console.log('filter = ', filter)
+
     return this.musculoService.findAll(filter).then((_res) => {
       if (_res.error) {
         console.error('erro no Exercicio/findAll', _res.error);
@@ -56,6 +58,8 @@ export class ExercicioController {
       ...body,
       nome: body.nome.toLocaleLowerCase()
     }).then((_res) => {
+
+      console.log('criando ...', _res)
       if (_res.error) {
         console.error('erro no Exercicio/findAll', _res.error);
         res.status(500).send({

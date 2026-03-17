@@ -7,44 +7,61 @@ const tableName = 'exercicios';
 
 @Injectable()
 export class ExercicioService {
-  constructor(private database: DataBaseService) {}
+  constructor(private database: DataBaseService) { }
 
   /**
    * The `findAll` function retrieves all records from a specified table in a database.
    * @returns An array of all records from the specified table in the database with all columns
    * selected.
    */
-  findAll(filter: Partial<Exercicio> | Exercicio) {
-    return this.database.supabase
+  async findAll(filter: Partial<Exercicio> | Exercicio) {
+    console.log('findAll = ', filter)
+
+    return await this.database.supabase
       .from(tableName)
-      .select(
-        `*, 
-        equipamentos (
-            *,
-            categoria (
-              *
-            )
-         
-        ),         
+      .select(`
+        id, 
+        nome, 
+        fl_ativo,
+        midias_url,
+        midia_url,
+        nivel: exercicio_nivel (
+          id, nome
+        ),
+        forca_tipo: exercicio_forca_tipo (
+          id, nome
+        ),
+        categoria: exercicio_categoria (
+          id, nome
+        ),
+        equipamento: equipamentos (
+            id, nome
+        ),
         musculo (
-          *, 
-          grupo_muscular (
-            *,
-             parte_do_corpo(
-              *
+          id, nome,
+          grupo_muscular: grupo_muscular (
+            id, nome,
+            parte_do_corpo: parte_do_corpo (
+              id, nome
             )
-          ),
-          parte_do_corpo(
-            *
+          )
+        ),         
+        grupo_muscular (
+          id, nome
+        ),
+        musculos: exercicio_musculo (
+          id,
+          tipo,
+          grupo_muscular (
+            id, nome
           )
         )
-
-        `,
-      )
+      `)
       .match({ ...filter })
       .order('nome', {
         ascending: true,
       });
+
   }
 
   /**
@@ -55,8 +72,11 @@ export class ExercicioService {
    * @returns The `create` function is returning the result of inserting the `body` object into the
    * specified table in the database.
    */
-  create(body: Exercicio) {
-    return this.database.supabase.from(tableName).insert(body, {});
+  async create(body: Exercicio) {
+
+
+    return await this.database.supabase.from(tableName).insert(body, {});
+    ;
   }
 
   /**
@@ -67,8 +87,10 @@ export class ExercicioService {
    * @returns The `update` method is returning a promise that represents the result of updating the
    * record in the database table specified by `tableName` with the data provided in the `body` object.
    */
-  update(body: Partial<Exercicio>) {
-    return this.database.supabase
+  async update(body: Partial<Exercicio>) {
+
+
+    return await this.database.supabase
       .from(tableName)
       .update(body)
       .eq('id', body.id);

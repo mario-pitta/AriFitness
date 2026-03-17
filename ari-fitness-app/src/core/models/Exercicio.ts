@@ -16,6 +16,13 @@ export interface Exercicio {
   equipamento?: Equipamento;
   midia_url?: string;
   img_url?: string;
+  musculos?: ExercicioMusculo[];
+}
+
+export interface ExercicioMusculo {
+  id?: number;
+  tipo: 'primario' | 'secundario';
+  grupo_muscular: GrupoMuscular;
 }
 
 

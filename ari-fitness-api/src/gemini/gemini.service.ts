@@ -16,6 +16,7 @@ import { TreinoExercicioRelation } from 'src/treino/Treino.interface';
 import { Exercicio } from './../exercicio/exercicio.interface';
 import { UsuarioService } from 'src/usuario/usuario.service';
 import { FichaAlunoService } from 'src/ficha-usuario/ficha-aluno.service';
+import { Usuario } from 'src/usuario/Usuario.interface';
 
 @Injectable()
 export class GeminiService {
@@ -202,6 +203,24 @@ export class GeminiService {
   }
 
   async buildTreinoDoAluno(alunoId: string | number, empresaId: string) {
+
+    const clearAlunoData = (aluno: any) => {
+      delete aluno.cpf;
+      delete aluno.rg;
+      delete aluno.telefone;
+      delete aluno.whatsapp;
+      delete aluno.email;
+      delete aluno.senha;
+      delete aluno.fl_ativo;
+      delete aluno.created_at;
+      delete aluno.updated_at;
+      delete aluno.empresa_id;
+      delete aluno.id;
+
+
+      return aluno;
+    };
+
     console.log('chegou no geminiService: ', alunoId, empresaId);
     const _aluno = await this.usuarioService.findByFilters({
       id: Number(alunoId),
@@ -218,6 +237,8 @@ export class GeminiService {
       throw new HttpException('Aluno não encontrado', HttpStatus.NOT_FOUND, {
         cause: new Error('Aluno nao encontrado'),
       });
+
+
 
     if (aluno.empresa_id !== empresaId)
       throw new HttpException(
@@ -247,57 +268,64 @@ export class GeminiService {
 
     const treinos = await this.fichaService.getByUser(aluno.id, {});
 
+
+
+
     const prompt = `
         "Você é um instrutor de academia altamente qualificado, especializado em desempenho físico e saúde. Seu objetivo é criar fichas de treino personalizadas, levando em conta as necessidades individuais de cada aluno e otimizando o uso dos equipamentos disponíveis. O plano deve seguir princípios de segurança, eficiência e progressão adequada. Considere os seguintes fatores ao elaborar o treino:"
 
         📌 Dados do Aluno:
 
-        ${JSON.stringify(aluno)}
+        ${JSON.stringify(clearAlunoData(aluno))}
 
         🏋️ Equipamentos Disponíveis na Academia:
         ${JSON.stringify(
-          equipamentos.data.map((eq: Equipamento) => ({
-            id: eq.id,
-            nome: eq.nome,
-            categoria: eq.categoria,
-          })),
-        )}
+      equipamentos.data?.map((eq: Equipamento | any) => ({
+        id: eq.id,
+        nome: eq.nome,
+        categoria: Array.isArray(eq.categoria) ? eq.categoria[0] : eq.categoria,
+      })),
+    )}
 
 
         🔄 Lista de Exercícios Disponíveis:
         ${JSON.stringify(
-          exercicios.data.map((eq: Exercicio) => ({
-            id: eq.id,
-            nome: eq.nome,
-            equipamento: {
-              id: eq.equipamento?.id,
-            },
-          })),
-        )}
+      exercicios.data?.map((ex: Exercicio | any) => ({
+        id: ex.id,
+        nome: ex.nome,
+        equipamento: {
+          id: Array.isArray(ex.equipamento) ? ex.equipamento[0]?.id : ex.equipamento?.id,
+        },
+        musculos: ex.musculos?.map((m: any) => ({
+          tipo: m.tipo,
+          nome: m.grupo_muscular?.nome,
+        })),
+      })),
+    )}
 
 
         Treinos Anteriores:
         ${JSON.stringify(
-          treinos?.data?.map((tr) => {
-            return tr.treinos_cadastrados?.map((_tr: any) => {
-              return {
-                id: _tr.treino.id,
+      treinos?.data?.map((tr) => {
+        return tr.treinos_cadastrados?.map((_tr: any) => {
+          return {
+            id: _tr.treino.id,
 
-                exercicios: _tr.treino.exercicios?.map(
-                  (ex: TreinoExercicioRelation | any) => {
-                    return {
-                      id: ex.id,
-                      exercicio_id: ex.exercicio.id,
-                      equipamento_id: ex.equipamento?.id,
-                      nome: ex.exercicio.nome,
-                      equipamento: ex.equipamento,
-                    };
-                  },
-                ),
-              };
-            });
-          }),
-        )}
+            exercicios: _tr.treino.exercicios?.map(
+              (ex: TreinoExercicioRelation | any) => {
+                return {
+                  id: ex.id,
+                  exercicio_id: ex.exercicio.id,
+                  equipamento_id: ex.equipamento?.id,
+                  nome: ex.exercicio.nome,
+                  equipamento: ex.equipamento,
+                };
+              },
+            ),
+          };
+        });
+      }),
+    )}
 
         📑 Requisitos para a Ficha de Treino:
 

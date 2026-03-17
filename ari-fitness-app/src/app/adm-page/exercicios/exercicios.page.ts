@@ -20,7 +20,7 @@ export class ExerciciosPage implements OnInit {
     private router: Router,
     private aRoute: ActivatedRoute
 
-  ) {}
+  ) { }
 
   ngOnInit() {
     const queryParams = this.aRoute.snapshot.queryParams;
@@ -31,8 +31,9 @@ export class ExerciciosPage implements OnInit {
 
   getExercicios(filters?: Partial<Exercicio> | Exercicio) {
     this.loading = true;
+    filters = { ...filters, fl_ativo: true };
 
-    this.exercicioService.find({...filters }).subscribe({
+    this.exercicioService.find({ ...filters }).subscribe({
       next: (ex) => (this.exercicios = ex),
       complete: () => (this.loading = false),
     });
@@ -51,7 +52,7 @@ export class ExerciciosPage implements OnInit {
   }
 
 
-  filterItems(){
+  filterItems() {
 
   }
 
