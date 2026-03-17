@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/mario-pitta/AriFitness/compare/v1.7.0...v1.8.0) (2026-03-17)
+
+
+### Features
+
+*  :art: Implement exercise management feature including frontend pages, detail component, and backend API. ([2439a18](https://github.com/mario-pitta/AriFitness/commit/2439a1877374c023a277c70aa0cb403524897f70))
+*  :sparkles: workout and checkin member historic ([2f9f345](https://github.com/mario-pitta/AriFitness/commit/2f9f3458bb21027fd0ca95da2d8394514fcc226b))
+* :art: refine financial flow styles and UX ([5dc05c2](https://github.com/mario-pitta/AriFitness/commit/5dc05c2527f00dcad58faf631a03294d39574cce))
+* :ok_hand: Introduce workout import functionality and a new workout editor page with associated routing and state management. ([e436553](https://github.com/mario-pitta/AriFitness/commit/e4365534355d077f770145c80e68a64baf4be156))
+* :sparkles:  import exercise db into database ([6e59afb](https://github.com/mario-pitta/AriFitness/commit/6e59afbda2b75c30e6648496b5488e467a23bedb))
+* :sparkles: Implement student workout sheet management page with workout template import and student cloning capabilities. ([4681c08](https://github.com/mario-pitta/AriFitness/commit/4681c080ea79765314f40ba8ba57ec3313d19f25))
+* implement student workout sheet management with template and student import capabilities. ([3041565](https://github.com/mario-pitta/AriFitness/commit/30415654f1b41c1116a57b164032613f5e5b1da4))
+
 ## [1.7.0](https://github.com/mario-pitta/AriFitness/compare/v1.6.2...v1.7.0) (2026-03-11)
 
 
