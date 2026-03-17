@@ -3,13 +3,7 @@ import { Component, EventEmitter, OnInit } from '@angular/core';
 import { ItemReorderEventDetail, ModalController } from '@ionic/angular';
 import { IUsuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
-import { TreinoExercicioFormPage } from '../treino-exercicio-form/treino-exercicio-form.page';
-import { TreinosListPage } from '../treino-list/treino-list.page';
 import { Treino } from 'src/core/models/Treino';
-import { WorkoutPreviewModalComponent } from '../shared/workout-editor/components/workout-preview-modal.component';
-import { TemplateSelectorModalComponent } from '../shared/workout-editor/components/template-selector-modal.component';
-import { StudentSelectorModalComponent } from '../shared/student-selector/student-selector-modal.component';
-
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { FichaAlunoService } from 'src/core/services/ficha-aluno/ficha-aluno.service';
@@ -19,6 +13,9 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
 import { WorkoutTemplateStateService } from 'src/core/services/treino/state/workout-template-state.service';
 import { TreinoService } from 'src/core/services/treino/treino.service';
+import { WorkoutExportService } from 'src/core/services/workout-export/workout-export.service';
+import { EmpresaService } from 'src/core/services/empresa/empresa.service';
+import { IEmpresa } from 'src/core/models/Empresa';
 
 @Component({
   selector: 'app-ficha-treino-aluno',
@@ -37,6 +34,7 @@ export class FichaTreinoAlunoPage implements OnInit {
   // aluno!: Partial<Usuario> | Usuario;
   instrutores: IUsuario[] = [];
   fichaAtual!: FichaAluno;
+  empresa: IEmpresa | null = null;
   loading: boolean = false;
   form: FormGroup = new FormGroup({});
   enableEdit: boolean = false;
@@ -51,7 +49,9 @@ export class FichaTreinoAlunoPage implements OnInit {
     private fichaService: FichaAlunoService,
     private treinoService: TreinoService,
     private toastr: ToastrService,
-    public workoutState: WorkoutTemplateStateService
+    public workoutState: WorkoutTemplateStateService,
+    private exportService: WorkoutExportService,
+    private empresaService: EmpresaService
   ) {
     this.subs$.add(
       this.router.events.subscribe({
@@ -84,6 +84,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     this.createForm();
     this.checkUserParams();
     this.loadData();
+    this.loadEmpresa();
     // this.selectedTreino = this.user.treinos && this.user.treinos[0];
   }
 
@@ -246,7 +247,8 @@ export class FichaTreinoAlunoPage implements OnInit {
     console.log('this.f: ', this.f);
   }
 
-  openTreinoList() {
+  async openTreinoList() {
+    const { TemplateSelectorModalComponent } = await import('../shared/workout-editor/components/template-selector-modal.component');
     this.modalController.create({
       component: TemplateSelectorModalComponent,
     }).then(modal => {
@@ -262,7 +264,8 @@ export class FichaTreinoAlunoPage implements OnInit {
     });
   }
 
-  openStudentImport() {
+  async openStudentImport() {
+    const { StudentSelectorModalComponent } = await import('../shared/student-selector/student-selector-modal.component');
     this.modalController.create({
       component: StudentSelectorModalComponent,
     }).then(modal => {
@@ -283,6 +286,7 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
 
   async previewAndLoadTemplate(treinoId: number) {
+    const { WorkoutPreviewModalComponent } = await import('../shared/workout-editor/components/workout-preview-modal.component');
     const modal = await this.modalController.create({
       component: WorkoutPreviewModalComponent,
       componentProps: { treinoId }
@@ -311,6 +315,47 @@ export class FichaTreinoAlunoPage implements OnInit {
     }
   }
 
+  loadEmpresa() {
+    const user = this.auth.getUser;
+    if (user && user.empresa_id) {
+      this.empresaService.getEmpresa(user.empresa_id).subscribe({
+        next: (res: any) => {
+          this.empresa = res.data;
+        }
+      });
+    }
+  }
+
+  exportPDF() {
+    const workoutData = this.workoutState.getWorkoutValue();
+    if (workoutData) {
+      this.exportService.exportToPDF(workoutData, this.aluno?.getRawValue() as unknown as IUsuario, this.empresa);
+    } else {
+      this.toastr.warning('Nenhum treino carregado para exportar.');
+    }
+  }
+
+  exportExcel() {
+    const workoutData = this.workoutState.getWorkoutValue();
+    if (workoutData) {
+      this.exportService.exportToExcel(workoutData);
+    } else {
+      this.toastr.warning('Nenhum treino carregado para exportar.');
+    }
+  }
+
+  printThermal() {
+    const workoutData = this.workoutState.getWorkoutValue();
+    if (workoutData) {
+      console.log('workoutData = ', workoutData)
+      const activeSection = workoutData?.sessoes?.find((s: any) => s.ativo);
+      console.log('activeSection = ', activeSection)
+      this.exportService.printThermal(activeSection, this.empresa);
+    } else {
+      this.toastr.warning('Nenhum treino carregado para exportar.');
+    }
+  }
+
 
   setInterval(e: any) {
     this.interval = e.value;
@@ -332,7 +377,8 @@ export class FichaTreinoAlunoPage implements OnInit {
 
   closeClock() { }
 
-  openTreinoForm() {
+  async openTreinoForm() {
+    const { TreinoExercicioFormPage } = await import('../treino-exercicio-form/treino-exercicio-form.page');
     this.modalController
       .create({
         component: TreinoExercicioFormPage,

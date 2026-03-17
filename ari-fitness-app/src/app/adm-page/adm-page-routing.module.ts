@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AdmPagePage } from './adm-page.page';
 import Constants from 'src/core/Constants';
-import { CheckInPageModule } from '../check-in/check-in.module';
 
 const routes: Routes = [
   {

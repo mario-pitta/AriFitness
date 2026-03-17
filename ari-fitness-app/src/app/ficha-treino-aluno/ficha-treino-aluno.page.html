@@ -90,6 +90,41 @@
             </ion-card-content>
         </ion-card>
 
+        <!-- Export Actions Bar -->
+        <div class="export-actions-container ion-margin-bottom"
+            *ngIf="fichaAtual?.sessoes?.length || (workoutState.workout$ | async)?.sessoes?.length">
+            <div class="d-flex justify-content-between align-items-center ion-padding-horizontal mb-2">
+                <h6 class="section-subtitle">EXPORTAR E IMPRIMIR</h6>
+            </div>
+            <ion-row class="g-2 ion-padding-horizontal">
+                <ion-col size="4">
+                    <ion-button expand="block" color="danger" fill="outline" (click)="exportPDF()" class="export-btn">
+                        <span class="d-flex flex-column align-items-center gap-1">
+                            <ion-icon name="file-tray-full-outline"></ion-icon>
+                            <span class="btn-label">PDF</span>
+                        </span>
+                    </ion-button>
+                </ion-col>
+                <ion-col size="4">
+                    <ion-button expand="block" color="success" fill="outline" (click)="exportExcel()"
+                        class="export-btn">
+                        <span class="d-flex flex-column align-items-center gap-1">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <span class="btn-label">Excel</span>
+                        </span>
+                    </ion-button>
+                </ion-col>
+                <ion-col size="4">
+                    <ion-button expand="block" color="dark" fill="outline" (click)="printThermal()" class="export-btn">
+                        <span class="d-flex flex-column align-items-center gap-1">
+                            <ion-icon name="print-outline"></ion-icon>
+                            <span class="btn-label">Térmica</span>
+                        </span>
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </div>
+
         <!-- Quick Start / Zero State Wizard -->
         <ion-card class="quick-start-card ion-padding" *ngIf="!fichaAtual?.sessoes?.length && !loading">
             <div class="ion-text-center">
