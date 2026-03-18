@@ -82,6 +82,7 @@ export class ExerciseTableComponent implements OnInit {
 
     isDropdownVisible = false;
     dropdownStyle: any = { display: 'none', zIndex: 99999 };
+    isAbove = false;
 
     onSearchFocus(index: number, currentName: string = '', event?: any) {
         this.activeSearchRow = index;
@@ -95,11 +96,16 @@ export class ExerciseTableComponent implements OnInit {
 
     updateDropdownPosition(element: any) {
         const rect = element.getBoundingClientRect();
-        this.dropdownStyle = {
-            top: `${rect.bottom + 5}px`,
-            left: `${rect.left}px`,
-            width: `${Math.max(rect.width, 250)}px`
-        };
+        const dropdownMaxHeight = 300;
+        const padding = 5;
+        const windowHeight = window.innerHeight;
+
+        const spaceBelow = windowHeight - rect.bottom - padding;
+        const spaceAbove = rect.top - padding;
+
+        // If there isn't enough space below, and there's more space above, open upwards
+        this.isAbove = spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow;
+
         this.isDropdownVisible = true;
     }
 

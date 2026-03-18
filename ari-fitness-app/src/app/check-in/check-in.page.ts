@@ -9,6 +9,7 @@ import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 
 import { ConfettiService } from 'src/core/services/confetti/confetti.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
+import { EmpresaStateService } from 'src/core/services/empresa/state/empresa-state.service';
 import { Subscription } from 'rxjs';
 import { ActionSheetController } from '@ionic/angular';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
@@ -50,7 +51,8 @@ export class CheckInPage implements OnInit {
     private mobileService: PageSizeService,
     private userService: UsuarioService,
     private actionSheetCtrl: ActionSheetController,
-    private toastService: ToastrService
+    private toastService: ToastrService,
+    private empresaState: EmpresaStateService
   ) {
 
     this.subs$.add(
@@ -113,9 +115,9 @@ export class CheckInPage implements OnInit {
       return;
     }
     this.empresaService.getEmpresa(this.empresaId).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         console.log(res);
-        this.empresa = new Empresa(res);
+        this.empresa = new Empresa(res.data || res);
       },
       error: (err) => {
         console.log(err);

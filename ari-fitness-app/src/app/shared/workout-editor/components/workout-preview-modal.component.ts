@@ -5,9 +5,9 @@ import { Treino } from 'src/core/models/Treino';
 import { TreinoService } from 'src/core/services/treino/treino.service';
 import { WorkoutExportService } from 'src/core/services/workout-export/workout-export.service';
 import { AuthService } from 'src/core/services/auth/auth.service';
-import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 import { IEmpresa } from 'src/core/models/Empresa';
 import { IUsuario } from 'src/core/models/Usuario';
+import { EmpresaStateService } from 'src/core/services/empresa/state/empresa-state.service';
 
 @Component({
     selector: 'app-workout-preview-modal',
@@ -17,7 +17,7 @@ import { IUsuario } from 'src/core/models/Usuario';
 export class WorkoutPreviewModalComponent implements OnInit {
     @Input() treinoId!: number;
     treino: Treino | null = null;
-    aluno: IUsuario | null = null;
+    @Input() aluno: IUsuario | null = null;
     empresa: IEmpresa | null = null;
     loading: boolean = true;
 
@@ -26,7 +26,7 @@ export class WorkoutPreviewModalComponent implements OnInit {
         private treinoService: TreinoService,
         private exportService: WorkoutExportService,
         private authService: AuthService,
-        private empresaService: EmpresaService
+        private empresaState: EmpresaStateService
     ) { }
 
     ngOnInit() {
@@ -35,7 +35,7 @@ export class WorkoutPreviewModalComponent implements OnInit {
                 next: (res: any) => {
                     this.treino = res.data;
                     this.loading = false;
-                    this.loadEmpresa();
+                    this.empresa = this.empresaState.getEmpresaValue;
                     console.log(' this.treino = ', this.treino)
                 },
                 error: err => {
@@ -46,20 +46,12 @@ export class WorkoutPreviewModalComponent implements OnInit {
         );
     }
 
-    loadEmpresa() {
-        const user = this.authService.getUser;
-        if (user && user.empresa_id) {
-            this.empresaService.getEmpresa(user.empresa_id).subscribe({
-                next: (res: any) => {
-                    this.empresa = res.data;
-                }
-            });
-        }
-    }
+
 
     exportPDF() {
         if (this.treino) {
-            this.exportService.exportToPDF(this.treino, this.aluno as unknown as IUsuario, this.empresa);
+            const instructor = this.authService.getUser as unknown as IUsuario;
+            this.exportService.exportToPDF(this.treino, this.aluno as unknown as IUsuario, this.empresa, instructor);
         }
     }
 
@@ -71,7 +63,8 @@ export class WorkoutPreviewModalComponent implements OnInit {
 
     printThermal() {
         if (this.treino) {
-            this.exportService.printThermal(this.treino, this.empresa);
+            const instructor = this.authService.getUser as unknown as IUsuario;
+            this.exportService.printThermal(this.treino, this.aluno as unknown as IUsuario, this.empresa, instructor);
         }
     }
 

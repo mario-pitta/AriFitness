@@ -14,8 +14,8 @@ import { ToastrService } from 'src/core/services/toastr/toastr.service';
 import { WorkoutTemplateStateService } from 'src/core/services/treino/state/workout-template-state.service';
 import { TreinoService } from 'src/core/services/treino/treino.service';
 import { WorkoutExportService } from 'src/core/services/workout-export/workout-export.service';
-import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 import { IEmpresa } from 'src/core/models/Empresa';
+
 
 @Component({
   selector: 'app-ficha-treino-aluno',
@@ -34,7 +34,7 @@ export class FichaTreinoAlunoPage implements OnInit {
   // aluno!: Partial<Usuario> | Usuario;
   instrutores: IUsuario[] = [];
   fichaAtual!: FichaAluno;
-  empresa: IEmpresa | null = null;
+  empresa: Partial<IEmpresa> | IEmpresa | null = null;
   loading: boolean = false;
   form: FormGroup = new FormGroup({});
   enableEdit: boolean = false;
@@ -51,7 +51,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     private toastr: ToastrService,
     public workoutState: WorkoutTemplateStateService,
     private exportService: WorkoutExportService,
-    private empresaService: EmpresaService
+
   ) {
     this.subs$.add(
       this.router.events.subscribe({
@@ -84,7 +84,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     this.createForm();
     this.checkUserParams();
     this.loadData();
-    this.loadEmpresa();
+    this.empresa = this.user.empresa as IEmpresa;
     // this.selectedTreino = this.user.treinos && this.user.treinos[0];
   }
 
@@ -289,7 +289,10 @@ export class FichaTreinoAlunoPage implements OnInit {
     const { WorkoutPreviewModalComponent } = await import('../shared/workout-editor/components/workout-preview-modal.component');
     const modal = await this.modalController.create({
       component: WorkoutPreviewModalComponent,
-      componentProps: { treinoId }
+      componentProps: {
+        treinoId,
+        aluno: this.aluno?.getRawValue() as unknown as IUsuario
+      }
     });
     await modal.present();
 
@@ -315,21 +318,16 @@ export class FichaTreinoAlunoPage implements OnInit {
     }
   }
 
-  loadEmpresa() {
-    const user = this.auth.getUser;
-    if (user && user.empresa_id) {
-      this.empresaService.getEmpresa(user.empresa_id).subscribe({
-        next: (res: any) => {
-          this.empresa = res.data;
-        }
-      });
-    }
-  }
 
   exportPDF() {
     const workoutData = this.workoutState.getWorkoutValue();
     if (workoutData) {
-      this.exportService.exportToPDF(workoutData, this.aluno?.getRawValue() as unknown as IUsuario, this.empresa);
+      this.exportService.exportToPDF(
+        workoutData,
+        this.aluno?.getRawValue() as unknown as IUsuario,
+        this.empresa,
+        this.instrutor?.getRawValue() as unknown as IUsuario
+      );
     } else {
       this.toastr.warning('Nenhum treino carregado para exportar.');
     }
@@ -346,11 +344,17 @@ export class FichaTreinoAlunoPage implements OnInit {
 
   printThermal() {
     const workoutData = this.workoutState.getWorkoutValue();
+
     if (workoutData) {
       console.log('workoutData = ', workoutData)
-      const activeSection = workoutData?.sessoes?.find((s: any) => s.ativo);
+      const activeSection = this.workoutState.getActiveSessionValue();
       console.log('activeSection = ', activeSection)
-      this.exportService.printThermal(activeSection, this.empresa);
+      this.exportService.printThermal(
+        activeSection,
+        this.aluno?.getRawValue() as unknown as IUsuario,
+        this.empresa,
+        this.instrutor?.getRawValue() as unknown as IUsuario
+      );
     } else {
       this.toastr.warning('Nenhum treino carregado para exportar.');
     }

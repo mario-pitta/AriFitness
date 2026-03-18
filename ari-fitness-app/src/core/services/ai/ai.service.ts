@@ -6,6 +6,12 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class AiService {
+
+  constructor(private http: HttpClient) { }
+
+
+
+
   getAnaliseFinanceira(data: {
     empresa_id: string;
     data_inicio: string;
@@ -16,5 +22,16 @@ export class AiService {
     );
   }
 
-  constructor(private http: HttpClient) {}
+
+  buildTreinoPersonalizado(data: {
+    empresa_id: string;
+    aluno_id: string;
+    observações: string;
+    objetivo: string;
+  }) {
+    return this.http.post(
+      `${environment.apiUrl}/ai/gemini/treino-personalizado`, data
+    );
+  }
+
 }

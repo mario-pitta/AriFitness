@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Treino } from 'src/core/models/Treino';
 import { IEmpresa } from 'src/core/models/Empresa';
 import { IUsuario } from 'src/core/models/Usuario';
+import pkg from '../../../../package.json';
 
 @Injectable({
     providedIn: 'root'
@@ -11,50 +11,57 @@ export class WorkoutExportService {
     constructor() { }
 
     /**
-   * Exporta o treino ou ficha para PDF com layout profissional e branding da empresa
+   * Exporta o treino ou ficha para PDF com layout profissional, grid de seções e branding dinâmico
    */
-    async exportToPDF(data: any, aluno: Partial<IUsuario>, empresa: IEmpresa | null) {
+    async exportToPDF(data: any, aluno: Partial<IUsuario>, empresa: IEmpresa | null, instrutor?: Partial<IUsuario>) {
         console.log('data = ', data)
         console.log('aluno = ', aluno)
         console.log('empresa = ', empresa)
+        console.log('instrutor = ', instrutor)
 
-        const nome = aluno.nome || data.descricao || 'Ficha de Treino';
-        const descricao = data.descricao || '';
+        const studentName = aluno?.nome || 'Não informado';
+
+
+        const gymName = empresa?.nome_fantasia || empresa?.nome || 'MvK Gym Manager';
+        const instructorName = instrutor?.nome || 'Não informado';
+        const gymLogo = empresa?.logo_url || null;
+        let gymLogoImage
+        if (gymLogo) {
+            const reader = new FileReader();
+            reader.onload = async () => {
+                gymLogoImage = reader.result as string;
+            };
+            await reader.readAsDataURL(new Blob([await fetch(gymLogo).then(res => res.arrayBuffer())], { type: 'image/jpeg' }));
+
+        }
+        const systemBranding = `${(pkg as any).name} v${(pkg as any).version}`;
+        const printDate = new Date().toLocaleString('pt-BR');
+
+        const startDate = data.ficha_data_inicio ? new Date(data.ficha_data_inicio).toLocaleDateString('pt-BR') : '-';
+        const endDate = data.ficha_data_fim ? new Date(data.ficha_data_fim).toLocaleDateString('pt-BR') : '-';
+        const period = `${startDate} até ${endDate}`;
+
         const sessoes = data.sessoes || [];
 
-        console.log('nome = ', nome)
-
-
-        // Lazy load pdfmake and fonts to avoid initialization issues
+        // Lazy load pdfmake and fonts
         const pdfMakeModule = (await import('pdfmake/build/pdfmake')) as any;
         const pdfFontsModule = (await import('pdfmake/build/vfs_fonts')) as any;
-
-        // The actual pdfMake object is usually the default export or the module itself
         const pdfMake = pdfMakeModule.default || pdfMakeModule;
         const pdfFonts = pdfFontsModule.default || pdfFontsModule;
 
-        // Extract VFS from the fonts module
         let vfs: any = pdfFonts.vfs || pdfFonts.pdfMake?.vfs || null;
-
         if (!vfs) {
-            // Fallback: collect all .ttf properties directly from the fonts module
             vfs = {};
             for (const key in pdfFonts) {
-                if (key.endsWith('.ttf')) {
-                    vfs[key] = pdfFonts[key];
-                }
+                if (key.endsWith('.ttf')) vfs[key] = pdfFonts[key];
             }
-            if (Object.keys(vfs).length === 0) vfs = null;
         }
 
         if (vfs) {
             pdfMake.vfs = vfs;
-
-            // Fix missing fonts by aliasing them in the VFS itself
             const vfsKeys = Object.keys(vfs);
             const foundRoboto = vfsKeys.find(k => k.includes('Roboto-Regular')) || vfsKeys[0];
             const baseFontData = vfs[foundRoboto];
-
             if (baseFontData) {
                 ['Roboto-Regular.ttf', 'Roboto-Medium.ttf', 'Roboto-Italic.ttf', 'Roboto-MediumItalic.ttf', 'Roboto-Bold.ttf'].forEach(fontKey => {
                     if (!vfs[fontKey]) vfs[fontKey] = baseFontData;
@@ -62,7 +69,8 @@ export class WorkoutExportService {
             }
         }
 
-        // Standardize fonts mapping
+
+
         const fontsMap = {
             Roboto: {
                 normal: 'Roboto-Regular.ttf',
@@ -72,133 +80,197 @@ export class WorkoutExportService {
             }
         };
 
-        const primaryColor = empresa?.primary_color_hex || '#4d8dff';
+        const primaryColor = empresa?.primary_color_hex || '#333333';
 
         const docDefinition: any = {
+            pageSize: 'A4',
+            pageOrientation: 'portrait',
+            pageMargins: [30, 30, 30, 40],
             content: [
-                // Header with Branding
+                // Header
                 {
                     columns: [
-                        empresa?.logo_url ? {
-                            image: empresa.logo_url,
-                            width: 100,
+                        //coluna 1
+                        gymLogoImage ? {
+                            image: gymLogoImage,
+                            width: 60,
                             alignment: 'left'
-                        } : { text: empresa?.nome_fantasia || empresa?.nome || 'MvK Gym Manager', fontSize: 20, bold: true, color: primaryColor },
+                        } : { text: gymName, fontSize: 16, bold: true, color: primaryColor },
+                        //coluna 2
                         {
                             stack: [
-                                { text: 'FICHA DE TREINO', fontSize: 18, bold: true, alignment: 'right', color: primaryColor },
-                                { text: nome, fontSize: 14, bold: true, alignment: 'right' },
+                                { text: '', fontSize: 0, bold: true, width: 40, color: '#666' },
+                                { text: gymLogoImage ? gymName : '', fontSize: 25, bold: true, alignment: 'right' }
                             ],
-                            margin: [0, 10, 0, 0]
+                        },
+                        //coluna 3
+                        {
+                            stack: [
+                                { text: 'FICHA DE TREINO', fontSize: 16, bold: true, alignment: 'right' },
+                                {
+                                    columns: [
+
+                                        {
+                                            stack: [
+                                                { text: 'Aluno:', fontSize: 10, bold: true, width: 40, color: '#666' },
+                                                { text: studentName, fontSize: 10 }
+                                            ],
+                                        }
+                                    ],
+                                    alignment: 'right',
+                                    margin: [0, 5, 0, 0]
+                                }
+                            ]
                         }
                     ],
-                    margin: [0, 0, 0, 20]
-                },
-                // Aluno / Info Geral
-                {
-                    canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#eeeeee' }],
                     margin: [0, 0, 0, 10]
                 },
+                // Secondary Header Info
                 {
                     columns: [
                         {
                             stack: [
-                                { text: 'Nível:', fontSize: 10, color: '#888888' },
-                                { text: this.getDificuldadeText(data.nivel_dificuldade), fontSize: 12, bold: true }
+                                { text: 'Período da Ficha:', fontSize: 9, color: '#666' },
+                                { text: period, fontSize: 10, bold: true }
                             ]
                         },
                         {
                             stack: [
-                                { text: 'Foco:', fontSize: 10, color: '#888888' },
-                                { text: data.parte_do_corpo?.nome || data.grupo_muscular?.nome || 'Geral', fontSize: 12, bold: true }
-                            ]
+                                { text: 'Instrutor:', fontSize: 9, color: '#666' },
+                                { text: instructorName, fontSize: 10, bold: true }
+                            ],
+                            alignment: 'right'
                         }
                     ],
-                    margin: [0, 0, 0, 20]
+                    margin: [0, 0, 0, 15]
                 },
+                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 535, y2: 0, lineWidth: 0.5, lineColor: '#dddddd' }], margin: [0, 0, 0, 15] },
+
+                //Objetivo e Observações
                 {
-                    text: descricao,
-                    fontSize: 10,
-                    italics: true,
-                    margin: [0, 0, 0, 20]
-                }
+                    columns: [
+                        {
+                            stack: [
+                                { text: 'Objetivo:', fontSize: 8, bold: true, color: '#666' },
+                                { text: data.objetivo, fontSize: 8 }
+                            ]
+                        },
+                        {
+                            stack: [
+                                { text: 'Observações:', fontSize: 8, bold: true, color: '#666', margin: [0, 5, 0, 5] },
+                                { text: data.descricao, fontSize: 8 }
+                            ]
+                        },
+                    ],
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 535, y2: 0, lineWidth: 0.5, lineColor: '#dddddd' }], margin: [0, 10, 0, 15] }
             ],
             styles: {
-                sessionHeader: {
-                    fontSize: 14,
-                    bold: true,
-                    color: '#ffffff',
-                    fillColor: primaryColor,
-                    margin: [0, 15, 0, 5],
-                    padding: 5
-                },
-                tableHeader: {
-                    bold: true,
-                    fontSize: 11,
-                    color: '#444444',
-                    fillColor: '#f8f9fa'
-                },
-                cellText: {
-                    fontSize: 10,
-                    margin: [0, 5, 0, 5]
-                }
+                sessionTitle: { fontSize: 11, bold: true, color: '#0f0f0fff', fillColor: primaryColor, margin: [0, 2, 0, 2] },
+                tableHeader: { bold: true, fontSize: 8, color: '#444', fillColor: '#f0f0f0' },
+                cellText: { fontSize: 8, margin: [0, 2, 0, 2] }
             },
-            defaultStyle: {
-                font: 'Roboto'
-            }
+            defaultStyle: { font: 'Roboto' }
         };
 
-        // Add Sessions and Exercises
-        sessoes.sort((a: any, b: any) => a.ordem - b.ordem).forEach((sessao: any) => {
-            docDefinition.content.push({
-                text: `Sessão ${sessao.nome}`,
-                style: 'sessionHeader'
+        // Create Session Grids (2 per row)
+        const sortedSessions = [...sessoes].sort((a: any, b: any) => a.ordem - b.ordem);
+        console.log('sortedSessions = ', sortedSessions)
+
+        const sessionChunks = [];
+        for (let i = 0; i < sortedSessions.length; i++) {
+            if (i % 2 === 0) {
+                if (i === sortedSessions.length - 1) {
+                    sessionChunks.push(sortedSessions.slice(i, i + 1));
+                } else {
+                    sessionChunks.push(sortedSessions.slice(i, i + 2));
+                }
+            }
+        }
+        console.log('sessionChunks = ', sessionChunks)
+
+        sessionChunks.forEach(chunk => {
+
+            const columns: any[] = [];
+            chunk.forEach((sessao: any) => {
+                //adicionar o sessao.nome no topo da tabela de cada sessao
+
+                const sessaoNome = sessao.nome || '';
+
+                console.log('sessaoNome = ', sessaoNome);
+
+
+                const tableBody = [
+                    [
+                        { text: 'Exercício', style: 'tableHeader' },
+                        { text: 'Sér', style: 'tableHeader', alignment: 'center' },
+                        { text: 'Rep', style: 'tableHeader', alignment: 'center' },
+                        { text: 'Kg', style: 'tableHeader', alignment: 'center' }
+                    ]
+                ];
+
+                sessao.exercicios?.sort((a: any, b: any) => a.ordem - b.ordem).forEach((ex: any) => {
+                    const exercicioNome = ex.exercicio?.nome || ex.exercicios?.nome || 'N/A';
+                    tableBody.push([
+                        { text: exercicioNome, style: 'cellText' } as any,
+                        { text: ex.series?.toString() || '-', style: 'cellText', alignment: 'center' } as any,
+                        { text: ex.repeticoes?.toString() || '-', style: 'cellText', alignment: 'center' } as any,
+                        { text: ex.carga?.toString() || '-', style: 'cellText', alignment: 'center' } as any
+                    ]);
+                });
+
+                console.log('sessao.nome} = ', sessao)
+
+                columns.push({
+                    width: '*',
+                    stack: [
+                        { text: `Sessão ${sessao.nome}`, alignment: 'left' },
+                        {
+                            table: {
+                                headerRows: 1,
+                                widths: ['*', 25, 25, 25],
+                                body: tableBody
+                            },
+                            layout: {
+                                hLineWidth: () => 0.1,
+                                vLineWidth: () => 0.1,
+                                hLineColor: () => '#eeeeee',
+                                vLineColor: () => '#eeeeee'
+                            }
+                        }
+                    ],
+                    margin: [columns.length === 0 ? 0 : 10, 0, columns.length === 0 ? 10 : 0, 15]
+                });
             });
 
-            const tableBody = [
-                [
-                    { text: 'Exercício', style: 'tableHeader' },
-                    { text: 'Séries', style: 'tableHeader' },
-                    { text: 'Reps', style: 'tableHeader' },
-                    { text: 'Carga', style: 'tableHeader' },
-                    { text: 'Intervalo', style: 'tableHeader' }
-                ]
-            ];
+            // If only one session in chunk, add empty column for alignment
+            if (columns.length === 1) {
+                columns.push({ width: '*', text: '' });
+            }
 
-            sessao.exercicios?.sort((a: any, b: any) => a.ordem - b.ordem).forEach((ex: any) => {
-                const exercicioNome = ex.exercicio?.nome || ex.exercicios?.nome || 'N/A';
-                tableBody.push([
-                    { text: exercicioNome, style: 'cellText' } as any,
-                    { text: ex.series?.toString() || '-', style: 'cellText', alignment: 'center' } as any,
-                    { text: ex.repeticoes?.toString() || '-', style: 'cellText', alignment: 'center' } as any,
-                    { text: ex.carga ? `${ex.carga}kg` : '-', style: 'cellText', alignment: 'center' } as any,
-                    { text: ex.intervalo ? `${ex.intervalo}s` : '-', style: 'cellText', alignment: 'center' } as any
-                ]);
-            });
-
-            docDefinition.content.push({
-                table: {
-                    headerRows: 1,
-                    widths: ['*', 50, 50, 50, 60],
-                    body: tableBody
-                },
-                layout: 'lightHorizontalLines',
-                margin: [0, 0, 0, 15]
-            });
+            docDefinition.content.push({ columns });
         });
 
         // Footer
         docDefinition.footer = (currentPage: number, pageCount: number) => {
             return {
-                text: `Página ${currentPage} de ${pageCount} | Gerado por MvK Gym Manager`,
-                alignment: 'center',
-                fontSize: 8,
-                color: '#aaaaaa',
-                margin: [0, 10, 0, 0]
+                stack: [
+                    { canvas: [{ type: 'line', x1: 30, y1: 0, x2: 565, y2: 0, lineWidth: 0.1, lineColor: '#aaaaaa' }] },
+                    {
+                        columns: [
+                            { text: `${systemBranding} | ${printDate}`, alignment: 'left', margin: [30, 5, 0, 0] },
+                            { text: `Página ${currentPage} de ${pageCount}`, alignment: 'right', margin: [0, 5, 30, 0] }
+                        ],
+                        fontSize: 7,
+                        color: '#999999'
+                    }
+                ]
             };
         };
 
-        pdfMake.createPdf(docDefinition, null, fontsMap, vfs).download(`Treino_${nome.replace(/\s+/g, '_')}.pdf`);
+
+        console.log('docDefinition = ', docDefinition)
+        pdfMake.createPdf(docDefinition, null, fontsMap, vfs).download(`Ficha_${studentName.replace(/\s+/g, '_') + '_' + new Date().toISOString().replace(/\s+/g, '_') + '_' + (empresa?.nome || empresa?.nome_fantasia || '').replace(/\s+/g, '_') + '_' + pkg.name}.pdf`);
     }
 
     /**
@@ -206,6 +278,18 @@ export class WorkoutExportService {
      */
     async exportToExcel(data: any) {
         const nome = data.nome || data.descricao || 'Ficha';
+        console.log('data = ', data)
+        const aluno = data.aluno;
+        console.log('aluno = ', aluno)
+        const instrutor = data.instrutor;
+        console.log('instrutor = ', instrutor)
+        const objetivo = data.objetivo;
+        console.log('objetivo = ', objetivo)
+        const ficha_data_inicio = data.ficha_data_inicio;
+        console.log('ficha_data_iniciodata_inicio = ', ficha_data_inicio)
+        const ficha_data_fim = data.ficha_data_fim;
+        console.log('ficha_data_fim = ', ficha_data_fim)
+
         const sessoes = data.sessoes || [];
         const XLSX = await import('xlsx');
         const workbook = XLSX.utils.book_new();
@@ -225,83 +309,116 @@ export class WorkoutExportService {
             }) || [];
 
             const worksheet = XLSX.utils.json_to_sheet(sheetData);
-            XLSX.utils.book_append_sheet(workbook, worksheet, `Sessão ${sessao.nome}`);
+            XLSX.utils.book_append_sheet(workbook, worksheet, `Sessão ${sessao.nome} `);
         });
-
-        XLSX.writeFile(workbook, `Treino_${nome.replace(/\s+/g, '_')}.xlsx`);
+        const docFileName = `Treino_${aluno?.nome.replace(/\s+/g, '_')}_${ficha_data_inicio}_${ficha_data_fim}_${objetivo?.replace(/\s+/g, '_')}.xlsx`;
+        XLSX.writeFile(workbook, docFileName);
     }
 
     /**
-     * Dispara a impressão em formato térmico (layout compacto)
+     * Dispara a impressão em formato térmico (layout compacto da seção ativa)
      */
-    printThermal(data: any, empresa: IEmpresa | null) {
-        const nome = data.nome || data.descricao || 'Ficha';
-        const sessoes = data.sessoes || [];
+    printThermal(sessao: any, aluno: Partial<IUsuario>, empresa: IEmpresa | null, instrutor?: Partial<IUsuario>) {
+        if (!sessao) return;
+
+        const studentName = aluno?.nome || 'Não informado';
+        const gymName = empresa?.nome_fantasia || empresa?.nome || 'MvK Gym Manager';
+        const instructorName = instrutor?.nome || 'Não informado';
+        const systemBranding = `${(pkg as any).name} v${(pkg as any).version} `;
+        const printDate = new Date().toLocaleString('pt-BR');
+
         const printWindow = window.open('', '_blank', 'width=400,height=600');
         if (!printWindow) return;
 
         let html = `
-      <html>
-        <head>
-          <title>Impressão de Treino</title>
-          <style>
-            @page { margin: 2mm; }
-            body { 
-              font-family: 'Courier New', Courier, monospace; 
-              font-size: 12px; 
-              width: 80mm; 
-              margin: 0; 
-              padding: 10px;
-              color: #000;
-            }
-            .header { text-align: center; margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 5px; }
-            .company { font-weight: bold; font-size: 14px; text-transform: uppercase; }
-            .workout-name { font-weight: bold; margin: 5px 0; }
-            .session { margin-top: 15px; border-top: 1px solid #000; padding-top: 5px; }
-            .session-title { font-weight: bold; text-decoration: underline; margin-bottom: 5px; }
-            .exercise { margin-bottom: 8px; }
-            .ex-name { font-weight: bold; display: block; }
-            .ex-details { font-size: 11px; }
-            .footer { margin-top: 20px; text-align: center; font-size: 10px; border-top: 1px dashed #000; padding-top: 5px; }
-            .checkbox { display: inline-block; width: 12px; height: 12px; border: 1px solid #000; margin-right: 5px; vertical-align: middle; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="company">${empresa?.nome || empresa?.nome_fantasia || 'MvK Gym Manager'}</div>
-            <div class="workout-name">${nome}</div>
-          </div>
-    `;
+    < html >
+    <head>
+    <title>Impressão Térmica - ${sessao.nome || 'Treino'} </title>
+        <style>
+@page { margin: 2mm; }
+            body {
+    font - family: 'Courier New', Courier, monospace;
+    font - size: 11px;
+    width: 72mm;
+    margin: 0;
+    padding: 5px;
+    color: #000;
+    background: #fff;
+}
+            .header { text - align: center; margin - bottom: 8px; border - bottom: 1px dashed #000; padding - bottom: 5px; }
+            .gym { font - weight: bold; font - size: 13px; text - transform: uppercase; }
+            .student { font - size: 12px; font - weight: bold; margin - top: 4px; }
+            .info { font - size: 10px; margin - top: 2px; }
+            
+            .session - block { margin - bottom: 15px; border - bottom: 1px solid #eee; padding - bottom: 10px; }
+            .session - title { font - weight: bold; text - align: center; font - size: 14px; margin: 10px 0 5px 0; border: 1px solid #000; padding: 2px; }
+            
+            table { width: 100 %; border - collapse: collapse; margin - top: 5px; }
+            th { text - align: left; border - bottom: 1px solid #000; font - size: 10px; }
+            td { padding: 3px 0; vertical - align: top; font - size: 10px; }
+            .ex - name { font - weight: bold; }
+            
+            .footer { margin - top: 15px; text - align: center; font - size: 9px; border - top: 1px dashed #000; padding - top: 5px; color: #333; }
+</style>
+    </head>
+    < body >
+    <div class="header" >
+        <div class="gym" > ${gymName} </div>
+            < div class="student" > ${studentName} </div>
+                < div class="info" > Instrutor: ${instructorName} </div>
+                    </div>
+                        `;
 
-        sessoes.sort((a: any, b: any) => a.ordem - b.ordem).forEach((sessao: any) => {
+        const sessoesToPrint = sessao.sessoes || [sessao];
+
+        sessoesToPrint.forEach((s: any) => {
+            if (!s.exercicios || s.exercicios.length === 0) return;
+
             html += `
-        <div class="session">
-          <div class="session-title">SESSÃO ${sessao.nome}</div>
-      `;
+                    < div class="session-block" >
+                        <div class="session-title" > SESSÃO ${s.nome} </div>
+                            < table >
+                            <thead>
+                            <tr>
+                            <th width="50%" > EXERCÍCIO </th>
+                                < th width = "15%" > S </th>
+                                    < th width = "15%" > R </th>
+                                        < th width = "20%" > KG </th>
+                                            </tr>
+                                            </thead>
+                                                <tbody>
+                                                `;
 
-            sessao.exercicios?.sort((a: any, b: any) => a.ordem - b.ordem).forEach((ex: any) => {
+            s.exercicios?.sort((a: any, b: any) => a.ordem - b.ordem).forEach((ex: any) => {
                 const exercicioNome = ex.exercicio?.nome || ex.exercicios?.nome || 'N/A';
                 html += `
-          <div class="exercise">
-            <span class="ex-name"><span class="checkbox"></span>${exercicioNome}</span>
-            <span class="ex-details">${ex.series}x${ex.repeticoes} | ${ex.carga}kg | ${ex.intervalo}s</span>
-          </div>
-        `;
+                                            < tr >
+                                            <td class="ex-name" > ${exercicioNome} </td>
+                                                < td > ${ex.series} </td>
+                                                    < td > ${ex.repeticoes} </td>
+                                                        < td > ${ex.carga || '-'} </td>
+                                                            </tr>
+                                                                `;
             });
-            html += `</div>`;
+
+            html += `
+                                                            </tbody>
+                                                            </table>
+                                                            </div>
+                                                                `;
         });
 
         html += `
-          <div class="footer">
-            Bom treino!<br>
-            ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
-          </div>
-          <script>
-            window.onload = function() { window.print(); window.close(); }
-          </script>
-        </body>
-      </html>
-    `;
+                                                            < div class="footer" >
+                                                                ${systemBranding} | Instrutor: ${instructorName} <br>
+                                                                    ${printDate}
+</div>
+    <script>
+window.onload = function () { window.print(); setTimeout(() => window.close(), 500); }
+    </script>
+    </body>
+    </html>
+        `;
 
         printWindow.document.write(html);
         printWindow.document.close();

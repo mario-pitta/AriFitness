@@ -1,6 +1,16 @@
 .exercise-container-card {
     background-color: var(--ion-card-background, #ffffff);
     border: 1px solid var(--ion-color-step-100, rgba(0, 0, 0, 0.05)) !important;
+
+    /* Permite que o dropdown "quebre" o overflow da tabela quando estiver ativo */
+    &.allow-overflow {
+        overflow: visible !important;
+
+        .card-body,
+        .table-responsive {
+            overflow: visible !important;
+        }
+    }
 }
 
 .bg-card-header {
@@ -58,6 +68,11 @@
         background-color: var(--ion-color-step-50, #f8fafc);
         transition: all 0.2s ease;
 
+        &.active-search-row {
+            position: relative;
+            z-index: 9999 !important;
+        }
+
         td {
             border: none !important;
 
@@ -79,21 +94,31 @@
 }
 
 .autocomplete-dropdown {
-    z-index: 100000 !important;
-    pointer-events: auto;
-    overflow-y: auto;
-    max-height: 200px;
     position: absolute;
     top: 100%;
     left: 0;
+    width: 100%;
+    min-width: 250px;
+    z-index: 100000 !important;
+    pointer-events: auto;
+
+    /* Estilos se estiver acima da linha */
+    &.dropdown-above {
+        top: auto;
+        bottom: 100%;
+        margin-bottom: 5px;
+    }
 }
 
 .autocomplete-dropdown-container {
-    background-color: var(--ion-card-background, #ffffff) !important;
+    background-color: var(--ion-background-color, #ffffff) !important;
     border: 1px solid var(--ion-color-step-200, #e2e8f0) !important;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+    opacity: 1 !important;
 
     .dropdown-item {
         color: var(--ion-text-color, #1e293b);

@@ -8,7 +8,7 @@ import { Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
-import { EmpresaService } from 'src/core/services/empresa/empresa.service';
+
 // @ts-ignore
 import packageInfo from '../../../../package.json';
 @Component({
@@ -36,10 +36,10 @@ export class AdminHomeComponent implements OnInit {
     private pageSize: PageSizeService,
     private dashBoardService: TransacaoFinanceiraDashService,
     private authService: AuthService,
-    private empresaService: EmpresaService
+
   ) {
     this.user = this.authService.getUser as Usuario;
-    this.empresa$ = this.empresaService.getEmpresa(this.user.empresa_id as string);
+
 
     this.router.events.subscribe((e: any) => {
       if (e instanceof NavigationEnd) {

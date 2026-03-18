@@ -5,7 +5,7 @@
             <!-- Header Integrado: Logo + Perfil -->
             <div class="sidebar-header">
                 <div class="header-layout">
-                    <ng-container *ngIf="empresa$ | async as empresa; else loadingLogo">
+                    <ng-container *ngIf="user.empresa as empresa; else loadingLogo">
                         <div class="sidebar-brand-logo" *ngIf="empresa.logo_url">
                             <img [src]="empresa.logo_url" alt="Logo">
                         </div>

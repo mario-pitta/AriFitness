@@ -2,8 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable, Subject, take, tap } from 'rxjs';
+import { BehaviorSubject, map, take } from 'rxjs';
 import { Usuario, IUsuario } from 'src/core/models/Usuario';
+import { EmpresaService } from '../empresa/empresa.service';
+import { EmpresaStateService } from '../empresa/state/empresa-state.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,11 +13,21 @@ import { Usuario, IUsuario } from 'src/core/models/Usuario';
 export class AuthService {
   user: WritableSignal<IUsuario | null> = signal(null);
   userValue: BehaviorSubject<any> = new BehaviorSubject(null);
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private empresaService: EmpresaService,
+    private empresaState: EmpresaStateService
+  ) {
     this.userValue = new BehaviorSubject<any>(
       JSON.parse(localStorage.getItem('user') as string)
     );
     this.user.set(this.userValue.value);
+
+    // Auto-fetch empresa if missing but user exists
+    if (this.userValue.value?.empresa_id && !this.empresaState.getEmpresaValue) {
+      this.fetchAndSetEmpresa(this.userValue.value.empresa_id);
+    }
   }
 
   get getToken(): string | null {
@@ -34,6 +46,20 @@ export class AuthService {
     localStorage.setItem('user', JSON.stringify(user));
     this.userValue.next(user as IUsuario);
     this.user.set(user);
+
+    if (user?.empresa_id) {
+      this.fetchAndSetEmpresa(user.empresa_id);
+    }
+  }
+
+  private fetchAndSetEmpresa(empresaId: string) {
+    this.empresaService.getEmpresa(empresaId).subscribe({
+      next: (res: any) => {
+        if (res.data) {
+          this.empresaState.setEmpresa(res.data);
+        }
+      }
+    });
   }
 
   login(cpf: string, senha: string | Date) {
@@ -80,6 +106,7 @@ export class AuthService {
     localStorage.clear();
     this.user.set(null);
     this.userValue.next(null);
+    this.empresaState.clear();
     this.router.navigate(['/login']);
   }
 

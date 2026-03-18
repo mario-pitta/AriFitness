@@ -192,6 +192,7 @@ export class HistoricoAlunoPage implements OnInit {
                     }))
             }))
             .filter(g => g.series.length > 1)
+            .sort((a, b) => a.evolution - b.evolution)
             .slice(0, 5); // Limit to top 5 evolved exercises to avoid clutter
 
 

@@ -19,7 +19,10 @@ export class AuthService {
     console.log('logando...', cpf, senha);
     const res = await this.supabase.supabase
       .from('usuario')
-      .select('*')
+      .select(`
+          *,
+          empresa(*)
+        `)
       .eq('cpf', cpf)
       .eq('senha', senha)
       .eq('fl_ativo', true)

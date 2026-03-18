@@ -73,6 +73,10 @@ export class WorkoutTemplateStateService {
         return this.workoutSubject.value;
     }
 
+    getActiveSessionValue(): TreinoSessao | null {
+        return this.activeSessionSubject.value;
+    }
+
     setActiveSession(session: TreinoSessao | null) {
         this.activeSessionSubject.next(session);
     }

@@ -7,7 +7,7 @@ import { IUsuario, Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { DashboardMembersService } from 'src/core/services/dashboard/members/members.service';
-import { EmpresaService } from 'src/core/services/empresa/empresa.service';
+
 import { map, Observable } from 'rxjs';
 import { IEmpresa } from 'src/core/models/Empresa';
 import { Color, ScaleType } from '@swimlane/ngx-charts';
@@ -80,7 +80,7 @@ export class DashboardPage implements OnInit {
     private dashboardService: DashboardMembersService,
     private auth: AuthService,
     private transFinServ: TransacaoFinanceiraDashService,
-    private empresaService: EmpresaService
+
   ) {
     this.searchControl.valueChanges.subscribe((value) => {
       this.getMembers(value);
@@ -111,17 +111,13 @@ export class DashboardPage implements OnInit {
 
   ngOnInit() {
     this.isMobile();
-    this.loadEmpresa();
+    this.empresa = this.usuario.empresa as IEmpresa;
     this.getTotals();
     this.getBestInstrutoresData();
     this.loadOperationalData();
   }
 
-  loadEmpresa() {
-    this.empresaService.getEmpresa(this.usuario.empresa_id as string).subscribe(emp => {
-      this.empresa = emp;
-    });
-  }
+
 
   loadOperationalData() {
     const empresaId = this.usuario.empresa_id as string;
