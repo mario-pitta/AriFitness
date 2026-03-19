@@ -14,7 +14,7 @@ ari-fitness-app/plugins
 #antigravity
 .agent
 .antigravity
-.skills/
+# .skills/
 
 # Environment
 .env
