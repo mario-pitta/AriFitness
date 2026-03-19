@@ -6,6 +6,21 @@ ion-content {
     --background: var(--ion-background-color);
 }
 
+.premium-segment {
+    --background: var(--ion-color-step-50);
+    border-radius: 16px;
+    padding: 4px;
+
+    ion-segment-button {
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        --background: var(--ion-color-step-50);
+        border-radius: 16px;
+        padding: 4px;
+    }
+}
+
 .user-header-container {
     padding: 24px 16px;
     background: var(--profile-bg);

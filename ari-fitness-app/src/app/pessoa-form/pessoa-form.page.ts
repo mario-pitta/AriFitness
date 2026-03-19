@@ -19,6 +19,9 @@ import { ToastrService } from 'src/core/services/toastr/toastr.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { Plano } from 'src/core/models/Empresa';
+import { SpecialtyService } from 'src/core/services/specialty/specialty.service';
+import { GymServiceService } from 'src/core/services/service/service.service';
+import { TeamMemberService } from 'src/core/services/instructor/team-member.service';
 
 @Component({
   selector: 'app-pessoa-form',
@@ -42,6 +45,10 @@ export class PessoaFormPage implements OnInit {
 
   tiposUsuario: TipoUsuario[] = [];
 
+  specialtiesList: any[] = [];
+  servicesList: any[] = [];
+  instructorId: string | null = null;
+
   onFormChange($event: Event) {
     // console.log($event);
     // console.log(this.form);
@@ -57,7 +64,10 @@ export class PessoaFormPage implements OnInit {
     private horarioService: HorarioService,
     private aRoute: ActivatedRoute,
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private specialtyService: SpecialtyService,
+    private gymService: GymServiceService,
+    private teamMemberService: TeamMemberService
   ) { }
   user!: IUsuario
   ngOnInit() {
@@ -76,6 +86,8 @@ export class PessoaFormPage implements OnInit {
 
     if (this.aRoute.snapshot.queryParams['userId']) {
       this.getUserInfo(this.aRoute.snapshot.queryParams['userId']);
+    } else if (this.aRoute.snapshot.queryParams['memberId']) {
+      this.getMemberInfo(this.aRoute.snapshot.queryParams['memberId']);
     }
 
 
@@ -84,10 +96,27 @@ export class PessoaFormPage implements OnInit {
   getUserInfo(id: any) {
     this.usuarioService.findByFilters({ id: id }).subscribe({
       next: (data: IUsuario[]) => {
-        this.form.patchValue(data[0]);
-        this.calcIMC()
-        // console.log(this.form.value);
+        if (data && data[0]) {
+          this.form.patchValue(data[0]);
+          this.calcIMC()
+        }
       },
+    });
+  }
+
+  getMemberInfo(id: string) {
+    this.teamMemberService.findOne(id, this.user.empresa_id as string).subscribe({
+      next: (member) => {
+        if (member) {
+          this.instructorId = member.id;
+          this.form.patchValue({
+            ...member,
+            whatsapp: member.telefone,
+            status_instrutor: member.status,
+            senha: member.password
+          });
+        }
+      }
     });
   }
 
@@ -95,6 +124,23 @@ export class PessoaFormPage implements OnInit {
     this.getTipoUsuarioList();
     this.getActiveHorarios();
     this.getActivePlans();
+    this.getSpecialties();
+    this.getServices();
+  }
+
+  getSpecialties() {
+    this.specialtyService.findAll().subscribe({
+      next: (res) => this.specialtiesList = res,
+    });
+  }
+
+  getServices() {
+    const empresa_id = this.user?.empresa_id as string;
+    if (empresa_id) {
+      this.gymService.findAll(empresa_id).subscribe({
+        next: (res) => this.servicesList = res,
+      });
+    }
   }
 
   getActivePlans() {
@@ -145,23 +191,15 @@ export class PessoaFormPage implements OnInit {
   imcIdeal = 0;
   rcqIdeal: number = 0;
   calcIMC() {
-    // console.log(
-    //   'calculando imc ideal',
-    //   Number(this.form.value.peso),
-    //   Number(this.form.value.altura)
-    // );
     this.imcIdeal =
       Number(this.form.value.peso) /
       Math.pow(Number(this.form.value.altura), 2);
     this.imcIdeal = Number(this.imcIdeal.toFixed(2));
-    // console.log(this.imcIdeal);
   }
   calcRCQ() {
-    // console.log('calculando rcq ideal');
     this.imcIdeal = Number(
       (this.form.value.peso / Math.pow(this.form.value.peso, 2)).toFixed(2)
     );
-    // console.log(this.imcIdeal);
   }
 
   createForm() {
@@ -234,11 +272,14 @@ export class PessoaFormPage implements OnInit {
       created_at: [null, [Validators.nullValidator]],
       classificacao_risco: [1, [Validators.nullValidator]],
       observacoes: ['', [Validators.nullValidator]],
-      empresa_id: [this.user.empresa_id, [Validators.nullValidator]],
+      empresa_id: [this.user.empresa_id ?? null, [Validators.nullValidator]],
       cref: [null, [Validators.nullValidator]],
       especialidade: [null, [Validators.nullValidator]],
       turno: [null, [Validators.nullValidator]],
       funcao: [null, [Validators.nullValidator]],
+      status_instrutor: ['ACTIVE', [Validators.nullValidator]],
+      specialties: [[], [Validators.nullValidator]],
+      services: [[], [Validators.nullValidator]]
     });
   }
 
@@ -277,47 +318,73 @@ export class PessoaFormPage implements OnInit {
 
   submitForm() {
     this.loading = true;
-
     const rawValue = this.form.getRawValue();
-    const isNew = !rawValue.id;
+    const isNew = !rawValue.id && !this.instructorId;
     const msg = isNew ? 'cadastrado' : 'atualizado';
-    const req = isNew
-      ? this.usuarioService.create(rawValue)
-      : this.usuarioService.update(rawValue);
+    const tipoId = this.tipoUsuarioForm?.id || rawValue.tipo_usuario;
 
-    this.form.disable();
-    req.subscribe({
-      next: (res: any) => {
-        this.toastr.success(`Usuário ${msg} com sucesso!`);
-        this.form.enable();
-        if (isNew) {
-          this.createForm();
-        } else {
-          // Redireciona para a rota correta conforme o tipo de usuário
-          const tipoId = this.tipoUsuarioForm?.id;
-          if (tipoId === Constants.INSTRUTOR_ID) {
-            this.router.navigateByUrl('admin/instrutores');
-          } else if (tipoId === Constants.ALUNO_ID) {
-            this.router.navigateByUrl('admin/membros');
-          } else {
-            this.router.navigateByUrl('admin/home');
-          }
+    // Qualquer um que não seja Aluno é considerado Membro da Equipe para esse fluxo
+    const isTeamMember = tipoId !== Constants.ALUNO_ID;
+
+    if (isTeamMember) {
+      const teamMemberData = {
+        empresa_id: this.user.empresa_id,
+        nome: rawValue.nome,
+        telefone: rawValue.whatsapp,
+        foto_url: rawValue.foto_url,
+        status: rawValue.status_instrutor || 'ACTIVE',
+        specialties: rawValue.specialties,
+        services: rawValue.services,
+        function_id: tipoId,
+        cpf: rawValue.cpf,
+        genero: rawValue.genero,
+        password: rawValue.senha
+      };
+
+      const request = this.instructorId ?
+        this.teamMemberService.update(this.instructorId, this.user.empresa_id as string, teamMemberData) :
+        this.teamMemberService.create(teamMemberData);
+
+      this.form.disable();
+      request.subscribe({
+        next: () => this.finishSubmit(msg, isNew, tipoId),
+        error: (err) => {
+          this.loading = false;
+          this.form.enable();
+          console.error(err);
+          this.toastr.error('Erro ao salvar dados do membro da equipe');
         }
-      },
-      error: (err: any) => {
-        this.loading = false;
-        this.form.enable();
-        console.error(err);
-      },
-      complete: () => {
-        this.loading = false;
-      },
-    });
+      });
+    } else {
+      this.form.disable();
+      const req = isNew ? this.usuarioService.create(rawValue) : this.usuarioService.update(rawValue);
+      req.subscribe({
+        next: () => this.finishSubmit(msg, isNew, tipoId),
+        error: (err: any) => {
+          this.loading = false;
+          this.form.enable();
+          console.error(err);
+          this.toastr.error('Erro ao salvar usuário');
+        }
+      });
+    }
   }
 
+  finishSubmit(msg: string, isNew: boolean, tipoId: any) {
+    this.toastr.success(`Usuário ${msg} com sucesso!`);
+    this.form.enable();
+    if (isNew) {
+      this.createForm();
+    } else {
+      if (tipoId === Constants.ALUNO_ID) {
+        this.router.navigateByUrl('admin/membros');
+      } else {
+        this.router.navigateByUrl('admin/equipe');
+      }
+    }
+  }
 
   ngOnDestroy() {
-    console.log('destruindo pessoa-form...')
     this.form.reset();
   }
 }

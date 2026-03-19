@@ -40,7 +40,18 @@
                 </ion-row>
 
 
-                <ion-list *ngIf="checkinHistoric.length > 0; else noCheckins">
+                <!-- Skeleton Loading State -->
+                <ion-list *ngIf="loadingHistoric">
+                    <ion-item *ngFor="let i of [1,2,3,4,5]">
+                        <ion-label>
+                            <h3><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></h3>
+                            <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
+                            <p><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></p>
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+
+                <ion-list *ngIf="!loadingHistoric && checkinHistoric.length > 0; else noCheckins">
                     <ion-item *ngFor="let checkin of checkinHistoric">
                         <ion-label>
                             <h2>{{ checkin.nome_completo || 'Nome não informado' }}</h2>

@@ -1,5 +1,6 @@
 <ion-content [fullscreen]="true">
-  <div *ngIf="user.flagAdmin; else alunoHome">
+  <div
+    *ngIf="user.tipo_usuario === Constants.GERENCIA_ID || user.function_id === Constants.INSTRUTOR_ID; else alunoHome">
     <app-admin-home [user]="user"></app-admin-home>
   </div>
 </ion-content>

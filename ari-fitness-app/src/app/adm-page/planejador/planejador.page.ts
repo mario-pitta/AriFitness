@@ -52,6 +52,7 @@ export class PlanejadorPage implements OnInit, OnDestroy {
     }
   }
   showTaskForm: boolean = false;
+  loading: boolean = true;
   cols: { title: string; visible: boolean; tasks: Tarefa[]; status_tarefa_id: number }[] = [];
 
   user: IUsuario | null = null;
@@ -174,35 +175,43 @@ export class PlanejadorPage implements OnInit, OnDestroy {
     console.log('logging: ', v);
   }
   loadTasks() {
+    this.loading = true;
     this.tarefaService
       .getByFilters({ fl_ativo: true, empresa_id: this.user?.empresa_id })
-      .subscribe((res) => {
-        this.cols = [
-          {
-            title: 'A Fazer',
-            visible: true,
-            tasks: res
-              .filter((t: Tarefa) => t.status_tarefa_id == 1)
-              .sort((a, b) => a.posicao - b.posicao),
-            status_tarefa_id: 1,
-          },
-          {
-            title: 'Fazendo',
-            visible: true,
-            tasks: res
-              .filter((t: Tarefa) => t.status_tarefa_id == 2)
-              .sort((a, b) => a.posicao - b.posicao),
-            status_tarefa_id: 2,
-          },
-          {
-            title: 'Feito',
-            visible: true,
-            tasks: res
-              .filter((t: Tarefa) => t.status_tarefa_id == 3)
-              .sort((a, b) => a.posicao - b.posicao),
-            status_tarefa_id: 3,
-          },
-        ];
+      .subscribe({
+        next: (res) => {
+          this.cols = [
+            {
+              title: 'A Fazer',
+              visible: true,
+              tasks: res
+                .filter((t: Tarefa) => t.status_tarefa_id == 1)
+                .sort((a, b) => a.posicao - b.posicao),
+              status_tarefa_id: 1,
+            },
+            {
+              title: 'Fazendo',
+              visible: true,
+              tasks: res
+                .filter((t: Tarefa) => t.status_tarefa_id == 2)
+                .sort((a, b) => a.posicao - b.posicao),
+              status_tarefa_id: 2,
+            },
+            {
+              title: 'Feito',
+              visible: true,
+              tasks: res
+                .filter((t: Tarefa) => t.status_tarefa_id == 3)
+                .sort((a, b) => a.posicao - b.posicao),
+              status_tarefa_id: 3,
+            },
+          ];
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao buscar tarefas:', err);
+          this.loading = false;
+        }
       });
 
     console.log('this.cols: ', this.cols);

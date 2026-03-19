@@ -9,7 +9,7 @@ import QRCode from 'qrcode';
   providedIn: 'root',
 })
 export class ReciboService {
-  constructor() {}
+  constructor() { }
 
   async buildRecibo(
     transacao: TransacaoFinanceira,
@@ -190,7 +190,7 @@ export class ReciboService {
       {
         label: 'Motivo',
         value: (transacao.categoria?.descricao as string).toUpperCase(),
-      }, //TODO MUDAR CONFORME NOVAS CATEGORIAS SEJAM ADICIONADAS
+      }, //TODO: MUDAR CONFORME NOVAS CATEGORIAS SEJAM ADICIONADAS
     ];
 
     if (transacao.tr_categoria_id === Constants.TR_CATEGORIA_MENSALIDADE) {
@@ -208,13 +208,12 @@ export class ReciboService {
     if (transacao.desconto_perc || transacao.desconto_real) {
       infoItems.push({
         label: 'Desconto',
-        value: `${
-          transacao.desconto_perc
+        value: `${transacao.desconto_perc
             ? transacao.desconto_perc + '%'
             : transacao.desconto_real
-            ? 'R$ ' + transacao.desconto_real
-            : ''
-        }`,
+              ? 'R$ ' + transacao.desconto_real
+              : ''
+          }`,
       });
     }
     // Create info items
@@ -269,7 +268,7 @@ export class ReciboService {
     const authCodeDiv = document.createElement('div');
     authCodeDiv.classList.add('cod-div');
     const authCodeParag = document.createElement('sub');
-    authCodeParag.classList.add('text-secondary',  'cod-div');
+    authCodeParag.classList.add('text-secondary', 'cod-div');
     authCodeParag.textContent = 'Cód: ' + transacao.auth_code;
 
     const qrCode = document.createElement('img');

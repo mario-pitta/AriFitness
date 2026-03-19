@@ -11,6 +11,11 @@ ari-fitness-app/plugins
 # Vercel
 .vercel
 
+#antigravity
+.agent
+.antigravity
+.skills/
+
 # Environment
 .env
 *.log

@@ -22,9 +22,15 @@ export class AuthController {
 
     const { data: user, access_token } = result;
 
+    console.log('user = ', user)
+
+
     // Based on user request: Only Admins can manage treinos.
     // If we want to allow only them to log in to the manager:
-    if (user.tipo_usuario !== 3 && !user.flag_admin) {
+    const validUserProfiles = [3, 2];
+
+
+    if (!validUserProfiles.includes(user.tipo_usuario) && !validUserProfiles.includes(user.function_id)) {
       return res.status(401).send({
         status: 401,
         message: 'Acesso restrito a Administradores e Instrutores.'

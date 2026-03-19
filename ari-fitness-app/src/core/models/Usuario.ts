@@ -120,6 +120,18 @@ export class Usuario implements IUsuario {
   }
 }
 
+
+
+export interface ITeamMember {
+  id: number;
+  nome: string;
+  email: string;
+  function_id: number; // 1=Admin, 2=Instrutor
+  [key: string]: any;
+  // ... outros campos que o backend retornar
+}
+
+
 interface obj {
   report: '[CONTEÚDO DO RELATÓRIO DETALHADO EM FORMATO MARKDOWN CONFORME A ESTRUTURA DEFINIDA ACIMA, SEM INCLUIR NENHUM BLOCO JSON DENTRO DESTA STRING]';
   data: {

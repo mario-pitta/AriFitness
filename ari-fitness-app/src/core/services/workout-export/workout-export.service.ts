@@ -24,16 +24,33 @@ export class WorkoutExportService {
 
         const gymName = empresa?.nome_fantasia || empresa?.nome || 'MvK Gym Manager';
         const instructorName = instrutor?.nome || 'Não informado';
-        const gymLogo = empresa?.logo_url || null;
-        let gymLogoImage
-        if (gymLogo) {
-            const reader = new FileReader();
-            reader.onload = async () => {
-                gymLogoImage = reader.result as string;
-            };
-            await reader.readAsDataURL(new Blob([await fetch(gymLogo).then(res => res.arrayBuffer())], { type: 'image/jpeg' }));
+        const gymLogoUrl = empresa?.logo_url || null;
+        // console.log('gymLogoUrl = ', gymLogoUrl)
 
+
+        //o sistema precisa esperar a imagem ser carregada antes de gerar o pdf
+
+        const getBase64Image = async (url: string): Promise<string> => {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        };
+
+        let gymLogoImage = null;
+        if (gymLogoUrl) {
+            try {
+                gymLogoImage = await getBase64Image(gymLogoUrl);
+                console.log('gymLogoImage = ', gymLogoImage)
+            } catch (error) {
+                console.error('Erro ao carregar imagem do logo:', error);
+            }
         }
+
         const systemBranding = `${(pkg as any).name} v${(pkg as any).version}`;
         const printDate = new Date().toLocaleString('pt-BR');
 
@@ -324,50 +341,50 @@ export class WorkoutExportService {
         const studentName = aluno?.nome || 'Não informado';
         const gymName = empresa?.nome_fantasia || empresa?.nome || 'MvK Gym Manager';
         const instructorName = instrutor?.nome || 'Não informado';
-        const systemBranding = `${(pkg as any).name} v${(pkg as any).version} `;
+        const systemBranding = `${(pkg as any).name} | v${(pkg as any).version} `;
         const printDate = new Date().toLocaleString('pt-BR');
 
         const printWindow = window.open('', '_blank', 'width=400,height=600');
         if (!printWindow) return;
 
         let html = `
-    < html >
-    <head>
-    <title>Impressão Térmica - ${sessao.nome || 'Treino'} </title>
-        <style>
-@page { margin: 2mm; }
-            body {
-    font - family: 'Courier New', Courier, monospace;
-    font - size: 11px;
-    width: 72mm;
-    margin: 0;
-    padding: 5px;
-    color: #000;
-    background: #fff;
-}
-            .header { text - align: center; margin - bottom: 8px; border - bottom: 1px dashed #000; padding - bottom: 5px; }
-            .gym { font - weight: bold; font - size: 13px; text - transform: uppercase; }
-            .student { font - size: 12px; font - weight: bold; margin - top: 4px; }
-            .info { font - size: 10px; margin - top: 2px; }
-            
-            .session - block { margin - bottom: 15px; border - bottom: 1px solid #eee; padding - bottom: 10px; }
-            .session - title { font - weight: bold; text - align: center; font - size: 14px; margin: 10px 0 5px 0; border: 1px solid #000; padding: 2px; }
-            
-            table { width: 100 %; border - collapse: collapse; margin - top: 5px; }
-            th { text - align: left; border - bottom: 1px solid #000; font - size: 10px; }
-            td { padding: 3px 0; vertical - align: top; font - size: 10px; }
-            .ex - name { font - weight: bold; }
-            
-            .footer { margin - top: 15px; text - align: center; font - size: 9px; border - top: 1px dashed #000; padding - top: 5px; color: #333; }
-</style>
-    </head>
-    < body >
-    <div class="header" >
-        <div class="gym" > ${gymName} </div>
-            < div class="student" > ${studentName} </div>
-                < div class="info" > Instrutor: ${instructorName} </div>
-                    </div>
-                        `;
+            <html>
+                <head>
+                    <title>Impressão Térmica - ${sessao.nome || 'Treino'} </title>
+                    <style>
+                        @page { margin: 2mm; }
+                        body {
+                            font-family: 'Courier New', Courier, monospace;
+                            font-size: 11px;
+                            width: 72mm;
+                            margin: 0;
+                            padding: 5px;
+                            color: #000;
+                            background: #fff;
+                        }
+                        .header { text-align: center; margin-bottom: 8px; border-bottom: 1px dashed #000; padding-bottom: 5px; }
+                        .gym { font-weight: bold; font-size: 13px; text-transform: uppercase; }
+                        .student { font-size: 12px; font-weight: bold; margin-top: 4px; }
+                        .info { font-size: 10px; margin-top: 2px; }
+                        
+                        .session-block { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+                        .session-title { font-weight: bold; text-align: center; font-size: 14px; margin: 10px 0 5px 0; border: 1px solid #000; padding: 2px; }
+                        
+                        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+                        th { text-align: left; border-bottom: 1px solid #000; font-size: 10px; }
+                        td { padding: 3px 0; vertical-align: top; font-size: 10px; }
+                        .ex-name { font-weight: bold; }
+                        
+                        .footer { margin-top: 15px; text-align: center; font-size: 9px; border-top: 1px dashed #000; padding-top: 5px; color: #333; }
+                    </style>
+                </head>
+                <body>
+                <div class="header" >
+                    <div class="gym" > ${gymName} </div>
+                        <div class="student" > ${studentName} </div>
+                            <div class="info" > Instrutor: ${instructorName} </div>
+                        </div>
+        `;
 
         const sessoesToPrint = sessao.sessoes || [sessao];
 
@@ -375,49 +392,49 @@ export class WorkoutExportService {
             if (!s.exercicios || s.exercicios.length === 0) return;
 
             html += `
-                    < div class="session-block" >
-                        <div class="session-title" > SESSÃO ${s.nome} </div>
-                            < table >
+                    <div class="session-block">
+                        <div class="session-title">SESSÃO ${s.nome}</div>
+                            <table>
                             <thead>
-                            <tr>
-                            <th width="50%" > EXERCÍCIO </th>
-                                < th width = "15%" > S </th>
-                                    < th width = "15%" > R </th>
-                                        < th width = "20%" > KG </th>
-                                            </tr>
-                                            </thead>
-                                                <tbody>
-                                                `;
+                                <tr>
+                                    <th width="60%">EXERCÍCIO</th>
+                                    <th width="10%">S</th>
+                                    <th width="15%">R</th>
+                                    <th width="10%">KG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        `;
 
             s.exercicios?.sort((a: any, b: any) => a.ordem - b.ordem).forEach((ex: any) => {
                 const exercicioNome = ex.exercicio?.nome || ex.exercicios?.nome || 'N/A';
                 html += `
-                                            < tr >
-                                            <td class="ex-name" > ${exercicioNome} </td>
-                                                < td > ${ex.series} </td>
-                                                    < td > ${ex.repeticoes} </td>
-                                                        < td > ${ex.carga || '-'} </td>
-                                                            </tr>
-                                                                `;
+                                <tr>
+                                    <td class="ex-name"> ${exercicioNome} </td>
+                                    <td> ${ex.series} </td>
+                                    <td> ${ex.repeticoes} </td>
+                                    <td> ${ex.carga || '-'} </td>
+                                </tr>
+                        `;
             });
 
             html += `
-                                                            </tbody>
-                                                            </table>
-                                                            </div>
-                                                                `;
+                                </tbody>
+                            </table>
+                        </div>
+                        `;
         });
 
         html += `
-                                                            < div class="footer" >
-                                                                ${systemBranding} | Instrutor: ${instructorName} <br>
-                                                                    ${printDate}
-</div>
-    <script>
-window.onload = function () { window.print(); setTimeout(() => window.close(), 500); }
-    </script>
-    </body>
-    </html>
+                        <div class="footer">
+                            ${systemBranding} | Instrutor: ${instructorName} <br>
+                            ${printDate}
+                        </div>
+                        <script>
+                            window.onload = function () { window.print(); setTimeout(() => window.close(), 500); }
+                        </script>
+                    </body>
+                </html>
         `;
 
         printWindow.document.write(html);

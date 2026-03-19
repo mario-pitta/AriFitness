@@ -3,7 +3,7 @@
     <ion-title>{{pageTitle}}</ion-title>
   </ion-toolbar>
 </ion-header> -->
-@if(user.tipo_usuario === Constants.GERENCIA_ID ){
+@if(user.tipo_usuario === Constants.GERENCIA_ID || user.function_id === Constants.INSTRUTOR_ID ){
 <ion-tabs>
   @if(isMobile){
 

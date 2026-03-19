@@ -1,93 +1,191 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Equipe</ion-title>
+        <ion-buttons slot="end">
+            <ion-button [routerLink]="['/admin/equipe/formulario']" fill="solid" color="primary" shape="round"
+                size="small">
+                <ion-icon slot="start" name="person-add-outline"></ion-icon>
+                Adicionar Membro
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
 <ion-content>
-    <ion-grid>
-        <ion-row>
-            <ion-col size="6">
-                <h5 class="ms-3 d-flex gap-2 ion-align-items-center">Instrutores:
-                    <ion-button size="small" fill="clear" shape="round" color="success  "
-                        [routerLink]="['/admin/instrutores/formulario']">
-                        <ion-icon name="add"></ion-icon>
-                    </ion-button>
-                </h5>
-                <ion-row></ion-row>
+
+    <!-- Analytics Section (MOCK) -->
+    <div class="analytics-container animate__animated animate__fadeIn" *ngIf="!carregando && instrutores.length > 0">
+        <div class="section-title">
+            <ion-icon name="analytics-outline" color="primary"></ion-icon>
+            Analytics da Equipe
+        </div>
+        <div class="analytics-scroll">
+            <!-- Role Distribution -->
+            <div class="analytics-card">
+                <h6>Distribuição por Função</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-pie-chart [scheme]="colorScheme" [results]="roleDistribution" [doughnut]="true"
+                        [legend]="false" [labels]="true" [animations]="true">
+                    </ngx-charts-pie-chart>
+                </div>
+            </div>
+
+            <!-- Specialty Coverage -->
+            <div class="analytics-card">
+                <h6>Especialidades em Destaque</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-bar-horizontal [scheme]="colorScheme" [results]="specialtyData" [xAxis]="true"
+                        [yAxis]="true" [showXAxisLabel]="false" [showYAxisLabel]="false" [animations]="true">
+                    </ngx-charts-bar-horizontal>
+                </div>
+            </div>
+
+            <!-- Mock Workload -->
+            <div class="analytics-card">
+                <h6>Carga Horária Média (Aulas/Dia)</h6>
+                <div class="chart-wrapper">
+                    <ngx-charts-bar-vertical [scheme]="colorScheme" [results]="workloadData" [xAxis]="true"
+                        [yAxis]="true" [animations]="true">
+                    </ngx-charts-bar-vertical>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and filter bar -->
+    <ion-grid class="ion-no-padding">
+        <ion-row class="ion-align-items-center ion-padding-horizontal ion-padding-top">
+            <ion-col>
+                <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="applyFilters()" placeholder="Buscar na equipe..."
+                    debounce="300" show-clear-button="focus">
+                </ion-searchbar>
             </ion-col>
         </ion-row>
-        <ion-row class="ion-align-items-center">
-            <ion-col size="6">
-                <ion-searchbar></ion-searchbar>
-            </ion-col>
 
-            <ion-col size="3" class="d-flex gap-2 ion-align-items-center ion-justify-content-around">
-                <ion-card-subtitle for="orderMemberSelector" style="width: inherit !important;"
-                    class="d-flex gap-1 ion-text-center fw-light">
-                    <ion-icon name="swap-vertical-sharp" size="small"></ion-icon>
-                    <ion-label>Ordernar:</ion-label>
-                </ion-card-subtitle>
-                <ion-select name="orderMemberSelector" id="orderMemberSelector" interface="popover">
-                    <ion-select-option selected [value]="'dateExpiracao'">Data de Expiração</ion-select-option>
-                    <ion-select-option [value]="'idade'">Idade</ion-select-option>
-                    <ion-select-option [value]="'plano'">Plano</ion-select-option>
-                    <ion-select-option [value]="'status'">Status</ion-select-option>
-                    <ion-select-option [value]="'horario'">Horário</ion-select-option>
-                    <ion-select-option [value]="'ultimaAtividade'">Última Atividade</ion-select-option>
-                </ion-select>
-            </ion-col>
-            <ion-col size="3" class="w-50 d-flex gap-2 ion-align-items-center ion-justify-content-around">
-                <ion-card-subtitle for="filterMemberSelector" style="width: inherit !important;"
-                    class="d-flex gap-1 ion-text-center fw-light">
-                    <ion-icon name="funnel" size="small"></ion-icon>
-                    <ion-label>Filtrar:</ion-label>
-                </ion-card-subtitle>
-                <ion-select name="filterMemberSelector" id="filterMemberSelector" interface="popover">
-                    <ion-select-option [value]="'status'">Todos</ion-select-option>
-                    <ion-select-option [value]="'idade'">Inadiplentes</ion-select-option>
-                    <ion-select-option [value]="'status'">Inativo</ion-select-option>
-                </ion-select>
+        <!-- Advanced Filters Scroll -->
+        <div class="filter-scroll" *ngIf="!carregando && instrutores.length > 0">
+            <ion-select [(ngModel)]="statusFilter" (ionChange)="applyFilters()" interface="popover"
+                placeholder="Status">
+                <ion-select-option value="">Todos Status</ion-select-option>
+                <ion-select-option value="ACTIVE">Ativos</ion-select-option>
+                <ion-select-option value="INACTIVE">Inativos</ion-select-option>
+            </ion-select>
+
+            <ion-select [(ngModel)]="roleFilter" (ionChange)="applyFilters()" interface="popover" placeholder="Função">
+                <ion-select-option value="">Todas Funções</ion-select-option>
+                <ion-select-option *ngFor="let role of availableRoles" [value]="role">{{ role }}</ion-select-option>
+            </ion-select>
+
+            <ion-select [(ngModel)]="specialtyFilter" (ionChange)="applyFilters()" interface="popover"
+                placeholder="Especialidade">
+                <ion-select-option value="">Todas Especialid.</ion-select-option>
+                <ion-select-option *ngFor="let spec of availableSpecialties" [value]="spec">{{ spec
+                    }}</ion-select-option>
+            </ion-select>
+        </div>
+    </ion-grid>
+
+    <!-- Skeleton Loading State -->
+    <ion-grid *ngIf="carregando">
+        <ion-row>
+            <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="4" *ngFor="let i of [1,2,3]">
+                <ion-card class="instructor-card">
+                    <div class="instructor-avatar">
+                        <ion-skeleton-text animated
+                            style="width: 100%; height: 100%; border-radius: 50%;"></ion-skeleton-text>
+                    </div>
+                    <ion-card-content>
+                        <ion-card-title>
+                            <ion-skeleton-text animated style="width: 60%; height: 20px;"></ion-skeleton-text>
+                        </ion-card-title>
+                        <ion-card-subtitle>
+                            <ion-skeleton-text animated
+                                style="width: 40%; height: 16px; margin-top: 8px;"></ion-skeleton-text>
+                        </ion-card-subtitle>
+                        <div class="chips-row">
+                            <ion-skeleton-text animated
+                                style="width: 60px; height: 32px; border-radius: 16px;"></ion-skeleton-text>
+                            <ion-skeleton-text animated
+                                style="width: 60px; height: 32px; border-radius: 16px;"></ion-skeleton-text>
+                        </div>
+                        <p class="contact-row mt-3">
+                            <ion-skeleton-text animated style="width: 80%; height: 14px;"></ion-skeleton-text>
+                        </p>
+                    </ion-card-content>
+                </ion-card>
             </ion-col>
         </ion-row>
     </ion-grid>
 
-    <ion-row>
-        <ion-col size-md="12" size-sm="12" size-xs="12" size-lg="4" *ngFor="let instrutor of instrutores">
-            <ion-card class="instructor-card" (click)="openForm(instrutor.id)"
-                [ngStyle]="{'background-image': 'url('+  instrutor.image_url + ')'}" style="background-size: 200px;
-  background-position: 100% 0%;
-  background-repeat: no-repeat;
-  position: relative;">
-                <ion-card-content>
-                    <ion-card-title>
+    <!-- Empty State -->
+    <div *ngIf="!carregando && filteredInstrutores.length === 0" class="ion-text-center ion-padding-top"
+        style="margin-top: 60px;">
+        <ion-icon name="people-outline" style="font-size: 64px; color: var(--ion-color-medium);"></ion-icon>
+        <h4 style="color: var(--ion-color-medium);">Nenhum membro da equipe encontrado</h4>
+        <ion-button [routerLink]="['/admin/equipe/formulario']" fill="outline" shape="round">
+            <ion-icon slot="start" name="person-add-outline"></ion-icon>
+            Cadastrar Membro
+        </ion-button>
+    </div>
 
-                        <h3>{{instrutor.nome}}</h3>
-                        <ion-card-subtitle>{{instrutor.tipo}}</ion-card-subtitle>
-                    </ion-card-title>
-                    <ion-row>
-                        <ion-col>
-                            <ion-card-title>
-                                3
-                                <ion-label color="success">+</ion-label>
-                            </ion-card-title>
-                            <p>Alunos</p>
-                        </ion-col>
-                        <ion-col>
-                            <ion-card-title>
-                                2
-                                <ion-label color="danger">+</ion-label>
-                            </ion-card-title>
-                            <p>Treinos</p>
-                        </ion-col>
+    <!-- Grouped Instructors Grid -->
+    <div *ngIf="!carregando && groupedInstrutores.length > 0">
+        <div *ngFor="let group of groupedInstrutores">
+            <div class="role-group-header">
+                <h3>{{ group.role }}</h3>
+                <span class="count-badge">{{ group.members.length }}</span>
+                <div class="header-line"></div>
+            </div>
 
-                    </ion-row>
-                    <ion-button class="position-absolute top-0 end-0" color="success" fill="clear" shape="round">
-                        <ion-icon slot="icon-only" name="expand"></ion-icon>
-                    </ion-button>
-                    <ion-row>
+            <ion-grid>
+                <ion-row>
+                    <ion-col size-xs="12" size-sm="6" size-md="6" size-lg="4" *ngFor="let instrutor of group.members">
+                        <ion-card class="instructor-card" (click)="openForm(instrutor.id)" button>
 
-                        <ion-chip
-                            *ngFor="let tag of ['Motivação', 'Musculação', 'Mentalidade']; track tag">{{tag}}</ion-chip>
+                            <!-- Status badge -->
+                            <div class="status-badge"
+                                [class.active]="instrutor.status === 'ACTIVE' || instrutor.fl_ativo"
+                                [class.inactive]="instrutor.status === 'INACTIVE' || !instrutor.fl_ativo">
+                                {{ (instrutor.status === 'ACTIVE' || instrutor.fl_ativo) ? 'Ativo' : 'Inativo' }}
+                            </div>
 
-                    </ion-row>
-                </ion-card-content>
-            </ion-card>
-        </ion-col>
+                            <!-- Avatar -->
+                            <div class="instructor-avatar">
+                                <img [src]="instrutor.foto_url || instrutor.image_url || getDefaultAvatar(instrutor.genero)"
+                                    [alt]="instrutor.nome" />
+                            </div>
 
-    </ion-row>
+                            <ion-card-content>
+                                <ion-card-title style="font-size: 1rem; font-weight: 700;">
+                                    {{ instrutor.nome }}
+                                </ion-card-title>
+                                <ion-card-subtitle
+                                    style="margin-bottom: 8px; color: var(--ion-color-primary); font-weight: 600;">
+                                    {{ instrutor.role }}
+                                </ion-card-subtitle>
+
+                                <!-- Specialties chips -->
+                                <div class="chips-row" *ngIf="instrutor.specialties?.length">
+                                    <ion-chip *ngFor="let tag of instrutor.specialties.slice(0, 3)" color="primary"
+                                        outline="true">
+                                        <ion-label>{{ tag }}</ion-label>
+                                    </ion-chip>
+                                    <ion-chip *ngIf="instrutor.specialties.length > 3" color="medium" outline="true">
+                                        <ion-label>+{{ instrutor.specialties.length - 3 }}</ion-label>
+                                    </ion-chip>
+                                </div>
+
+                                <!-- Phone number -->
+                                <p *ngIf="instrutor.whatsapp || instrutor.telefone" class="contact-row">
+                                    <ion-icon name="logo-whatsapp" color="success"></ion-icon>
+                                    {{ instrutor.whatsapp || instrutor.telefone }}
+                                </p>
+                            </ion-card-content>
+                        </ion-card>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </div>
+    </div>
+
 </ion-content>

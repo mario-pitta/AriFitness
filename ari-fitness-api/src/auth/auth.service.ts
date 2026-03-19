@@ -17,52 +17,81 @@ export class AuthService {
 
   async login(cpf: string, senha: string) {
     console.log('logando...', cpf, senha);
-    const res = await this.supabase.supabase
+
+    // 1. Try "usuario" table first (Admins, Students)
+    console.log("buscando usuario...")
+    let res = await this.supabase.supabase
       .from('usuario')
       .select(`
           *,
           empresa(*)
         `)
       .eq('cpf', cpf)
-      .eq('senha', senha)
+      .eq('senha', senha) // frontend already sends MD5
       .eq('fl_ativo', true)
       .single();
 
-    console.log('res = ', res)
+    let userType = 'USUARIO';
+    let user = res.data;
+
+    console.log("user = ", user)
+
+    // 2. If not found, try "team_member" table
+    console.log("buscando team_member...")
+    if (res.error || !user) {
+      const teamRes = await this.supabase.supabase
+        .from('team_member')
+        .select(`
+            *,
+            empresa:empresa_id(*)
+          `)
+        .eq('cpf', cpf)
+        .eq('password', senha) // frontend already sends MD5
+        .single();
 
 
-    if (res.error || !res.data) {
-      return { error: { message: 'Usuário ou senha inválidos' } };
+      console.log('teamRes = ', teamRes)
+
+      if (teamRes.error || !teamRes.data) {
+        return { error: { message: 'Usuário ou senha inválidos' } };
+      }
+
+
+      if (teamRes.data.status !== 'ACTIVE') {
+        return { error: { message: 'Usuário inativo. Solicite ao administrador da sua empresa para ativar sua conta.' } };
+      }
+
+
+      user = teamRes.data;
+
     }
 
-    const user = res.data;
+    console.log('user logado = ', user);
 
-
-    console.log('user = ', user)
-
-    // Only Admin (1) and Instructor (2) can manage workouts, but we generate token for everyone
     const payload = {
       sub: user.id,
       nome: user.nome,
       empresa_id: user.empresa_id,
-      tipo_usuario: user.tipo_usuario,
-      expires_in: 60 * 60 * 24 // 1 day
+      tipo_usuario: user.tipo_usuario || user.function_id,
+      expires_in: 60 * 60 * 24 * 7 // 1 week
     };
-
-    console.log('payload = ', payload)
 
     const token = this.jwtService.sign(payload);
 
-    console.log('token = ', token)
-
-    // Sanitize user before returning
+    // Sanitize
     if (user.senha) delete user.senha;
+    if (user.password) delete user.password;
+
+
 
     return {
       data: user,
       access_token: token
     };
   }
+
+
+
   async register(registrationData: { user: any; company: any; planId?: number }) {
     const { user, company, planId } = registrationData;
 

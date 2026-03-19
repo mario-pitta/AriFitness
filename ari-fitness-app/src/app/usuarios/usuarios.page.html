@@ -6,33 +6,55 @@
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card" *ngFor="let card of memberDataCard" [class.full-width]="card.size === 12"
-        (click)="onCardClick(card)">
-        <div class="card-glow" [style.background]="getGlowColor(card.iconColor)"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <div class="icon-box" [attr.color]="card.iconColor">
-              <ion-icon [name]="card.cardIconName"></ion-icon>
+      <!-- Skeleton Stats -->
+      <ng-container *ngIf="loading">
+        <div class="stat-card" *ngFor="let i of [1,2,3,4,5,6]">
+          <div class="card-content">
+            <div class="card-top">
+              <div class="icon-box">
+                <ion-skeleton-text animated style="width: 24px; height: 24px;"></ion-skeleton-text>
+              </div>
             </div>
-            <div class="trend" *ngIf="card.tendency" [class]="card.tendency">
-              <ion-icon [name]="card.tendency === 'up' ? 'trending-up' : 'trending-down'"></ion-icon>
-              {{card.tendencyValue}}%
-            </div>
-          </div>
-
-          <div class="card-main">
-            <div class="info">
-              <h3 class="card-title">{{card.title}}</h3>
-              <span class="card-subtitle">{{card.subtitle}}</span>
-              <div class="value">{{card.value || ''}}</div>
-            </div>
-
-            <div class="chart-box" *ngIf="card.chartType">
-              <ng-content *ngTemplateOutlet="cardChartTemplate; context: {$implicit: card}"></ng-content>
+            <div class="card-main">
+              <div class="info">
+                <ion-skeleton-text animated style="width: 100px; height: 16px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 150px; height: 12px; margin-top: 4px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80px; height: 32px; margin-top: 8px;"></ion-skeleton-text>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </ng-container>
+
+      <ng-container *ngIf="!loading">
+        <div class="stat-card" *ngFor="let card of memberDataCard" [class.full-width]="card.size === 12"
+          (click)="onCardClick(card)">
+          <div class="card-glow" [style.background]="getGlowColor(card.iconColor)"></div>
+          <div class="card-content">
+            <div class="card-top">
+              <div class="icon-box" [attr.color]="card.iconColor">
+                <ion-icon [name]="card.cardIconName"></ion-icon>
+              </div>
+              <div class="trend" *ngIf="card.tendency" [class]="card.tendency">
+                <ion-icon [name]="card.tendency === 'up' ? 'trending-up' : 'trending-down'"></ion-icon>
+                {{card.tendencyValue}}%
+              </div>
+            </div>
+
+            <div class="card-main">
+              <div class="info">
+                <h3 class="card-title">{{card.title}}</h3>
+                <span class="card-subtitle">{{card.subtitle}}</span>
+                <div class="value">{{card.value || ''}}</div>
+              </div>
+
+              <div class="chart-box" *ngIf="card.chartType">
+                <ng-content *ngTemplateOutlet="cardChartTemplate; context: {$implicit: card}"></ng-content>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
 
@@ -80,63 +102,91 @@
     </div>
 
     <div class="members-grid">
-      @for(member of usuarioList ; track $index){
-      <div class="member-card" [class.inactive]="!member.fl_ativo">
-        <div class="member-top" (click)="showNavigationOptions(member)">
-          <div class="person-info">
-            <div class="name-details">
-              <div class="status-dot" [class.online]="member.fl_ativo"></div>
-              <h4>{{member.nome}}</h4>
-              <span>{{member.whatsapp || 'Sem WhatsApp'}}</span>
+      <!-- Skeleton Members -->
+      <ng-container *ngIf="loading">
+        <div class="member-card" *ngFor="let i of [1,2,3,4,5,6,7,8]">
+          <div class="member-top">
+            <div class="person-info">
+              <div class="name-details">
+                <ion-skeleton-text animated style="width: 150px; height: 18px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 100px; height: 14px; margin-top: 4px;"></ion-skeleton-text>
+              </div>
             </div>
           </div>
-
-          <ion-button fill="clear" color="medium" [id]="member.id + '_memberOptionsBtn'">
-            <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
-          </ion-button>
-        </div>
-
-        <div class="member-body">
-          <div class="info-row">
-            <div class="info-item">
-              <span class="label">Plano</span>
-              <span class="value">{{member.planos.descricao}}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Vencimento</span>
-              <span class="value">{{member.data_vencimento}}º dia</span>
-            </div>
-          </div>
-          <div class="info-row">
-            <div class="info-item">
-              <span class="label">Horário</span>
-              <span class="value">{{member.horarios.hora_inicio.slice(0, 5)}} - {{member.horarios.hora_fim.slice(0,
-                5)}}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Pagamento</span>
-              <ion-badge
-                [color]="member.status_pagamento.label === 'Em Dia' ? 'success' : member.status_pagamento.label === 'Em Atraso' ? 'danger' : 'warning'"
-                mode="ios">
-                {{ member.status_pagamento.label }}
-              </ion-badge>
+          <div class="member-body">
+            <div class="info-row">
+              <div class="info-item">
+                <ion-skeleton-text animated style="width: 80px; height: 14px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 100%; height: 16px; margin-top: 4px;"></ion-skeleton-text>
+              </div>
+              <div class="info-item">
+                <ion-skeleton-text animated style="width: 80px; height: 14px;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 100%; height: 16px; margin-top: 4px;"></ion-skeleton-text>
+              </div>
             </div>
           </div>
         </div>
+      </ng-container>
 
-        <div class="member-footer">
-          <ion-button fill="clear" size="small" (click)="openFormReciboModal(member)">
-            <ion-icon slot="start" name="receipt-outline"></ion-icon>
-            Pagamento
-          </ion-button>
-          <div class="divider"></div>
-          <ion-button fill="clear" size="small" (click)="navigate('/admin/membros/cadastro-usuario', member)">
-            <ion-icon slot="start" name="person-outline"></ion-icon>
-            Ver Perfil
-          </ion-button>
+      <ng-container *ngIf="!loading">
+        @for(member of usuarioList ; track $index){
+        <div class="member-card" [class.inactive]="!member.fl_ativo">
+          <div class="member-top" (click)="showNavigationOptions(member)">
+            <div class="person-info">
+              <div class="name-details">
+                <div class="status-dot" [class.online]="member.fl_ativo"></div>
+                <h4>{{member.nome}}</h4>
+                <span>{{member.whatsapp || 'Sem WhatsApp'}}</span>
+              </div>
+            </div>
+
+            <ion-button fill="clear" color="medium" [id]="member.id + '_memberOptionsBtn'">
+              <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="member-body">
+            <div class="info-row">
+              <div class="info-item">
+                <span class="label">Plano</span>
+                <span class="value">{{member.planos.descricao}}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Vencimento</span>
+                <span class="value">{{member.data_vencimento}}º dia</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-item">
+                <span class="label">Horário</span>
+                <span class="value">{{member.horarios.hora_inicio.slice(0, 5)}} - {{member.horarios.hora_fim.slice(0,
+                  5)}}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Pagamento</span>
+                <ion-badge
+                  [color]="member.status_pagamento.label === 'Em Dia' ? 'success' : member.status_pagamento.label === 'Em Atraso' ? 'danger' : 'warning'"
+                  mode="ios">
+                  {{ member.status_pagamento.label }}
+                </ion-badge>
+              </div>
+            </div>
+          </div>
+
+          <div class="member-footer">
+            <ion-button fill="clear" size="small" (click)="openFormReciboModal(member)">
+              <ion-icon slot="start" name="receipt-outline"></ion-icon>
+              Pagamento
+            </ion-button>
+            <div class="divider"></div>
+            <ion-button fill="clear" size="small" (click)="navigate('/admin/membros/cadastro-usuario', member)">
+              <ion-icon slot="start" name="person-outline"></ion-icon>
+              Ver Perfil
+            </ion-button>
+          </div>
         </div>
-      </div>
-      }
+        }
+      </ng-container>
     </div>
   </div>
 

@@ -8,13 +8,16 @@ import { InstrutoresPageRoutingModule } from './instrutores-routing.module';
 
 import { InstrutoresPage } from './instrutores.page';
 
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    InstrutoresPageRoutingModule
+    InstrutoresPageRoutingModule,
+    NgxChartsModule
   ],
   declarations: [InstrutoresPage]
 })
-export class InstrutoresPageModule {}
+export class InstrutoresPageModule { }

@@ -60,15 +60,31 @@
         </div>
     </div>
 
-    <!-- Exercise Grid -->
-    <ion-grid class="ion-padding">
-        <ion-row class="gap-0"> <!-- Added gap using bootstrap class g-3 -->
-            <!-- Loading State -->
-            <ion-col size="12" *ngIf="loading && exercicios.length === 0"
-                class="ion-text-center ion-padding mt-5 gap-2">
-                <ion-spinner name="crescent" color="primary"></ion-spinner>
-                <p class="text-muted mt-2">Buscando exercícios...</p>
-            </ion-col>
+    <!-- Exercise List Grid -->
+    <ion-grid>
+        <ion-row>
+            <!-- Skeleton Loading State -->
+            <ng-container *ngIf="loading && exercicios.length === 0">
+                <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let i of [1,2,3,4,5,6,7,8]" class="mb-2">
+                    <div class="premium-card shadow-sm h-100 bg-white rounded-4 overflow-hidden d-flex flex-column">
+                        <div class="card-media-wrapper position-relative">
+                            <ion-skeleton-text animated style="width: 100%; height: 200px;"></ion-skeleton-text>
+                        </div>
+                        <div class="card-body p-3 d-flex flex-column">
+                            <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+                            <div class="d-flex gap-1 mt-2">
+                                <ion-skeleton-text animated
+                                    style="width: 60px; height: 16px; border-radius: 12px;"></ion-skeleton-text>
+                                <ion-skeleton-text animated
+                                    style="width: 60px; height: 16px; border-radius: 12px;"></ion-skeleton-text>
+                            </div>
+                            <div class="mt-auto pt-3 border-top">
+                                <ion-skeleton-text animated style="width: 100%; height: 14px;"></ion-skeleton-text>
+                            </div>
+                        </div>
+                    </div>
+                </ion-col>
+            </ng-container>
 
             <!-- Empty State -->
             <ion-col size="12" *ngIf="!loading && exercicios.length === 0" class="ion-text-center ion-padding mt-5">

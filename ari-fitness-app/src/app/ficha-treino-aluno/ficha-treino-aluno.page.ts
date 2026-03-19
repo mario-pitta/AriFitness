@@ -15,6 +15,7 @@ import { WorkoutTemplateStateService } from 'src/core/services/treino/state/work
 import { TreinoService } from 'src/core/services/treino/treino.service';
 import { WorkoutExportService } from 'src/core/services/workout-export/workout-export.service';
 import { IEmpresa } from 'src/core/models/Empresa';
+import { TeamMemberService } from 'src/core/services/instructor/team-member.service';
 
 
 @Component({
@@ -32,13 +33,17 @@ export class FichaTreinoAlunoPage implements OnInit {
   // treinos: Treino[] = [];
   /** Esse atributo refere-se ao Aluno que tera sua ficha gerenciada pelo adm ou instrutor  */
   // aluno!: Partial<Usuario> | Usuario;
-  instrutores: IUsuario[] = [];
+  instrutores: any[] = [];
   fichaAtual!: FichaAluno;
   empresa: Partial<IEmpresa> | IEmpresa | null = null;
   loading: boolean = false;
   form: FormGroup = new FormGroup({});
   enableEdit: boolean = false;
+  activeSegment: string = 'atual';
+  historySegment: string = 'fichas';
   subs$: Subscription = new Subscription();
+
+  // History Data removed - handled by component
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -51,8 +56,15 @@ export class FichaTreinoAlunoPage implements OnInit {
     private toastr: ToastrService,
     public workoutState: WorkoutTemplateStateService,
     private exportService: WorkoutExportService,
-
+    private teamMemberService: TeamMemberService,
   ) {
+    this.subs$.add(
+      this.aRoute.queryParams.subscribe(params => {
+        if (params['segment']) {
+          this.activeSegment = params['segment'];
+        }
+      })
+    );
     this.subs$.add(
       this.router.events.subscribe({
         next: (ev) => {
@@ -66,21 +78,20 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
 
   checkUserParams() {
-    const param = this.aRoute.snapshot.queryParams['userId'];
+    const userId = this.aRoute.snapshot.queryParams['userId'];
+    const fichaId = this.aRoute.snapshot.queryParams['fichaId'];
 
-    console.log('qual param', param);
-    if (param) {
-      this.loadFichaData(
-        Number(this.aRoute.snapshot.queryParamMap.get('userId'))
-      );
-
-      console.log('pathFromRoot', this.aRoute.snapshot.pathFromRoot);
+    console.log('checkUserParams', { userId, fichaId });
+    if (userId) {
+      this.loading = true;
+      this.loadFichaData(Number(userId), fichaId ? Number(fichaId) : undefined);
     }
   }
 
   ngOnInit() {
     this.user = this.auth.getUser;
     console.log('init do ficha aluno!!!', this.aRoute.snapshot);
+    this.loading = true;
     this.createForm();
     this.checkUserParams();
     this.loadData();
@@ -103,10 +114,45 @@ export class FichaTreinoAlunoPage implements OnInit {
    * The function `loadFichaData` in TypeScript uses `forkJoin` to make parallel requests to `getAluno`
    * and `getFichaInfo`.
    */
-  loadFichaData(userId: number) {
-    console.log('vai carregar a ficha do aluno', userId);
-    this.getAluno(userId);
-    this.getFichaInfo();
+  loadFichaData(userId: number, fichaId?: number) {
+    console.log('vai carregar a ficha do aluno', userId, fichaId);
+
+    const alunoReq = this.usuarioService.findByFilters({ id: userId });
+    const fichaReq = fichaId
+      ? this.fichaService.getById(fichaId)
+      : this.fichaService.getByUser(userId, { fl_ativo: true });
+
+    forkJoin([alunoReq, fichaReq]).subscribe({
+      next: ([usuarios, fichas]: [IUsuario[], FichaAluno[]]) => {
+        // Process Aluno
+        if (usuarios && usuarios.length > 0) {
+          this.aluno?.patchValue({
+            id: usuarios[0].id,
+            nome: usuarios[0].nome,
+          });
+        }
+
+        // Process Ficha
+        if (fichas && fichas.length > 0) {
+          this.fichaAtual = fichas[0];
+          this.completeForm(this.fichaAtual);
+
+          if (this.fichaAtual.sessoes) {
+            this.workoutState.setWorkout({
+              ...this.fichaAtual as any,
+              nome: this.fichaAtual.descricao || 'Ficha do Aluno'
+            });
+          }
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar dados:', err);
+        this.toastr.error('Erro ao carregar dados do aluno');
+        this.loading = false;
+      }
+    });
   }
 
   loadData() {
@@ -114,37 +160,27 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
 
   getInstrutores() {
-    this.usuarioService
-      .findByFilters({ tipo_usuario: Constants.INSTRUTOR_ID, fl_ativo: true, empresa_id: this.user?.empresa_id })
-      .subscribe({
-        next: (instrutores) => {
-          this.instrutores = instrutores;
-        },
-      });
+    this.teamMemberService.findByFilters({ empresa_id: this.user.empresa_id as string, status: 'ACTIVE', function_id: Constants.INSTRUTOR_ID }, this.user.empresa_id as string).subscribe({
+      next: (instrutores) => {
+        this.instrutores = instrutores.map((instrutor) => {
+          return {
+            id: instrutor.id,
+            nome: instrutor.nome,
+            genero: instrutor.genero,
+            foto_url: instrutor.foto_url,
+            tipo_usuario: instrutor.tipo_usuario,
+            specialties: instrutor.specialties,
+            services: instrutor.services,
+            status: instrutor.status,
+          };
+        }).filter((instrutor) => instrutor.status === 'ACTIVE' && instrutor.tipo_usuario.id === Constants.INSTRUTOR_ID);
+
+        console.log('this.instrutores = ', this.instrutores)
+
+      },
+    });
   }
 
-  getFichaInfo() {
-    this.fichaService
-      .getByUser(Number(this.aRoute.snapshot.queryParamMap.get('userId')), {
-        fl_ativo: true,
-      })
-      .subscribe({
-        next: (data: FichaAluno[]) => {
-          if (data.length) {
-            this.fichaAtual = data[0];
-            this.completeForm(this.fichaAtual);
-
-            // Sync with workout state editor
-            if (this.fichaAtual.sessoes) {
-              this.workoutState.setWorkout({
-                ...this.fichaAtual as any,
-                nome: this.fichaAtual.descricao || 'Ficha do Aluno'
-              });
-            }
-          }
-        },
-      });
-  }
 
   handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     console.log(ev);
@@ -181,7 +217,7 @@ export class FichaTreinoAlunoPage implements OnInit {
       ficha_data_inicio: [null, [Validators.required]],
       ficha_data_fim: [null, [Validators.required]],
       objetivo: [null, [Validators.required]],
-      instrutor_id: [null, [Validators.required]],
+      team_member_id: [null, [Validators.required]],
       fl_ativo: [true, [Validators.required]],
       peso_inicial: [null, [Validators.nullValidator]],
       peso_meta: [null, [Validators.nullValidator]],
@@ -201,16 +237,6 @@ export class FichaTreinoAlunoPage implements OnInit {
     });
   }
 
-  getAluno(id: number) {
-    this.usuarioService.findByFilters({ id: id }).subscribe({
-      next: (_usuario) => {
-        this.aluno?.patchValue({
-          id: _usuario[0].id,
-          nome: _usuario[0].nome,
-        });
-      },
-    });
-  }
 
   completeForm(ficha: FichaAluno) {
     this.aluno?.patchValue({
@@ -404,6 +430,12 @@ export class FichaTreinoAlunoPage implements OnInit {
     }
 
     console.log('submitting ficha', this.f.value, workoutData);
+
+    if (this.f.value.id && !this.fichaAtual?.fl_ativo) {
+      this.toastr.error('Apenas fichas ativas podem ser alteradas. Reative esta ficha para editá-la.');
+      return;
+    }
+
     this.loading = true;
 
     const body: any = {
@@ -439,7 +471,7 @@ export class FichaTreinoAlunoPage implements OnInit {
           this.auth.login(this.user.cpf, this.user.data_nascimento).subscribe();
         }
 
-        this.getFichaInfo(); // Refresh view
+        this.checkUserParams(); // Refresh view
       },
       error: (err) => {
         this.loading = false;
@@ -457,6 +489,42 @@ export class FichaTreinoAlunoPage implements OnInit {
         )
       )
     );
+  }
+
+  // History Logic delegated to HistoricoAlunoComponent
+
+  segmentChanged(ev: any) {
+    this.activeSegment = ev.detail.value;
+  }
+
+  viewFicha(fichaId: number) {
+    const userId = Number(this.aRoute.snapshot.queryParamMap.get('userId'));
+    this.activeSegment = 'atual';
+    this.router.navigate([], {
+      relativeTo: this.aRoute,
+      queryParams: { userId, fichaId },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  reactivateFicha(ficha: any) {
+    if (!this.isManagerOrInstructor) return;
+
+    // We basically do an "Update" on this ficha but as a new one
+    // The current update logic in the service handles creating a new record
+    const body = { ...ficha };
+    delete body.id;
+    delete body.created_at;
+    delete body.updated_at;
+    body.fl_ativo = true;
+
+    this.fichaService.create(body).subscribe({
+      next: (res: any) => {
+        this.toastr.success('Ficha reativada como versão atual!');
+        this.viewFicha(res.id);
+      },
+      error: () => this.toastr.error('Erro ao reativar ficha.')
+    });
   }
 
   ngOnDestroy() {

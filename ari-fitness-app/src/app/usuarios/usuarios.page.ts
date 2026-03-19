@@ -107,6 +107,7 @@ export class UsuariosPage implements OnInit {
   searchText: string = '';
   alunosRiscoIds: number[] = [];
   selectedFilter: string = 'todos';
+  loading: boolean = true;
   constructor(
     private usuarioService: UsuarioService,
     private router: Router,
@@ -390,6 +391,7 @@ export class UsuariosPage implements OnInit {
       return false;
     };
 
+    this.loading = true;
     this.usuarioService
       .findByFilters({
         tipo_usuario: tipoUsuario,
@@ -409,7 +411,12 @@ export class UsuariosPage implements OnInit {
           });
           console.log('this.usuarioList: ', this.usuarioList);
           this.usuarioList = this.usuarios.filter((u: Usuario) => u.fl_ativo);
+          this.loading = false;
         },
+        error: (err) => {
+          console.error('Erro ao buscar usuários:', err);
+          this.loading = false;
+        }
       });
   }
 
@@ -680,7 +687,6 @@ export class UsuariosPage implements OnInit {
 
               this.transacaoFinanceiraService.save(transacao).subscribe({
                 next: (res) => {
-                  console.log('Pagamento registrado com sucesso: ', res); //TODO: mostrar mensagem de sucesso
                   this.toastr.success(
                     'Pagamento registrado com sucesso!',
                     'top'

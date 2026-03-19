@@ -76,9 +76,16 @@ const routes: Routes = [
         loadChildren: () => import('./calendario/calendario.module').then(m => m.CalendarioPageModule)
       },
       {
-        path: 'atividades',
+        path: 'tarefas',
         loadChildren: () => import('./planejador/planejador.module').then(m => m.PlanejadorPageModule)
       },
+      // todo: criar pagina de contatos
+      // {
+      //   path: 'contatos',
+      //   loadChildren: () => import('./contatos/contatos.module').then(m => m.ContatosPageModule)
+      // },
+
+
       {
         path: 'configuracoes',
         children: [
@@ -97,7 +104,7 @@ const routes: Routes = [
 
       },
       {
-        path: 'instrutores',
+        path: 'equipe',
         loadChildren: () => import('./instrutores/instrutores.module').then(m => m.InstrutoresPageModule)
       },
       {

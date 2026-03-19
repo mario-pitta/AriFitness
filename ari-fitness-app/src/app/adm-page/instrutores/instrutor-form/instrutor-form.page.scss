@@ -1,0 +1,81 @@
+/* ===== Instrutor Form Styles ===== */
+
+ion-header ion-toolbar {
+    --padding-start: 6px;
+    --padding-end: 6px;
+}
+
+ion-content {
+    --background: var(--ion-color-light);
+}
+
+ion-item {
+    --background: var(--ion-background-color);
+    --border-radius: 12px;
+    margin-bottom: 10px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    ion-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 2px;
+    }
+}
+
+ion-note {
+    font-size: 0.75rem;
+    padding-left: 16px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+h5 {
+    font-weight: 700;
+    color: var(--ion-color-medium-shade);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+ion-footer {
+    ion-toolbar {
+        --padding-top: 8px;
+        --padding-bottom: 8px;
+    }
+}
+
+.text-danger {
+    color: var(--ion-color-danger);
+}
+
+/* ===== Schedule Turno Row ===== */
+.turno-row {
+    margin-bottom: 6px;
+}
+
+.turno-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    --inner-padding-end: 0;
+    --padding-start: 8px;
+    border: 1px solid var(--ion-color-light-shade);
+    border-radius: 10px;
+    margin: 0 0 4px;
+
+    ion-select.turno-dia {
+        min-width: 68px;
+        max-width: 80px;
+        font-weight: 600;
+    }
+
+    ion-input.turno-hora {
+        width: 78px;
+        text-align: center;
+        --padding-start: 4px;
+        --padding-end: 4px;
+    }
+}

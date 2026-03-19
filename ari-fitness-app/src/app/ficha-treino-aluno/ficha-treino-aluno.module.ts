@@ -8,6 +8,8 @@ import { FichaTreinoAlunoPageRoutingModule } from './ficha-treino-aluno-routing.
 
 import { FichaTreinoAlunoPage } from './ficha-treino-aluno.page';
 import { WorkoutEditorModule } from '../shared/workout-editor/workout-editor.module';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { HistoricoAlunoPageModule } from '../usuarios/historico-aluno/historico-aluno.module';
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import { WorkoutEditorModule } from '../shared/workout-editor/workout-editor.mod
     IonicModule,
     ReactiveFormsModule,
     FichaTreinoAlunoPageRoutingModule,
-    WorkoutEditorModule
+    WorkoutEditorModule,
+    NgxChartsModule,
+    HistoricoAlunoPageModule
   ],
 
   declarations: [FichaTreinoAlunoPage]

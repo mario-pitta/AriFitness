@@ -41,6 +41,9 @@ export class FichaAlunoEntity {
     @Column({ nullable: true })
     instrutor_id: number;
 
+    @Column({ nullable: true })
+    team_member_id: string;
+
     @Column({ nullable: true, default: true })
     fl_ativo: boolean;
 

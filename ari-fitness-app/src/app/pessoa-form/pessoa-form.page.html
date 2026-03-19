@@ -77,10 +77,10 @@
                         </ion-card-title>
                     </ion-card-header>
                     <ion-card-content>
-                        <ion-item lines="none" class="checkbox-item" *ngIf="form.getRawValue().tipo_usuario">
+                        <!-- <ion-item lines="none" class="checkbox-item" *ngIf="form.getRawValue().tipo_usuario">
                             <ion-checkbox formControlName="flagAdmin" labelPlacement="end">Administrador do
                                 Sistema</ion-checkbox>
-                        </ion-item>
+                        </ion-item> -->
 
                         <ng-container *ngIf="form.getRawValue().tipo_usuario === Constants.INSTRUTOR_ID">
                             <ion-row>
@@ -90,10 +90,30 @@
                                     </ion-input>
                                 </ion-col>
                                 <ion-col size="12" size-md="6">
-                                    <ion-input formControlName="especialidade" label="Especialidade Principal *"
-                                        labelPlacement="floating" fill="outline" class="modern-input" type="text"
-                                        placeholder="Ex: Musculação, Funcional">
-                                    </ion-input>
+                                    <ion-select formControlName="status_instrutor" label="Status"
+                                        labelPlacement="floating" fill="outline" class="modern-input"
+                                        interface="popover">
+                                        <ion-select-option value="ACTIVE">Ativo</ion-select-option>
+                                        <ion-select-option value="INACTIVE">Inativo</ion-select-option>
+                                    </ion-select>
+                                </ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col size="12" size-md="6">
+                                    <ion-select formControlName="specialties" label="Especialidades"
+                                        labelPlacement="floating" fill="outline" class="modern-input" [multiple]="true"
+                                        interface="alert">
+                                        <ion-select-option *ngFor="let spec of specialtiesList"
+                                            [value]="spec.id">{{spec.nome}}</ion-select-option>
+                                    </ion-select>
+                                </ion-col>
+                                <ion-col size="12" size-md="6">
+                                    <ion-select formControlName="services" label="Serviços (Extras)"
+                                        labelPlacement="floating" fill="outline" class="modern-input" [multiple]="true"
+                                        interface="alert">
+                                        <ion-select-option *ngFor="let serv of servicesList"
+                                            [value]="serv.id">{{serv.nome}}</ion-select-option>
+                                    </ion-select>
                                 </ion-col>
                             </ion-row>
                         </ng-container>

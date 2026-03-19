@@ -26,6 +26,9 @@ import { EventoModule } from './evento/evento.module';
 import { TransacaoFinanceiraModule } from './transacao_financeira/transacao-financeira.module';
 import { EmailModule } from './email/email.module';
 import { EmpresaModule } from './empresa/empresa.module';
+import { TeamMemberModule } from './instructor/team-member.module';
+import { SpecialtyModule } from './specialty/specialty.module';
+import { ServiceModule } from './service/service.module';
 
 
 @Module({
@@ -61,6 +64,9 @@ import { EmpresaModule } from './empresa/empresa.module';
     TransacaoFinanceiraModule,
     EmpresaModule,
     EmailModule,
+    TeamMemberModule,
+    SpecialtyModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

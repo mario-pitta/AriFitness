@@ -21,6 +21,7 @@ const routes: Routes = [
         NgxChartsModule,
         RouterModule.forChild(routes)
     ],
-    declarations: [HistoricoAlunoPage]
+    declarations: [HistoricoAlunoPage],
+    exports: [HistoricoAlunoPage]
 })
 export class HistoricoAlunoPageModule { }

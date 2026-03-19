@@ -8,10 +8,11 @@ import { AuthService } from 'src/core/services/auth/auth.service';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { DashboardMembersService } from 'src/core/services/dashboard/members/members.service';
 
-import { map, Observable } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { IEmpresa } from 'src/core/models/Empresa';
 import { Color, ScaleType } from '@swimlane/ngx-charts';
 import * as shape from 'd3-shape';
+import { TeamMemberService } from 'src/core/services/instructor/team-member.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -80,6 +81,7 @@ export class DashboardPage implements OnInit {
     private dashboardService: DashboardMembersService,
     private auth: AuthService,
     private transFinServ: TransacaoFinanceiraDashService,
+    private teamMemberService: TeamMemberService,
 
   ) {
     this.searchControl.valueChanges.subscribe((value) => {
@@ -112,82 +114,87 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
     this.isMobile();
     this.empresa = this.usuario.empresa as IEmpresa;
-    this.getTotals();
-    this.getBestInstrutoresData();
-    this.loadOperationalData();
+    this.loadAllDashboardData();
   }
 
-
-
-  loadOperationalData() {
+  loadAllDashboardData() {
+    this.loading = true;
     const empresaId = this.usuario.empresa_id as string;
 
-    this.transFinServ.getCheckinsHoje(empresaId).subscribe(res => this.checkinsHoje = res);
-    this.transFinServ.getAlertasVencimento(empresaId).subscribe(res => {
-      this.alertasVencimento = {
-        total: res.total,
-        alertas: res.alertas.map((a: any) => (
-          {
+    forkJoin({
+      totals: this.transFinServ.getTotalsByEmpresaId(empresaId),
+      checkins: this.transFinServ.getCheckinsHoje(empresaId),
+      alertas: this.transFinServ.getAlertasVencimento(empresaId),
+      churn: this.transFinServ.getAlunosSemCheckin(empresaId),
+      pendentes: this.transFinServ.getReceitasPendentes(empresaId),
+      picos: this.transFinServ.getPicoCheckins(empresaId),
+      instrutores: this.teamMemberService.findAll(empresaId)
+    }).subscribe({
+      next: (res: any) => {
+        // Process Totals
+        this.totals = res.totals;
+        this.processTotalsChart(res.totals);
+
+        // Process Operational
+        this.checkinsHoje = res.checkins;
+        this.alertasVencimento = {
+          total: res.alertas.total,
+          alertas: res.alertas.alertas.map((a: any) => ({
             ...a,
-            //remove os caracteres especiais do telefone e adciona o texto de que o plano está vencendo
             whatsapp: a.whatsapp?.replace(/[^0-9]/g, '')
-          }
-        ))
+          }))
+        };
+        this.alunosChurn = res.churn;
+        this.receitasPendentes = res.pendentes;
+        this.picoCheckinsData = res.picos.picos.map((p: any) => ({ name: p.hora, value: p.total }));
+
+        // Process Instrutores
+        this.teachers$ = new Observable(subscriber => {
+          subscriber.next(res.instrutores.slice(0, 4));
+          subscriber.complete();
+        });
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar dashboard:', err);
+        this.loading = false;
       }
-
-
     });
-    this.transFinServ.getAlunosSemCheckin(empresaId).subscribe(res => this.alunosChurn = res);
-    this.transFinServ.getReceitasPendentes(empresaId).subscribe(res => this.receitasPendentes = res);
-    this.transFinServ.getPicoCheckins(empresaId).subscribe(res => {
-      this.picoCheckinsData = res.picos.map((p: any) => ({ name: p.hora, value: p.total }));
-    });
+
+    // Sidebar Alunos still loads independently on search, but initial load can be empty or separate
+    // For now, only the search triggers getMembers which has its own loading
   }
 
-  getGreeting(): string {
-    const hr = new Date().getHours();
-    if (hr < 12) return 'Bom dia';
-    if (hr < 18) return 'Boa tarde';
-    return 'Boa noite';
+  processTotalsChart(totals: any) {
+    // Receitas vs Despesas (Gráfico de Área)
+    this.revenueVsExpenseData = [
+      {
+        name: 'Receitas',
+        series: totals.receita_por_mes.map((r: any) => ({
+          name: (this.meses.find(m => m.value === (r.mes + 1))?.label || '') + '/' + r.ano,
+          value: r.valor
+        }))
+      },
+      {
+        name: 'Despesas',
+        series: (totals.despesa_por_mes || []).map((d: any) => ({
+          name: (this.meses.find(m => m.value === (d.mes + 1))?.label || '') + '/' + d.ano,
+          value: d.valor
+        }))
+      }
+    ];
+
+    // Alunos Status (Pizza)
+    this.membrosStatusData = [
+      { name: 'Ativos', value: totals.totalMembros },
+      { name: 'Inativos', value: Math.floor(totals.totalMembros * 0.15) }
+    ];
   }
 
-  getUserInitials(): string {
-    if (!this.usuario?.nome) return '?';
-    const names = this.usuario.nome.split(' ');
-    if (names.length === 1) return names[0].charAt(0).toUpperCase();
-    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
-  }
 
-  getTotals() {
-    const empresaId = this.usuario.empresa_id as string;
-    this.transFinServ.getTotalsByEmpresaId(empresaId).subscribe((totals: any) => {
-      this.totals = totals;
 
-      // Receitas vs Despesas (Gráfico de Área)
-      this.revenueVsExpenseData = [
-        {
-          name: 'Receitas',
-          series: totals.receita_por_mes.map((r: any) => ({
-            name: (this.meses.find(m => m.value === (r.mes + 1))?.label || '') + '/' + r.ano,
-            value: r.valor
-          }))
-        },
-        {
-          name: 'Despesas',
-          series: (totals.despesa_por_mes || []).map((d: any) => ({
-            name: (this.meses.find(m => m.value === (d.mes + 1))?.label || '') + '/' + d.ano,
-            value: d.valor
-          }))
-        }
-      ];
 
-      // Alunos Status (Pizza)
-      this.membrosStatusData = [
-        { name: 'Ativos', value: totals.totalMembros },
-        { name: 'Inativos', value: Math.floor(totals.totalMembros * 0.15) } // Mock provisório até ter endpoint de inativos
-      ];
-    });
-  }
 
   getMembers(text?: string, flag_active: boolean = true) {
     this.loading = true;
@@ -206,13 +213,12 @@ export class DashboardPage implements OnInit {
   }
 
   teachers$: Observable<IUsuario[]> | undefined;
-  getBestInstrutoresData() {
-    this.teachers$ = this.usuarioService.findByFilters({
-      tipo_usuario: Constants.INSTRUTOR_ID,
-      empresa_id: this.usuario.empresa_id,
-    }).pipe(
-      map(users => users.slice(0, 4))
-    );
+
+  getGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Bom dia';
+    if (hour >= 12 && hour < 18) return 'Boa tarde';
+    return 'Boa noite';
   }
 }
 

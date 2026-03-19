@@ -19,6 +19,20 @@
                         cdkDropList [cdkDropListData]="column.tasks" (cdkDropListDropped)="drop($event)"
                         [hidden]="!column.visible">
 
+                        <!-- Skeleton Cards -->
+                        <ng-container *ngIf="loading">
+                            <ion-card class="mb-2 task-card" *ngFor="let i of [1,2,3]">
+                                <ion-card-content class="p-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <ion-skeleton-text animated
+                                            style="width: 70%; height: 16px;"></ion-skeleton-text>
+                                        <ion-skeleton-text animated
+                                            style="width: 20px; height: 20px; border-radius: 50%;"></ion-skeleton-text>
+                                    </div>
+                                </ion-card-content>
+                            </ion-card>
+                        </ng-container>
+
                         <ion-card class="mb-2 task-card" *ngFor="let task of column.tasks"
                             (click)="showTaskForm = true; createForm(column.status_tarefa_id, task)" cdkDrag [ngClass]="{
               'low-priority': task.prioridade === 0,

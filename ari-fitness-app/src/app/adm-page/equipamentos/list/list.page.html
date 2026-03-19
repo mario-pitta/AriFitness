@@ -9,10 +9,24 @@
 
   <ion-grid>
     <ion-row>
-      <ion-col size="12" *ngIf="loading" class="text-center ion-padding">
-        <ion-spinner name="crescent"></ion-spinner>
-        <p class="mt-2">Carregando equipamentos...</p>
-      </ion-col>
+      <!-- Skeleton Loading State -->
+      <ng-container *ngIf="loading">
+        <ion-col size="12" *ngFor="let i of [1,2,3,4,5,6]" class="mb-2">
+          <ion-item lines="inset">
+            <ion-thumbnail slot="start" style="width: 40px; height: 40px;">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></h3>
+              <p><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></p>
+            </ion-label>
+            <div slot="end" class="d-flex">
+              <ion-skeleton-text animated style="width: 24px; height: 24px; margin-right: 8px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 24px; height: 24px;"></ion-skeleton-text>
+            </div>
+          </ion-item>
+        </ion-col>
+      </ng-container>
 
       <ion-col size="12" *ngIf="!loading && (equipamentos | filterByName: searchText).length === 0"
         class="text-center ion-padding">

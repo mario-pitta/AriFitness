@@ -1,4 +1,4 @@
-<ion-header class="ion-no-border">
+<ion-header class="ion-no-border" *ngIf="showHeader">
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-button (click)="goBack()">
@@ -9,12 +9,23 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ng-container *ngIf="showHeader; else componentLayout">
+    <ion-content [fullscreen]="true">
+        <ng-container *ngTemplateOutlet="historyTemplate"></ng-container>
+    </ion-content>
+</ng-container>
+
+<ng-template #componentLayout>
+    <div class="history-component-wrapper animate__animated animate__fadeIn">
+        <ng-container *ngTemplateOutlet="historyTemplate"></ng-container>
+    </div>
+</ng-template>
+
+<ng-template #historyTemplate>
     <!-- User Profile Header -->
-    <div class="user-header-container" *ngIf="aluno">
+    <div class="user-header-container" *ngIf="aluno && showHeader">
         <div class="profile-card animate__animated animate__fadeInDown">
             <div class="avatar-wrapper">
-                <!-- <img [src]="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + aluno.nome" alt="Avatar"> -->
                 <span class="avatar-letter">{{aluno.nome.charAt(0)}}</span>
             </div>
             <div class="profile-info">
@@ -25,8 +36,8 @@
     </div>
 
     <!-- Perspective Switcher -->
-    <div class="segment-container ion-padding-horizontal">
-        <ion-segment (ionChange)="segmentChanged($event)" [value]="activeSegment" mode="ios">
+    <div class="segment-container ion-padding-horizontal" [style.margin-top]="showHeader ? '0' : '20px'">
+        <ion-segment class="premium-segment" (ionChange)="segmentChanged($event)" [value]="activeSegment" mode="ios">
             <ion-segment-button value="frequencia">
                 <ion-label>Frequência</ion-label>
             </ion-segment-button>
@@ -41,7 +52,6 @@
 
     <!-- Content Areas -->
     <div class="history-content ion-padding animate__animated animate__fadeIn">
-
         <!-- FREQUENCY VIEW -->
         <div *ngIf="activeSegment === 'frequencia'" class="view-container">
             <div class="stats-row">
@@ -97,7 +107,6 @@
                 <p class="section-subtitle">Progresso baseado nos pesos definidos nas fichas ao longo do tempo.</p>
 
                 <ion-row>
-
                     <ion-card class="exercise-card glass-card" *ngFor="let exercise of chartData">
                         <div class="card-header">
                             <h4>{{exercise.name | titlecase}}</h4>
@@ -165,13 +174,18 @@
                         <span class="dates">
                             {{ficha.ficha_data_inicio | date: 'dd/MM/yy'}} ➔ {{ficha.ficha_data_fim | date: 'dd/MM/yy'}}
                         </span>
-                        <ion-button fill="clear" size="small" disabled>
-                            VER FICHA
-                        </ion-button>
+                        <div class="d-flex gap-2">
+                            <ion-button fill="clear" size="small" (click)="onViewFicha.emit(ficha.id)">
+                                VER FICHA
+                            </ion-button>
+                            <ion-button fill="solid" color="primary" size="small"
+                                (click)="onReactivateFicha.emit(ficha)" *ngIf="!ficha.fl_ativo">
+                                REATIVAR
+                            </ion-button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-</ion-content>
+</ng-template>

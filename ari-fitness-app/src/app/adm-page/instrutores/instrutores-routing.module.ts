@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { InstrutoresPage } from './instrutores.page';
-import { PessoaFormPage } from 'src/app/pessoa-form/pessoa-form.page';
 import Constants from 'src/core/Constants';
 
 const routes: Routes = [
@@ -12,14 +11,15 @@ const routes: Routes = [
   },
   {
     path: 'formulario',
-    loadChildren: () => import('../../pessoa-form/pessoa-form.module').then( m => m.PessoaFormPageModule),
+    loadChildren: () => import('./instrutor-form/instrutor-form.module').then(m => m.InstrutorFormPageModule),
     data: {
       tipoUsuario: Constants.INSTRUTOR_ID
     }
-  }]
+  }
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class InstrutoresPageRoutingModule {}
+export class InstrutoresPageRoutingModule { }

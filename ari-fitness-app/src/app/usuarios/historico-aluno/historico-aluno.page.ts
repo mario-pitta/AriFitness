@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { IUsuario } from 'src/core/models/Usuario';
@@ -11,8 +11,12 @@ import { FichaAlunoService } from 'src/core/services/ficha-aluno/ficha-aluno.ser
     templateUrl: './historico-aluno.page.html',
     styleUrls: ['./historico-aluno.page.scss'],
 })
-export class HistoricoAlunoPage implements OnInit {
-    userId: number | null = null;
+export class HistoricoAlunoPage implements OnInit, OnChanges {
+    @Input() userId: number | null = null;
+    @Input() showHeader: boolean = true;
+    @Output() onViewFicha = new EventEmitter<number>();
+    @Output() onReactivateFicha = new EventEmitter<any>();
+
     aluno: IUsuario | null = null;
     activeSegment: string = 'frequencia';
 
@@ -39,8 +43,18 @@ export class HistoricoAlunoPage implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.userId = Number(this.route.snapshot.paramMap.get('id'));
+        if (!this.userId) {
+            this.userId = Number(this.route.snapshot.paramMap.get('id'));
+        }
+
         if (this.userId) {
+            this.loadAllData();
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['userId'] && changes['userId'].currentValue) {
+            this.userId = changes['userId'].currentValue;
             this.loadAllData();
         }
     }

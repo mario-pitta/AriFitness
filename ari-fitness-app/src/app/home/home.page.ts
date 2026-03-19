@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Constants from 'src/core/Constants';
 import { Treino } from 'src/core/models/Treino';
-import { IUsuario } from 'src/core/models/Usuario';
+import { ITeamMember, IUsuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { PagetitleService } from 'src/core/services/pagetitle.service';
 
@@ -23,6 +23,7 @@ export enum MALE_BG_URLS {
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+  Constants = Constants;
   treinos: any;
   navigate(path: string, params?: any) {
     this.router.navigate([path], {
@@ -32,7 +33,7 @@ export class HomePage implements OnInit {
       },
     });
   }
-  user!: IUsuario;
+  user!: IUsuario | ITeamMember | any;
   treinoUrlImage: string = MALE_BG_URLS.PERNAS;
 
 
@@ -48,7 +49,7 @@ export class HomePage implements OnInit {
     this.treinos =
       this.user.tipo_usuario == Constants.ALUNO_ID
         ? this.user.ficha_aluno
-          ?.filter((f) => f.fl_ativo)[0]
+          ?.filter((f: IUsuario) => f.fl_ativo)[0]
           .treinos?.map((t: any) => {
             let url = '';
 

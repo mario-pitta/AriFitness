@@ -124,24 +124,19 @@ export class DashboardService {
   async getBestInstrutoresData(empresaId: string) {
     try {
       const { data, error } = await this.database.supabase
-        .from('usuario')
+        .from('team_member')
         .select(
           `
           id,
           nome,
           genero,
-          tipo_usuario (id, nome),
-          ficha_aluno:ficha_aluno!ficha_aluno_instrutor_id_fkey(
+          ficha_aluno:ficha_aluno!fk_ficha_aluno_team_member(
             fl_ativo,
-            ficha_data_fim,
-            ficha_data_inicio,
-            usuario:usuario!ficha_aluno_usuario_id_fkey(id, nome, genero),
             created_at
           )
         `,
         )
-        .eq('empresa_id', empresaId)
-        .eq('tipo_usuario', 2);
+        .eq('empresa_id', empresaId);
 
       if (error) {
         throw new Error(
@@ -149,15 +144,14 @@ export class DashboardService {
         );
       }
 
-      const bestInstrutores = data
-
-        ?.slice(0, 3)
-        ?.map((instrutor: any) => {
-          const fichasAtivas = instrutor.ficha_aluno.filter(
+      const bestInstrutores = (data || [])
+        .map((member: any) => {
+          const allFichas = member.ficha_aluno || [];
+          const fichasAtivas = allFichas.filter(
             (ficha: any) => ficha.fl_ativo,
           ).length;
           const { fichasMesPassado, fichasMesAtual } = this.contarFichasPorMes(
-            instrutor.ficha_aluno,
+            allFichas,
           );
           const percentualDiferenca = this.calcularPercentualDiferenca(
             fichasMesPassado,
@@ -165,16 +159,17 @@ export class DashboardService {
           );
 
           return {
-            id: instrutor.id,
-            nome: instrutor.nome,
-            genero: instrutor.genero,
+            id: member.id,
+            nome: member.nome,
+            genero: member.genero || 'M',
             fichasAtivas,
             fichasMesPassado,
             fichasMesAtual,
             percentualDiferenca,
           };
         })
-        ?.sort((a: any, b: any) => b.fichasAtivas - a.fichasAtivas);
+        .sort((a: any, b: any) => b.fichasAtivas - a.fichasAtivas)
+        .slice(0, 3);
 
       return bestInstrutores;
     } catch (error) {
@@ -269,10 +264,10 @@ export class DashboardService {
     totals.totalMembros = totalMembros.count || 0;
 
     const totalInstrutores = await this.database.supabase
-      .from('usuario')
+      .from('team_member')
       .select('id', { count: 'exact' })
       .eq('empresa_id', empresaId)
-      .eq('tipo_usuario', 2); //tipo_usuario 2 = instrutor
+      .eq('function_id', 2); // 2 = instrutor
     if (totalInstrutores.error) {
       throw new Error(
         `Erro ao obter total de instrutores: ${JSON.stringify(

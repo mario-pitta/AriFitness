@@ -38,9 +38,10 @@ export class CheckInPage implements OnInit {
   viewMode: 'list' | 'checkin' = 'list';
   maskPredicate: MaskitoElementPredicate = async (el: any) =>
     (el as HTMLIonInputElement).getInputElement();
-  filtroNome: any;
   dataInicio: any;
   dataFim: any;
+  filtroNome: string = '';
+  loadingHistoric: boolean = false;
 
   constructor(
     private empresaService: EmpresaService,
@@ -159,20 +160,17 @@ export class CheckInPage implements OnInit {
     const data_fim = new Date(dataFim);
     data_fim.setHours(23, 59, 59, 999);
 
+    this.loadingHistoric = true;
     this.userService.getCheckinsByEmpresa(empresaId, data_inicio, data_fim).subscribe({
       next: (res) => {
-        this.checkinHistoric = res
-        // .map(check => ({
-        //   ...check,
-        //   // mascarar cpf 037.***.***-52
-        //   cpf_aluno: check.cpf_aluno.replace(/(\d{3})\.(\d{3})\.(\d{3})-(\d{2})/, '$1.***.***-$4')
-
-        // }));
-        console.log('💻🔍🪲 - this.checkinHistoric', this.checkinHistoric);
-
-
+        this.checkinHistoric = res;
+        this.loadingHistoric = false;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar histórico de check-in:', err);
+        this.loadingHistoric = false;
       }
-    })
+    });
   }
 
   async openCheckinActions(checkin: any) {

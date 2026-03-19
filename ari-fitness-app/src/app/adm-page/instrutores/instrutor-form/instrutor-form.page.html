@@ -1,0 +1,196 @@
+<ion-content class="ion-padding">
+
+
+  <div class="card-header d-flex justify-content-between align-items-center mb-2">
+
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/equipe"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar' : 'Novo' }} Membro da Equipe</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" *ngIf="isEdit" (click)="deleteInstructor()">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </div>
+
+
+  <form [formGroup]="form" (ngSubmit)="submitForm()">
+
+    <!-- Main Data -->
+    <ion-item>
+      <ion-label position="stacked">Nome <span class="text-danger">*</span></ion-label>
+      <ion-input formControlName="nome" placeholder="Nome completo"></ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="form.get('nome')?.touched && form.get('nome')?.hasError('required')">
+      Nome é obrigatório
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="stacked">Função / Cargo <span class="text-danger">*</span></ion-label>
+      <ion-select formControlName="function_id" placeholder="Selecione a função">
+        <ion-select-option *ngFor="let role of rolesList" [value]="role.id">{{ role.nome }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-note color="danger" *ngIf="form.get('function_id')?.touched && form.get('function_id')?.hasError('required')">
+      Função é obrigatória
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="stacked">CPF <span class="text-danger">*</span></ion-label>
+      <ion-input formControlName="cpf" [maskito]="cpfMask" [maskitoElement]="maskPredicate"
+        placeholder="000.000.000-00"></ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="form.get('cpf')?.touched && form.get('cpf')?.hasError('required')">
+      CPF é obrigatório
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="stacked">WhatsApp <span class="text-danger">*</span></ion-label>
+      <ion-input formControlName="whatsapp" [maskito]="phoneMask" [maskitoElement]="maskPredicate"
+        placeholder="(__) 9____-____"></ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="form.get('whatsapp')?.touched && form.get('whatsapp')?.hasError('required')">
+      WhatsApp é obrigatório
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="stacked">Gênero <span class="text-danger">*</span></ion-label>
+      <ion-select formControlName="genero" placeholder="Selecione o gênero">
+        <ion-select-option value="M">Masculino</ion-select-option>
+        <ion-select-option value="F">Feminino</ion-select-option>
+        <ion-select-option value="O">Outro</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Status</ion-label>
+      <ion-select formControlName="status">
+        <ion-select-option value="ACTIVE">Ativo</ion-select-option>
+        <ion-select-option value="INACTIVE">Inativo</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Foto URL (Opcional)</ion-label>
+      <ion-input formControlName="foto_url" placeholder="https://..."></ion-input>
+    </ion-item>
+
+    <br />
+    <h5 class="ms-3 mb-2">Dados Administrativos</h5>
+
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="12" size-md="6">
+          <ion-item>
+            <ion-label position="stacked">CTPS</ion-label>
+            <ion-input formControlName="ctps" placeholder="Nº Carteira de Trabalho"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="12" size-md="6">
+          <ion-item>
+            <ion-label position="stacked">CREF</ion-label>
+            <ion-input formControlName="cref" placeholder="Registro CREF (Se instrutor)"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-item>
+      <ion-label position="stacked">Senha de Acesso (App)</ion-label>
+      <ion-input type="password" formControlName="password" placeholder="Mínimo 6 caracteres"></ion-input>
+    </ion-item>
+
+    <div *ngIf="isInstructor">
+      <br />
+      <!-- Instructor Specifics -->
+      <h5 class="ms-3 mb-2">Área de Atuação</h5>
+
+      <ion-item>
+        <ion-label position="stacked">Especialidades Globais <span class="text-danger">*</span></ion-label>
+        <ion-select formControlName="specialties" [multiple]="true" placeholder="Selecione as especialidades">
+          <ion-select-option *ngFor="let option of specialtiesList" [value]="option.id">
+            {{ option.nome }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-note color="danger"
+        *ngIf="form.get('specialties')?.touched && form.get('specialties')?.hasError('required')">
+        Selecione ao menos uma especialidade
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="stacked">Serviços da Academia</ion-label>
+        <ion-select formControlName="services" [multiple]="true" placeholder="Vincule serviços (opcional)">
+          <ion-select-option *ngFor="let option of servicesList" [value]="option.id">
+            {{ option.nome }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <br />
+    <!-- Schedule Section -->
+    <h5 class="ms-3 mb-2">Horários de Trabalho</h5>
+
+    <!-- Turnos list -->
+    <div *ngFor="let turno of turnos; let i = index" class="turno-row">
+      <ion-item lines="none" class="turno-item">
+
+        <!-- Dia -->
+        <ion-select [value]="turno.dia" (ionChange)="updateTurno(i, 'dia', $event.detail.value)" interface="popover"
+          class="turno-dia">
+          <ion-select-option *ngFor="let d of diasSemana" [value]="d.key">{{ d.label }}</ion-select-option>
+        </ion-select>
+
+        <!-- Entrada -->
+        <ion-input type="number" min="0" max="23" step="1" placeholder="Início (h)" [value]="turno.inicio"
+          (ionInput)="updateTurno(i, 'inicio', $event.detail.value)" class="turno-hora">
+        </ion-input>
+
+        <!-- Saida -->
+        <ion-input type="number" min="0" max="23" step="1" placeholder="Saída (h)" [value]="turno.saida"
+          (ionInput)="updateTurno(i, 'saida', $event.detail.value)" class="turno-hora">
+        </ion-input>
+
+        <ion-button slot="end" fill="clear" color="danger" (click)="removeTurno(i)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </div>
+
+    <ion-button fill="outline" expand="block" size="small" (click)="addTurno()"
+      class="ion-margin-horizontal ion-margin-bottom">
+      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+      Adicionar Horário
+    </ion-button>
+
+    <br />
+    <!-- Salary Section -->
+    <h5 class="ms-3 mb-2">Remuneração</h5>
+
+    <ion-item>
+      <ion-label position="stacked">Salário (Opcional)</ion-label>
+      <ion-input type="number" formControlName="salario" placeholder="R$ 0,00" min="0" step="0.01"></ion-input>
+    </ion-item>
+
+    <!-- Save button inside content so it's always visible -->
+    <div class="ion-padding-top ion-padding-bottom">
+      <ion-button expand="block" shape="round" color="primary" (click)="submitForm()" [disabled]="loading">
+        <ion-spinner name="crescent" *ngIf="loading"></ion-spinner>
+        <span *ngIf="!loading">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
+          SALVAR MEMBRO DA EQUIPE
+        </span>
+      </ion-button>
+
+      <ion-button *ngIf="isEdit" expand="block" shape="round" fill="outline" color="danger" (click)="deleteInstructor()"
+        [disabled]="loading" class="ion-margin-top">
+        <ion-icon slot="start" name="trash-outline"></ion-icon>
+        EXCLUIR MEMBRO DA EQUIPE
+      </ion-button>
+    </div>
+
+  </form>
+</ion-content>

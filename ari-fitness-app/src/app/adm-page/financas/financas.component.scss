@@ -356,3 +356,68 @@ $danger-rgb: rgb(235, 68, 90);
     border-radius: 4px;
   }
 }
+
+// Chart Styling Fixes for Dark Mode Legibility
+::ng-deep {
+  .ngx-charts {
+    text {
+      fill: var(--ion-text-color) !important;
+    }
+
+    .legend-title-text {
+      color: var(--ion-text-color) !important;
+      fill: var(--ion-text-color) !important;
+    }
+
+    .legend-labels {
+      color: var(--ion-text-color) !important;
+    }
+
+    .legend-label-text {
+      color: var(--ion-text-color) !important;
+      fill: var(--ion-text-color) !important;
+    }
+
+    .label-text {
+      fill: var(--ion-text-color) !important;
+    }
+
+    .pie-label {
+      text {
+        fill: var(--ion-text-color) !important;
+      }
+    }
+
+    .arc-link {
+      stroke: var(--ion-text-color) !important;
+      opacity: 0.5;
+    }
+
+    .arc-polyline {
+      stroke: var(--ion-text-color) !important;
+      opacity: 0.5;
+    }
+  }
+
+  .chart-legend {
+    .legend-title {
+      color: var(--ion-text-color) !important;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .legend-labels {
+      background: transparent !important;
+    }
+
+    .legend-label-text {
+      color: var(--ion-text-color) !important;
+    }
+
+    .legend-label {
+      &:hover {
+        color: var(--ion-color-primary) !important;
+      }
+    }
+  }
+}
