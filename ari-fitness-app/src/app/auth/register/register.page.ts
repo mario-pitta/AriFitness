@@ -50,6 +50,7 @@ export class RegisterPage implements OnInit {
             nome: ['', [Validators.required]],
             cpf: ['', [Validators.required]],
             email: ['', [Validators.required, Validators.email]],
+            data_nascimento: ['', [Validators.required]],
             senha: ['', [Validators.required, Validators.minLength(6)]],
             confirmSenha: ['', [Validators.required]]
         }, { validator: this.passwordMatchValidator });
@@ -114,13 +115,15 @@ export class RegisterPage implements OnInit {
                     this.router.navigate(['/login']);
                 },
                 error: async (err) => {
-                    await loading.dismiss();
-                    this.presentToast(err.error?.message || 'Erro ao criar conta. Tente novamente.', 'danger');
+                    try { await loading.dismiss(); } catch (e) { console.log('loading already dismissed'); }
+                    console.error('Registration error:', err);
+                    const msg = err.error?.message || err.message || 'Erro ao criar conta. Verifique os dados e tente novamente.';
+                    this.presentToast(msg, 'danger');
                 }
             });
         } catch (error) {
-            await loading.dismiss();
-            this.presentToast('Erro ao criar conta. Tente novamente.', 'danger');
+            try { await loading.dismiss(); } catch (e) { }
+            this.presentToast('Ocorreu um erro inesperado. Tente novamente.', 'danger');
         }
     }
 

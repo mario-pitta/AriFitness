@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Empresa } from 'src/core/models/Empresa';
 import { environment } from 'src/environments/environment';
 import { EmpresaStateService } from './state/empresa-state.service';
-import { tap } from 'rxjs';
+import { map, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,12 +17,19 @@ export class EmpresaService {
 
   getEmpresa(empresaId: string) {
     return this.http.get(environment.apiUrl + '/empresa/' + empresaId).pipe(
-      tap((res: any) => {
+      map((res: any) => {
+        console.log('empresa', res);
         if (res.data) {
           this.empresaState.setEmpresa(res.data);
+          return res.data;
         }
+        return res; // Caso retorne o objeto direto
       })
     );
+  }
+
+  getDefaultServices() {
+    return this.http.get<any[]>(environment.apiUrl + '/services/defaults');
   }
 
   createEmpresa(empresa: Empresa) {

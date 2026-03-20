@@ -1,20 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Form,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MaskitoElementPredicate } from '@maskito/core';
 import Constants from 'src/core/Constants';
-import { Empresa, Endereco, Plano } from 'src/core/models/Empresa';
-import { Horario } from 'src/core/models/Horario';
+import { Empresa, Horario, IService, Plano } from 'src/core/models/Empresa';
+import { Horario as HorarioModel } from 'src/core/models/Horario';
 
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
+
+interface DefaultService {
+  nome: string;
+  checked: boolean;
+}
 
 @Component({
   selector: 'app-empresa',
@@ -22,11 +20,12 @@ import { ToastrService } from 'src/core/services/toastr/toastr.service';
   styleUrls: ['./empresa.page.scss'],
 })
 export class EmpresaPage implements OnInit {
+  DEFAULT_SERVICES: IService[] = [];
   cnpjMask = Constants.cnpjMask;
   telefoneMask = Constants.phoneMask;
   loading: boolean = false;
   maskPredicate: MaskitoElementPredicate = async (el) =>
-    (el as HTMLIonInputElement).getInputElement();
+    (el as unknown as HTMLIonInputElement).getInputElement();
 
   empresaForm!: FormGroup;
 
@@ -41,23 +40,55 @@ export class EmpresaPage implements OnInit {
     return this.f.get('horarios') as FormArray;
   }
 
-  get enderecos() {
-    return this.f.get('enderecos') as FormArray;
+  get servicos() {
+    return this.f.get('servicos') as FormArray;
   }
+
+  defaultServices: DefaultService[] = [];
+  customServices: IService[] = [];
 
   constructor(
     private empresaService: EmpresaService,
     private auth: AuthService,
     private fb: FormBuilder,
     private toastr: ToastrService
-  ) {}
+  ) { }
+
+  isCustomService(index: number): boolean {
+    const serviceControl = this.servicos.at(index);
+    if (!serviceControl) return true;
+
+    const nome = serviceControl.get('nome')?.value?.toLowerCase();
+    if (!nome) return true;
+
+    return !this.DEFAULT_SERVICES.some(ds => ds.nome?.toLowerCase() === nome);
+  }
 
   ngOnInit() {
     console.log('iniciando empresa..');
     this.createForm();
+    this.loadDefaultServices();
     const empresaId = this.auth.getUser?.empresa_id;
     if (!empresaId) return;
     this.getEmpresaData(empresaId);
+  }
+
+  loadDefaultServices() {
+    this.empresaService.getDefaultServices().subscribe({
+      next: (res) => {
+        this.DEFAULT_SERVICES = res;
+        this.defaultServices = res.map((s: any) => ({
+          nome: s.nome,
+          checked: false
+        }));
+
+        // Se os dados da empresa já foram carregados, sincroniza os serviços
+        const servicosAtuais = this.servicos.getRawValue();
+        if (servicosAtuais.length > 0) {
+          this.syncServices(servicosAtuais);
+        }
+      }
+    });
   }
 
   createForm() {
@@ -75,7 +106,7 @@ export class EmpresaPage implements OnInit {
         [Validators.required, Validators.minLength(1)]
       ),
       planos: this.fb.array([], [Validators.required, Validators.minLength(1)]),
-      enderecos: this.fb.array([], [Validators.nullValidator]),
+      servicos: this.fb.array([]),
       default_theme: ['dark', Validators.nullValidator],
       primary_color_hex: ['#4d8dff', Validators.nullValidator],
       created_at: [null, Validators.nullValidator],
@@ -110,24 +141,83 @@ export class EmpresaPage implements OnInit {
   completeForm(empresa: Empresa) {
     this.empresaForm.patchValue(empresa);
 
-    if(empresa.planos){
+    if (empresa.planos) {
       empresa.planos.forEach(plano => {
         this.addPlano(plano);
       });
     }
 
-    if(empresa.horarios){
+    if (empresa.horarios) {
       empresa.horarios.forEach(horario => {
         this.addHorario(horario);
       });
     }
 
-    if(empresa.enderecos){
-      empresa.enderecos.forEach(endereco => {
-        this.addEndereco(endereco);
-      });
+    if (empresa.servicos) {
+      this.syncServices(empresa.servicos);
+    }
+  }
+
+  syncServices(apiServices: IService[]) {
+    // Marcar serviços default que já existem na API
+    this.defaultServices.forEach(ds => {
+      ds.checked = apiServices.some(as => as.nome.toLowerCase() === ds.nome.toLowerCase() && as.ativo);
+    });
+
+    // Identificar serviços customizados (que não estão na lista default)
+    this.customServices = apiServices.filter(as =>
+      !this.DEFAULT_SERVICES.some(ds => ds.nome.toLowerCase() === as.nome.toLowerCase())
+    );
+
+    // Adicionar todos os serviços ao FormArray
+    this.servicos.clear();
+    apiServices.forEach(s => this.addServiceToForm(s));
+  }
+
+  toggleDefaultService(serviceName: string, ev: any) {
+    const checked = ev.detail.checked;
+    const index = this.defaultServices.findIndex(ds => ds.nome === serviceName);
+    if (index > -1) {
+      this.defaultServices[index].checked = checked;
     }
 
+    if (checked) {
+      this.addServiceToForm({ nome: serviceName, ativo: true });
+    } else {
+      this.removeServiceByName(serviceName);
+    }
+  }
+
+  addCustomService() {
+    this.addServiceToForm({ nome: '', ativo: true });
+  }
+
+  addServiceToForm(service: Partial<IService>) {
+    this.servicos.push(
+      this.fb.group({
+        id: [service.id || null],
+        nome: [service.nome || '', Validators.required],
+        descricao: [service.descricao || ''],
+        ativo: [service.ativo ?? true],
+        empresa_id: [this.auth.getUser?.empresa_id]
+      })
+    );
+  }
+
+  removeServiceByName(name: string) {
+    const index = this.servicos.controls.findIndex(c => c.get('nome')?.value === name);
+    if (index > -1) {
+      this.servicos.removeAt(index);
+    }
+  }
+
+  removeService(index: number) {
+    const serviceName = this.servicos.at(index).get('nome')?.value;
+    const dsIndex = this.defaultServices.findIndex(ds => ds.nome === serviceName);
+    if (dsIndex > -1) {
+      this.defaultServices[dsIndex].checked = false;
+    }
+    this.servicos.removeAt(index);
   }
 
   //#region Planos
@@ -166,7 +256,7 @@ export class EmpresaPage implements OnInit {
   //#endregion
 
   //#region Horarios
-  addHorario(horario?: Horario) {
+  addHorario(horario?: HorarioModel) {
     // if(!this.horarios) this.f.get('horarios')?.setValue(this.fb.array([]));
 
     this.horarios.push(
@@ -196,27 +286,6 @@ export class EmpresaPage implements OnInit {
 
   //#endregion
 
-  //#region Enderecos
-  addEndereco(endereco?: Endereco) {
-    this.enderecos.push(
-      this.fb.group({
-        id: [endereco?.id, Validators.nullValidator],
-        descricao: [endereco?.descricao, Validators.required],
-        cep: [endereco?.cep, Validators.required],
-        logradouro: [endereco?.logradouro, Validators.required],
-        numero: [endereco?.numero, Validators.required],
-        complemento: [endereco?.complemento, Validators.nullValidator],
-        bairro: [endereco?.bairro, Validators.required],
-        cidade: [endereco?.cidade, Validators.required],
-        estado: [endereco?.estado, Validators.required],
-      })
-    );
-  }
-
-  removeEndereco(index: number) {
-    this.enderecos.removeAt(index);
-  }
-  //#endregion
 
   //#region ImageHandler
 

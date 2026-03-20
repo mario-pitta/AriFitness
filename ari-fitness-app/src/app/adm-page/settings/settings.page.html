@@ -1,26 +1,20 @@
-<ion-content>
+<ion-content class="ion-padding">
+  <div class="dash-welcome-header animate__animated animate__fadeIn">
+    <div class="dash-welcome-text">
+      <h1 class="dash-welcome-name">Configurações</h1>
+      <p class="dash-welcome-greeting">Gerencie sua conta e preferências do sistema</p>
+    </div>
+  </div>
+
   <ion-grid>
     <ion-row>
-      <ion-col size="12" sizeXs="12" sizeSm="6" sizeMd="12" sizeLg="4" *ngFor="let card of cards">
-        <ion-card routerLink="{{card.path}}">
-          <ion-card-content>
-            <ion-row class="ion-padding ion-align-items-center ">
-              <ion-col sizeSm="12" sizeMd="4">
-                <!-- <ion-card-title> -->
-                <ion-icon [name]="card.icon" class="mega-icon"></ion-icon>
-                <!-- </ion-card-title> -->
-              </ion-col>
-              <ion-col sizeSm="12" sizeMd="8">
-                <ion-label class="fw-bold ion-text-wrap">{{card.title}}</ion-label>
-                <!-- <ion-item lines="none"> -->
-                <div class="ion-padding ion-text-wrap">
-                  <ion-card-subtitle>{{card.subtitle }}</ion-card-subtitle>
-                </div>
-                <!-- </ion-item> -->
-              </ion-col>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
+      <ion-col size="12" sizeSm="6" sizeMd="4" *ngFor="let card of cards" class="animate__animated animate__fadeInUp">
+        <div class="dash-kpi-card dash-kpi-card--{{card.color}}" [routerLink]="card.path ? card.path : null"
+          (click)="handleCardClick(card)">
+          <div class="dash-kpi-label">{{card.subtitle}}</div>
+          <div class="dash-kpi-value">{{card.title}}</div>
+          <ion-icon [name]="card.icon" class="dash-kpi-icon"></ion-icon>
+        </div>
       </ion-col>
     </ion-row>
   </ion-grid>

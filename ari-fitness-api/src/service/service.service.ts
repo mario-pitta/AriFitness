@@ -5,6 +5,17 @@ import { DataBaseService } from '../datasource/database.service';
 export class ServiceService {
     constructor(private database: DataBaseService) { }
 
+    async findDefaults(): Promise<any[]> {
+        const { data, error } = await this.database.supabase
+            .from('default_services')
+            .select('*')
+            .eq('fl_ativo', true)
+            .order('nome', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    }
+
     async findAll(empresa_id: string): Promise<any[]> {
         const { data, error } = await this.database.supabase
             .from('service')
@@ -37,7 +48,7 @@ export class ServiceService {
             .single();
 
         if (error) throw error;
-        if (!data) throw new NotFoundException(`Service ${id} not found`);
+        if (!data) throw new NotFoundException(`Serviço ${id} não encontrado`);
         return data;
     }
 

@@ -1,58 +1,193 @@
-ion-input .label-text {
-  // color: red !important;
-  display:none !important;
+.logo-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 2px dashed var(--ion-color-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: var(--ion-color-primary);
+
+        .logo-overlay {
+            opacity: 1;
+        }
+    }
+
+    .logo-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #fdfdfd;
+    }
+
+    .logo-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        color: #fff;
+        font-size: 24px;
+    }
 }
 
-
-.banner-thumbnail {
-  height: 250px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 10px 10px;
-  background-color: #3f3b3b62;
-  border-radius: 10px;
-}
-
-.banner-preview {
-  // height: 100px;
-  width: 100%;
-  object-fit: cover;
-  padding: 10px 0px;
-}
-
-.logo-thumbnail {
-  height: 100px;
-  width: 100px;
-  display: flex;
-  align-items: center;
-  padding: 5px 5px;
-  background-color: #3f3b3b62;
-  border-radius: 10px;
-}
-
-
-.logo-preview {
-  height: 90px;
-  width: 90px;
-  object-fit: cover;
-  padding: 10px 0px;
-}
-
-@media screen and (max-width: 768px) {
-  .banner-thumbnail {
-    height: 90px;
-  }
-
-  .banner-preview {
-    height: 75px;
-  }
-
-
-  .logo-preview {
-
+.banner-container {
     width: 100%;
-  }
+    height: 150px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 2px dashed var(--ion-color-medium);
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: var(--ion-color-primary);
+
+        .banner-overlay {
+            opacity: 1;
+        }
+    }
+
+    .banner-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .banner-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        color: #fff;
+
+        ion-icon {
+            font-size: 32px;
+        }
+
+        span {
+            font-weight: 500;
+        }
+    }
 }
 
+.custom-input {
+    --background: var(--ion-color-light);
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--ion-border-color);
+    transition: border-color 0.2s ease;
 
+    &:focus-within {
+        border-color: var(--ion-color-primary);
+    }
+}
+
+.services-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.service-chip {
+    padding: 10px 16px;
+    border-radius: 30px;
+    background: var(--ion-color-light);
+    color: var(--ion-color-dark);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid var(--ion-border-color);
+
+    ion-icon {
+        font-size: 18px;
+    }
+
+    &:hover {
+        background: var(--ion-color-step-100);
+    }
+
+    &.active {
+        background: var(--ion-color-primary);
+        color: #fff;
+        border-color: var(--ion-color-primary);
+    }
+}
+
+.main-save-btn {
+    --border-radius: 16px;
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+    margin-top: 20px;
+    box-shadow: 0 8px 16px rgba(var(--ion-color-primary-rgb), 0.3);
+}
+
+.payment-methods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payment-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: 44px;
+    margin-bottom: 0;
+
+    ion-checkbox {
+        width: 100%;
+        --padding-start: 0;
+        --padding-end: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+
+        &::part(container) {
+            margin-right: 12px;
+        }
+    }
+}
+
+.credit-card-group,
+.pix-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.parcelas-input,
+.pix-key-wrapper {
+    padding-left: 36px;
+    margin-top: -8px;
+    margin-bottom: 12px;
+}
+
+.custom-input.narrow {
+    max-width: 200px;
+}
+
+.text-muted {
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+}

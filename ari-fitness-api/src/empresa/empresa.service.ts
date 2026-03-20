@@ -15,8 +15,8 @@ export class EmpresaService {
   constructor(
     private readonly databaseService: DataBaseService,
     private readonly storageService: StorageService,
-  ) {}
-  async getEmpresa(empresaId: string): Promise<PostgrestSingleResponse<Empresa>>{
+  ) { }
+  async getEmpresa(empresaId: string): Promise<PostgrestSingleResponse<Empresa>> {
     console.log('empresaId: ', empresaId);
     return await this.databaseService.supabase
       .from('empresa')
@@ -24,7 +24,8 @@ export class EmpresaService {
         `
           *,
           horarios(*),
-          planos(*)
+          planos(*),
+          servicos:service(*)
         `,
       )
       .eq('id', empresaId)
@@ -33,187 +34,156 @@ export class EmpresaService {
 
   async createEmpresa(empresa: Empresa) {
     try {
-      const logo = empresa.logo_url;
-      const banner = empresa.banner_url;
-      const enderecos = empresa.enderecos;
-      const horarios = empresa.horarios;
-      const planos = empresa.planos;
+      const { logo_url, banner_url, horarios, planos, servicos } = empresa;
 
       delete empresa.logo_url;
       delete empresa.banner_url;
-      delete empresa.enderecos;
+      delete (empresa as any).enderecos; // Garante que não vá para o banco
       delete empresa.horarios;
       delete empresa.planos;
+      delete empresa.servicos;
 
-      return await this.databaseService.supabase
+      const { data, error } = await this.databaseService.supabase
         .from('empresa')
         .insert(empresa)
-        .then(async (res) => {
-          if (res.error) {
-            throw res.error;
-          }
+        .select()
+        .single();
 
-          if (!logo && !banner) {
-            return res;
-          }
+      if (error) throw error;
+      const empresaId = data.id;
 
-          const empresaId =
-            res.data && res.data[0] ? res.data[0]['id'] : undefined;
+      const promises = [];
 
-          if (!empresaId) {
-            throw new Error('Empresa não encontrada');
-          }
+      if (logo_url) {
+        promises.push(
+          this.storageService
+            .uploadImage('empresalogo', 'logo_' + empresaId, logo_url)
+            .then((res) => ({ logo_url: res?.fullPath }))
+        );
+      }
 
-          if (logo) {
-            empresa.logo_url = await this.storageService
-              .uploadImage('empresalogo', 'logo_' + empresaId, logo)
-              .then((res) => res?.fullPath);
-          }
+      if (banner_url) {
+        promises.push(
+          this.storageService
+            .uploadImage('empresabanner', 'banner_' + empresaId, banner_url)
+            .then((res) => ({ banner_url: res?.fullPath }))
+        );
+      }
 
-          if (banner) {
-            empresa.banner_url = await this.storageService
-              .uploadImage('empresabanner', 'banner_' + empresaId, banner)
-              .then((res) => res?.fullPath);
-          }
+      if (horarios?.length) {
+        promises.push(
+          this.databaseService.supabase.from('horarios').insert(
+            horarios.map((h) => ({ ...h, empresa_id: empresaId }))
+          )
+        );
+      }
 
-          // TODO criar tabela de endereco */
-          // if (enderecos) {
-          //   this.databaseService.supabase
-          //     .from('enderecos')
-          //     .insert(enderecos)
-          // }
+      if (planos?.length) {
+        promises.push(
+          this.databaseService.supabase.from('planos').insert(
+            planos.map((p) => ({ ...p, empresa_id: empresaId }))
+          )
+        );
+      }
 
-          if (horarios) {
-            await this.databaseService.supabase.from('horarios').insert(
-              horarios.map((horario) => ({
-                ...horario,
-                empresa_id: empresaId,
-              })),
-            );
-          }
+      if (servicos?.length) {
+        promises.push(
+          this.databaseService.supabase.from('service').insert(
+            servicos.map((s: any) => ({ ...s, empresa_id: empresaId }))
+          )
+        );
+      }
 
-          if (planos) {
-            await this.databaseService.supabase.from('planos').insert(
-              planos.map((plano) => ({
-                ...plano,
-                empresa_id: empresaId,
-              })),
-            );
-          }
+      const results = await Promise.all(promises);
+      const updates: any = {};
+      results.forEach((res: any) => {
+        if (res && (res.logo_url || res.banner_url)) {
+          Object.assign(updates, res);
+        }
+      });
 
-          return this.databaseService.supabase
-            .from('empresa')
-            .update(empresa)
-            .eq('id', empresaId);
-        });
+      if (Object.keys(updates).length > 0) {
+        await this.databaseService.supabase
+          .from('empresa')
+          .update(updates)
+          .eq('id', empresaId);
+      }
+
+      return data;
     } catch (error) {
       throw error;
     }
   }
 
   async updateEmpresa(empresa: Empresa) {
-    const logo = empresa.logo_url;
-    const banner = empresa.banner_url;
-    const enderecos = empresa.enderecos;
-    const horarios = empresa.horarios;
-    const planos = empresa.planos;
+    const { logo_url, banner_url, horarios, planos, servicos } = empresa;
 
     delete empresa.logo_url;
     delete empresa.banner_url;
-    delete empresa.enderecos;
+    delete (empresa as any).enderecos;
     delete empresa.horarios;
     delete empresa.planos;
-    //delete oldFiles
-    const deleteFile = async (bucketName: string, path: string) => {
-      return await this.storageService.deleteFileFromBucket(bucketName, path);
-    };
+    delete empresa.servicos;
+
+    const deleteFile = (bucketName: string, path: string) =>
+      this.storageService.deleteFileFromBucket(bucketName, path);
 
     try {
-      if (logo && logo.indexOf('base64') > -1) {
-        await deleteFile('empresalogo', 'logo_' + empresa.id);
-        const logo_url = await this.storageService
-          .uploadImage('empresalogo', 'logo_' + empresa.id, logo)
-          .then((res) => res?.fullPath);
+      const promises = [];
 
-        empresa.logo_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${logo_url}`;
+      // Imagens
+      if (logo_url && logo_url.indexOf('base64') > -1) {
+        promises.push(
+          deleteFile('empresalogo', 'logo_' + empresa.id)
+            .then(() => this.storageService.uploadImage('empresalogo', 'logo_' + empresa.id, logo_url))
+            .then(res => ({ logo_url: `${process.env.SUPABASE_URL}/storage/v1/object/public/${res?.fullPath}` }))
+        );
       }
 
-      if (banner && banner.indexOf('base64') > -1) {
-        await deleteFile('empresabanner', 'banner_' + empresa.id);
-        const banner_url = await this.storageService
-          .uploadImage('empresabanner', 'banner_' + empresa.id, banner)
-          .then((res) => res?.fullPath);
-        empresa.banner_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${banner_url}`;
+      if (banner_url && banner_url.indexOf('base64') > -1) {
+        promises.push(
+          deleteFile('empresabanner', 'banner_' + empresa.id)
+            .then(() => this.storageService.uploadImage('empresabanner', 'banner_' + empresa.id, banner_url))
+            .then(res => ({ banner_url: `${process.env.SUPABASE_URL}/storage/v1/object/public/${res?.fullPath}` }))
+        );
       }
 
-      // if (enderecos) {
-      //   await this.databaseService.supabase
-      //     .from('enderecos')
-      //     .update(enderecos)
-      //     .eq('empresa_id', empresa.id);
-      // }
-
+      // Horários
       if (horarios) {
-        console.log('vai salvar os horarios');
-
-        horarios.map((p) => {
-          if (!p.id) delete p.id;
-
-          p.empresa_id = empresa.id;
-          return p;
-        });
-
-        await this.databaseService.supabase
-          .from('horarios')
-          .upsert(horarios)
-          .then((res) => {
-            if (res.error) {
-              throw res.error;
-            }
-
-            return res;
-          });
+        const hToSave = horarios.map(h => ({ ...h, empresa_id: empresa.id }));
+        hToSave.forEach(h => { if (!h.id) delete h.id; });
+        promises.push(this.databaseService.supabase.from('horarios').upsert(hToSave));
       }
 
+      // Planos
       if (planos) {
-        console.log('vai salvar os planos');
-
-        const newPlans = planos.filter((p) => !p.id);
-        if (newPlans.length > 0) {
-          const { data, error } = await this.databaseService.supabase
-            .from('planos')
-            .insert(
-              newPlans.map((plano) => {
-                console.log('plano: ', plano);
-                delete plano.id;
-                plano.empresa_id = empresa.id;
-                console.log('plano: ', plano);
-                return plano;
-              }),
-            );
-          if (error) {
-            throw new Error(error.message);
-          }
-        }
-
-        planos.forEach(async (plano) => {
-          const { error } = await this.databaseService.supabase
-            .from('planos')
-            .update(plano)
-            .eq('id', plano.id)
-            .select();
-          if (error) {
-            throw new Error(error.message);
-          }
-        });
+        const pToSave = planos.map(p => ({ ...p, empresa_id: empresa.id }));
+        pToSave.forEach(p => { if (!p.id) delete p.id; });
+        promises.push(this.databaseService.supabase.from('planos').upsert(pToSave));
       }
+
+      // Serviços
+      if (servicos) {
+        const sToSave = servicos.map((s: any) => ({ ...s, empresa_id: empresa.id }));
+        sToSave.forEach((s: any) => { if (!s.id) delete s.id; });
+        promises.push(this.databaseService.supabase.from('service').upsert(sToSave));
+      }
+
+      const results = await Promise.all(promises);
+      results.forEach((res: any) => {
+        if (res && (res.logo_url || res.banner_url)) {
+          Object.assign(empresa, res);
+        }
+      });
 
       return await this.databaseService.supabase
         .from('empresa')
         .update(empresa)
         .eq('id', empresa.id)
         .select();
+
     } catch (error) {
+      console.error('Error updating empresa:', error);
       throw error;
     }
   }

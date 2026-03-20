@@ -1,0 +1,7 @@
+Task Name;Description;Priority;Status;Estimate (hours)
+[BACKEND] Ajustar Fallback de URL na Recuperação de Senha;Ajustar o fluxo de recuperação de senha para que o caminho de fallback (redirecionamento) seja dinâmico entre dev (localhost) e prod.;High;To Do;2
+[FINANCEIRO/ALUNOS] Relatórios em PDF;Implementar exportação de PDF para resumos financeiros e listas de alunos com status de pagamento.;High;To Do;12
+[TECNICO/MOBILE] Suporte PWA e Service Workers (Offline);Implementar @angular/pwa e resolver cache de rotas para visualização de treinos sem internet.;High;To Do;16
+[REPROJETO] Redesign do Módulo de Configurações;Atualizar o visual das telas "Meu Perfil" e "Minha Empresa" para o padrão premium do sistema.;Normal;To Do;10
+[PERFIL] Edição de Dados do Aluno (Foto, Peso, Altura);Criar interfaces e integração para atualização de foto e dados biométricos do aluno.;Normal;To Do;8
+[GAMIF] Sistema de Gamificação (Futuro);Lógica para streaks de check-in e badges de consistência.;Low;To Do;24

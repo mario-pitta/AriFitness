@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { Service } from '../service/service.interface';
 
 export interface Empresa {
   id?: string;
@@ -8,42 +9,26 @@ export interface Empresa {
   logo_url?: string;
   banner_url?: string;
   flag_ativo?: boolean;
-  subscription_plan_id?: number //fk SUBCRITION_PAN;
+  subscription_plan_id?: number;
   default_theme?: string;
   nome?: string;
   telefone?: string;
   email?: string;
   primary_color_hex?: string;
-  accept_pix?: string;
-  accept_credit_card?: string;
-  accept_debit_card?: string;
-  accept_money_in_cash?: string;
-
-
-  enderecos?: Endereco[];
-  horarios?: Horario[];
-  planos?: Plano[];
-  updated_at?: Date;
-  deleted_at?: Date;
-  
-
-  
-  pgmto_credito_max_parcelas?: string;
+  accept_pix?: boolean;
+  accept_credit_card?: boolean;
+  accept_debit_card?: boolean;
+  accept_money_in_cash?: boolean;
+  pgmto_credito_max_parcelas?: number;
   chave_pix?: string;
   openai_key?: string;
   meta_key?: string;
-}
 
-export interface Endereco {
-  id: number;
-  descricao: string;
-  cep?: string;
-  logradouro?: string;
-  numero?: string;
-  complemento?: string;
-  bairro?: string;
-  cidade?: string;
-  estado?: string;
+  horarios?: Horario[];
+  planos?: Plano[];
+  servicos?: Service[];
+  updated_at?: Date;
+  deleted_at?: Date;
 }
 
 export interface Horario {
@@ -57,9 +42,12 @@ export interface Horario {
 
 export interface Plano {
   id?: number;
-  created_at: Date;
-  nome: string;
-  valor: number;
+  created_at?: Date;
+  descricao: string;
+  qtd_dias_semana: number;
   fl_ativo: boolean;
-  empresa_id?: Empresa['id'];
+  preco_padrao: number;
+  empresa_id?: string;
+  caracteristicas?: string;
 }
+

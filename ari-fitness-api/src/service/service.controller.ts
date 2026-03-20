@@ -6,6 +6,11 @@ import { Service } from './entities/service.entity';
 export class ServiceController {
     constructor(private readonly serviceService: ServiceService) { }
 
+    @Get('defaults')
+    async findDefaults(): Promise<any[]> {
+        return this.serviceService.findDefaults();
+    }
+
     @Get()
     async findAll(@Query('empresa_id') empresa_id: string): Promise<any[]> {
         return this.serviceService.findAll(empresa_id);

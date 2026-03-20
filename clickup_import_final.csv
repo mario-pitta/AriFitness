@@ -1,0 +1,8 @@
+Task Name;Description;Labels;Estimate;Priority;Status
+[AUTH] Recuperação de Senha Universal & Dinâmica;"Expandir recuperação para equipe e tornar a URL (Dev/Prod) dinâmica via env. Impacto: Segurança total. Mitigação: Unificar busca de e-mail no backend.";Backend,Segurança;4;High;To Do
+[PERFIL] Edição de Perfil Me (Self-Service);"Permitir que o próprio usuário edite foto, peso e altura. Impacto: Autonomia. Mitigação: Ajustar RLS no Supabase para permitir update do próprio id.";Frontend,UX;8;High;To Do
+[FINANCEIRO] Exportação de Relatórios PDF;"Gerar PDF de transações financeiras (sem IA). Impacto: Fechamento de caixa. Mitigação: Usar pdfMake para tabelas dinâmicas.";Admin,Financeiro;12;High;To Do
+[GESTÃO] Painel de Assinatura da Academia;"Área para o gestor gerenciar seu plano: upgrade, métricas, vencimento. Impacto: Fidelização B2B. Mitigação: Criar campos de metadados de licença na tabela empresa.";Admin,Business;16;High;To Do
+[FINANCEIRO] Análise de Gateway de Pagamento;"Estudo de integração (Stripe/Pagar.me) para automação de cobranças. Impacto: Redução de inadimplência. Mitigação: Foco inicial em Webhooks para baixa automática.";Backend,Financeiro;8;Normal;To Do
+[ALUNO] Suporte PWA e Service Workers (Offline);"Implementar suporte offline para visualização de treinos. Impacto: UX em academias sem sinal. Mitigação: Configurar Service Workers e LocalStorage.";Mobile,Offline;16;Normal;To Do
+[ALUNO] Gamificação Instrutor & Aluno;"Streaks e badges para consistência. Impacto: Retenção. Mitigação: Lógica assíncrona baseada nos check-ins do dia.";Futuro,Engajamento;24;Low;To Do

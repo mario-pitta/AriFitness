@@ -11,12 +11,12 @@ import { Empresa } from './empresa.interface';
 export class EmpresaController {
     constructor(
         private empresaService: EmpresaService
-    ) {}
+    ) { }
 
 
     @Get(':empresaId')
     async getEmpresa(@Param('empresaId') empresaId: string) {
-        return (await this.empresaService.getEmpresa(empresaId)).data;
+        return await this.empresaService.getEmpresa(empresaId);
     }
 
     @Post()
