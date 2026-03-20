@@ -6,6 +6,7 @@ import { Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
 import { PagetitleService } from 'src/core/services/pagetitle.service';
+import { NAV_ITEMS, canSeeItem, NavigationItem } from 'src/core/navigation/navigation.config';
 
 @Component({
   selector: 'app-tabs',
@@ -19,6 +20,7 @@ export class TabsPage implements OnInit, OnDestroy {
   pageTitle = 'Home';
   isMobile = false;
   subs$: Subscription = new Subscription();
+  filteredNavItems: NavigationItem[] = [];
   constructor(
     private titleService: PagetitleService,
     private auth: AuthService,
@@ -55,6 +57,9 @@ export class TabsPage implements OnInit, OnDestroy {
 
     if (this.user) {
       // this.updateLoggedUserData();
+      this.filteredNavItems = NAV_ITEMS.filter(item =>
+        item.showInMobile && canSeeItem(this.user, item)
+      );
     } else {
       this.router.navigate(['login']);
     }

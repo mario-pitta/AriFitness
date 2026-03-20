@@ -3,72 +3,13 @@
     <ion-title>{{pageTitle}}</ion-title>
   </ion-toolbar>
 </ion-header> -->
-@if(user.tipo_usuario === Constants.GERENCIA_ID || user.function_id === Constants.INSTRUTOR_ID ){
 <ion-tabs>
-  @if(isMobile){
-
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button [ngClass]="route.indexOf('admin/dashboard') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/dashboard', false)">
-      <ion-icon aria-hidden="true" name="home"></ion-icon>
+  <ion-tab-bar slot="bottom" *ngIf="isMobile || user.tipo_usuario === Constants.ALUNO_ID">
+    <ion-tab-button *ngFor="let item of filteredNavItems"
+      [ngClass]="route.indexOf(item.route) > -1 ? 'tab-selected' : ''"
+      (click)="navigate(item.route, item.route.includes('admin'))">
+      <ion-icon aria-hidden="true" [name]="item.tabIcon || item.sidebarIcon"></ion-icon>
+      <ion-label *ngIf="user.tipo_usuario === Constants.ALUNO_ID">{{ item.label }}</ion-label>
     </ion-tab-button>
-
-    <ion-tab-button [ngClass]="route.indexOf('admin/financas') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/financas', false)">
-      <ion-icon name="cash"></ion-icon>
-    </ion-tab-button>
-
-    <ion-tab-button [ngClass]="route.indexOf('admin/membros') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/membros', false)">
-      <ion-icon name="people"></ion-icon>
-    </ion-tab-button>
-
-
-    <!-- planejador -->
-    <ion-tab-button [ngClass]="route.indexOf('admin/planejador') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/planejador', false)">
-      <ion-icon name="time"></ion-icon>
-    </ion-tab-button>
-
-    <ion-tab-button [ngClass]="route.indexOf('admin/calendario') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/calendario', false)">
-      <ion-icon name="calendar"></ion-icon>
-    </ion-tab-button>
-
-
-
-    <ion-tab-button [ngClass]="route.indexOf('admin/configuracoes') > -1 ? 'tab-selected' : ''"
-      (click)="navigate('admin/configuracoes', false)">
-      <ion-icon name="settings"></ion-icon>
-    </ion-tab-button>
-
-  </ion-tab-bar>
-
-  }
-</ion-tabs>
-}@else{
-
-
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="home" routerLink="home">
-      <ion-icon aria-hidden="true" name="home"></ion-icon>
-    </ion-tab-button>
-
-    <ion-tab-button [ngClass]="route.indexOf('treinar') > -1 ? 'tab-selected' : ''" (click)="navigate('treinar')">
-      <ion-icon name="barbell-outline"></ion-icon>
-    </ion-tab-button>
-
-    <ion-tab-button tab="stats" routerLink="stats">
-      <ion-icon name="stats-chart-outline"></ion-icon>
-    </ion-tab-button>
-
-    <ion-tab-button
-      [ngClass]="route.indexOf('usuarios') > -1 ||  route.indexOf('cadastro-usuario') > -1 ? 'tab-selected' : ''"
-      (click)="navigate(user.tipo_usuario !== Constants.ALUNO_ID ? 'usuarios' : 'cadastro-usuario')">
-      <ion-icon aria-hidden="true" [name]="user.tipo_usuario !== Constants.ALUNO_ID ? 'people' : 'person'"></ion-icon>
-    </ion-tab-button>
-
   </ion-tab-bar>
 </ion-tabs>
-}

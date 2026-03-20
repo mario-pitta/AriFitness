@@ -8,6 +8,7 @@ import { Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
+import { NAV_ITEMS, canSeeItem, NavigationItem } from 'src/core/navigation/navigation.config';
 
 // @ts-ignore
 import packageInfo from '../../../../package.json';
@@ -29,6 +30,7 @@ export class AdminHomeComponent implements OnInit {
   }[] = [];
   isMobile: boolean = false;
   empresa$!: Observable<any>;
+  menuGroups: { label: string, items: NavigationItem[] }[] = [];
 
   constructor(
     private menuCtrl: MenuController,
@@ -73,6 +75,29 @@ export class AdminHomeComponent implements OnInit {
 
     this.isMobile = this.pageSize.getSize().isMobile;
     this.getUserInitials();
+    this.setupMenu();
+  }
+
+  setupMenu() {
+    const visibleItems = NAV_ITEMS.filter(item =>
+      item.showInSidebar && canSeeItem(this.user, item)
+    );
+
+    const groups: { [key: string]: NavigationItem[] } = {};
+    visibleItems.forEach(item => {
+      const groupName = item.group || 'Outros';
+      if (!groups[groupName]) {
+        groups[groupName] = [];
+      }
+      groups[groupName].push(item);
+    });
+
+    this.menuGroups = Object.keys(groups).map(key => ({
+      label: key,
+      items: groups[key]
+    }));
+
+    // Ensure groups are in a specific order if desired, but for now we follow NAV_ITEMS order
   }
 
   toggleMenu() {

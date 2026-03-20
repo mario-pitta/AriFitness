@@ -38,74 +38,15 @@
 
             <!-- Menu Groups -->
             <ion-list lines="none" class="sidebar-menu-list">
-                <div class="menu-group-label">Principal</div>
+                <ng-container *ngFor="let group of menuGroups">
+                    <div class="menu-group-label" *ngIf="group.label !== 'Aluno'">{{ group.label }}</div>
 
-                <ion-item button routerLink="/admin/dashboard" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="grid-outline" slot="start"></ion-icon>
-                    <ion-label>Painel Geral</ion-label>
-                </ion-item>
-
-                <div class="menu-group-label">Gestão</div>
-
-                <ion-item button routerLink="/admin/membros" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="people-outline" slot="start"></ion-icon>
-                    <ion-label>Alunos</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/equipe" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="id-card-outline" slot="start"></ion-icon>
-                    <ion-label>Equipe</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/financas" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="wallet-outline" slot="start"></ion-icon>
-                    <ion-label>Finanças</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/treinos" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="clipboard-outline" slot="start"></ion-icon>
-                    <ion-label>Fichas / Treinos</ion-label>
-                </ion-item>
-
-                <div class="menu-group-label">Operacional</div>
-
-                <ion-item button routerLink="/admin/qrcode" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="qr-code-outline" slot="start"></ion-icon>
-                    <ion-label>Check-in</ion-label>
-                </ion-item>
-
-
-                <ion-item button routerLink="/admin/tarefas" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="list-outline" slot="start"></ion-icon>
-                    <ion-label>Tarefas</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/calendario" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="calendar-outline" slot="start"></ion-icon>
-                    <ion-label>Calendário</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/contatos" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="call-outline" slot="start"></ion-icon>
-                    <ion-label>Contatos</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/equipamentos" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="bicycle-outline" slot="start"></ion-icon>
-                    <ion-label>Equipamentos</ion-label>
-                </ion-item>
-
-                <ion-item button routerLink="/admin/exercicios" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="barbell-outline" slot="start"></ion-icon>
-                    <ion-label>Exercícios</ion-label>
-                </ion-item>
-
-                <div class="menu-group-label">Sistema</div>
-
-                <ion-item button routerLink="configuracoes" routerLinkActive="menu-item-active" detail="false">
-                    <ion-icon name="settings-outline" slot="start"></ion-icon>
-                    <ion-label>Configurações</ion-label>
-                </ion-item>
+                    <ion-item *ngFor="let item of group.items" button [routerLink]="item.route"
+                        routerLinkActive="menu-item-active" detail="false">
+                        <ion-icon [name]="item.sidebarIcon" slot="start"></ion-icon>
+                        <ion-label>{{ item.label }}</ion-label>
+                    </ion-item>
+                </ng-container>
             </ion-list>
         </ion-content>
 
