@@ -94,7 +94,7 @@ NUNCA quebrar o layout existente.
 
 ## Criar (se não existir) um arquivo com o mapeamento da identidade:
 
-  - ./visual-identity.ts
+  - ./identidade-visual.md
 
 ### Esse arquivo deve conter:
 
