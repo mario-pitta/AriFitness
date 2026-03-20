@@ -107,7 +107,7 @@
                 <p class="section-subtitle">Progresso baseado nos pesos definidos nas fichas ao longo do tempo.</p>
 
                 <ion-row>
-                    <ion-card class="exercise-card glass-card" *ngFor="let exercise of chartData">
+                    <ion-card class="exercise-card glass-card col-3" *ngFor="let exercise of chartData">
                         <div class="card-header">
                             <h4>{{exercise.name | titlecase}}</h4>
                             <span class="badge"
@@ -177,10 +177,6 @@
                         <div class="d-flex gap-2">
                             <ion-button fill="clear" size="small" (click)="onViewFicha.emit(ficha.id)">
                                 VER FICHA
-                            </ion-button>
-                            <ion-button fill="solid" color="primary" size="small"
-                                (click)="onReactivateFicha.emit(ficha)" *ngIf="!ficha.fl_ativo">
-                                REATIVAR
                             </ion-button>
                         </div>
                     </div>

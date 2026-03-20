@@ -50,8 +50,8 @@ export class PessoaFormPage implements OnInit {
   instructorId: string | null = null;
 
   onFormChange($event: Event) {
-    // console.log($event);
-    // console.log(this.form);
+    console.log($event);
+    console.log(this.form);
   }
   form: FormGroup = new FormGroup({});
   // temDoenca: boolean = false;
@@ -86,8 +86,6 @@ export class PessoaFormPage implements OnInit {
 
     if (this.aRoute.snapshot.queryParams['userId']) {
       this.getUserInfo(this.aRoute.snapshot.queryParams['userId']);
-    } else if (this.aRoute.snapshot.queryParams['memberId']) {
-      this.getMemberInfo(this.aRoute.snapshot.queryParams['memberId']);
     }
 
 
@@ -104,21 +102,6 @@ export class PessoaFormPage implements OnInit {
     });
   }
 
-  getMemberInfo(id: string) {
-    this.teamMemberService.findOne(id, this.user.empresa_id as string).subscribe({
-      next: (member) => {
-        if (member) {
-          this.instructorId = member.id;
-          this.form.patchValue({
-            ...member,
-            whatsapp: member.telefone,
-            status_instrutor: member.status,
-            senha: member.password
-          });
-        }
-      }
-    });
-  }
 
   loadData() {
     this.getTipoUsuarioList();
@@ -172,11 +155,6 @@ export class PessoaFormPage implements OnInit {
     this.tipoUsuarioService.findAll().subscribe({
       next: (res: TipoUsuario[]) => {
         if (res) this.tiposUsuario = res;
-        this.tipoUsuarioForm = this.tiposUsuario.find(t => t.id == this.aRoute.snapshot.data['tipoUsuario']) as TipoUsuario;
-        if (this.tipoUsuarioForm) {
-          this.form.get('tipo_usuario')?.setValue(this.tipoUsuarioForm.id);
-          this.form.get('tipo_usuario')?.disable();
-        }
       },
       error: (err) => {
         this.loading = false;
@@ -208,44 +186,13 @@ export class PessoaFormPage implements OnInit {
       nome: ['', [Validators.required]],
       email: ['', [Validators.email]],
       data_nascimento: null,
-      tipo_usuario: [
-        null,
-        [Validators.required],
-      ],
+      tipo_usuario: [Constants.ALUNO_ID, [Validators.required]],
       genero: ['', [Validators.required]],
-      peso: [
-        null,
-        [
-          Number(this.aRoute.snapshot.params['id']) == Constants.ALUNO_ID
-            ? Validators.required
-            : Validators.nullValidator,
-        ],
-      ],
-      altura: [
-        null,
-        [
-          Number(this.aRoute.snapshot.params['id']) == Constants.ALUNO_ID
-            ? Validators.required
-            : Validators.nullValidator,
-        ],
-      ],
+      peso: [null, [Validators.required]],
+      altura: [null, [Validators.required]],
       cpf: [null, [Validators.required]],
-      plano: [
-        null,
-        [
-          Number(this.aRoute.snapshot.params['id']) == Constants.ALUNO_ID
-            ? Validators.required
-            : Validators.nullValidator,
-        ],
-      ],
-      horario_id: [
-        null,
-        [
-          Number(this.aRoute.snapshot.params['id']) == Constants.ALUNO_ID
-            ? Validators.required
-            : Validators.nullValidator,
-        ],
-      ],
+      plano: [null, [Validators.required]],
+      horario_id: [null, [Validators.required]],
       whatsapp: ['', [Validators.required]],
       doencas: ['', [Validators.nullValidator]],
       objetivo: [null, [Validators.nullValidator]],
@@ -253,7 +200,7 @@ export class PessoaFormPage implements OnInit {
       senha: [null, [Validators.nullValidator]],
       rcq: [null, [Validators.nullValidator]],
       imc: [null, [Validators.nullValidator]],
-      flagAdmin: [null, [Validators.required]],
+      flagAdmin: [false, [Validators.required]],
       fl_ativo: [true, [Validators.required]],
       foto_url: ['', [Validators.nullValidator]],
       avc: [null, [Validators.nullValidator]],
@@ -273,13 +220,6 @@ export class PessoaFormPage implements OnInit {
       classificacao_risco: [1, [Validators.nullValidator]],
       observacoes: ['', [Validators.nullValidator]],
       empresa_id: [this.user.empresa_id ?? null, [Validators.nullValidator]],
-      cref: [null, [Validators.nullValidator]],
-      especialidade: [null, [Validators.nullValidator]],
-      turno: [null, [Validators.nullValidator]],
-      funcao: [null, [Validators.nullValidator]],
-      status_instrutor: ['ACTIVE', [Validators.nullValidator]],
-      specialties: [[], [Validators.nullValidator]],
-      services: [[], [Validators.nullValidator]]
     });
   }
 
@@ -287,34 +227,7 @@ export class PessoaFormPage implements OnInit {
     return `${maxLength - inputLength} characters remaining`;
   }
 
-  onChangeTipoUser() {
-    const newValue = this.form.value.tipo_usuario;
-    this.form.patchValue({
-      flagAdmin: this.tiposUsuario.find((tu) => tu.id == newValue)
-        ?.adm_padrao,
-    });
 
-    if (newValue === Constants.ALUNO_ID) {
-      this.form.controls['plano'].setValidators(Validators.required);
-      this.form.controls['horario_id'].setValidators(Validators.required);
-    } else {
-      this.form.controls['plano'].clearValidators();
-      this.form.controls['horario_id'].clearValidators();
-    }
-
-    if (newValue === Constants.INSTRUTOR_ID) {
-      this.form.controls['cref'].setValidators(Validators.required);
-      this.form.controls['especialidade'].setValidators(Validators.required);
-    } else {
-      this.form.controls['cref'].clearValidators();
-      this.form.controls['especialidade'].clearValidators();
-    }
-
-    this.form.get('horario_id')?.updateValueAndValidity();
-    this.form.get('plano')?.updateValueAndValidity();
-    this.form.get('cref')?.updateValueAndValidity();
-    this.form.get('especialidade')?.updateValueAndValidity();
-  }
 
   submitForm() {
     this.loading = true;
@@ -324,7 +237,8 @@ export class PessoaFormPage implements OnInit {
     const tipoId = this.tipoUsuarioForm?.id || rawValue.tipo_usuario;
 
     // Qualquer um que não seja Aluno é considerado Membro da Equipe para esse fluxo
-    const isTeamMember = tipoId !== Constants.ALUNO_ID;
+    // Usamos Number() para garantir comparação numérica robusta
+    const isTeamMember = Number(tipoId) !== Constants.ALUNO_ID;
 
     if (isTeamMember) {
       const teamMemberData = {

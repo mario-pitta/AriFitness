@@ -236,17 +236,17 @@
             <!-- Botão de salvar -->
             <div class="ion-padding footer-action" *ngIf="isManagerOrInstructor">
                 <ion-button expand="block" color="success" (click)="submitForm()"
-                    [disabled]="loading || (workoutState?.isValid$ | async) === false || (f.get('id')?.value && !fichaAtual?.fl_ativo)"
-                    class="save-button">
-                    <ion-icon slot="start" name="save-outline"></ion-icon>
-                    Finalizar e Salvar Ficha
+                    [disabled]="loading || (workoutState?.isValid$ | async) === false" class="save-button">
+                    <ion-icon slot="start"
+                        [name]="(f.get('id')?.value && !fichaAtual?.fl_ativo) ? 'flash-outline' : 'save-outline'"></ion-icon>
+                    {{ (f.get('id')?.value && !fichaAtual?.fl_ativo) ? 'REATIVAR FICHA' : 'Finalizar e Salvar Ficha' }}
                 </ion-button>
             </div>
         </div>
 
         <!-- HISTORY VIEW (Unified Component) -->
         <app-historico-aluno *ngIf="!loading && activeSegment === 'historico'" [userId]="aluno?.get('id')?.value"
-            [showHeader]="false" (onViewFicha)="viewFicha($event)" (onReactivateFicha)="reactivateFicha($event)">
+            [showHeader]="false" (onViewFicha)="viewFicha($event)">
         </app-historico-aluno>
     </div>
 

@@ -15,7 +15,6 @@ export class HistoricoAlunoPage implements OnInit, OnChanges {
     @Input() userId: number | null = null;
     @Input() showHeader: boolean = true;
     @Output() onViewFicha = new EventEmitter<number>();
-    @Output() onReactivateFicha = new EventEmitter<any>();
 
     aluno: IUsuario | null = null;
     activeSegment: string = 'frequencia';
@@ -180,15 +179,22 @@ export class HistoricoAlunoPage implements OnInit, OnChanges {
         });
 
         const _exercises = Array.from(groups.entries()).map(([name, points], index) => {
-            let evolution = points[points.length - 1].value - points[0].value
+            // Sort points from oldest to newest to calculate evolution correctly
+            const sortedPoints = points.sort((a, b) => a.date - b.date);
+            const evolution = sortedPoints[sortedPoints.length - 1].value - sortedPoints[0].value;
+
+            console.log('name = ', name);
+            console.log('sortedPoints = ', sortedPoints);
+            console.log('primeira execução (mais antiga): points[0] = ', sortedPoints[0]);
+            console.log('última execução (mais recente): points[points.length - 1] = ', sortedPoints[sortedPoints.length - 1]);
+            console.log('evolução calculada = ', evolution);
 
             return {
                 name: name,
-                series: points,
+                series: sortedPoints,
                 evolution: evolution
-            }
-
-        })
+            };
+        });
 
 
         console.log('exercises = ', _exercises)
@@ -205,9 +211,9 @@ export class HistoricoAlunoPage implements OnInit, OnChanges {
                         value: p.value
                     }))
             }))
-            .filter(g => g.series.length > 1)
-            .sort((a, b) => a.evolution - b.evolution)
-            .slice(0, 5); // Limit to top 5 evolved exercises to avoid clutter
+            .filter(g => g.series.length > 1 && g.evolution > 0)
+            .sort((a, b) => b.evolution - a.evolution)
+            .slice(0, 10); // Limit to top 5 evolved exercises to avoid clutter
 
 
         console.log('this.chartData = ', this.chartData)

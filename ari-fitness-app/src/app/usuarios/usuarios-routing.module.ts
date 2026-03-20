@@ -13,13 +13,7 @@ const routes: Routes = [
     path: 'importar',
     loadChildren: () => import('./importar/importar.module').then(m => m.ImportarPageModule)
   },
-  {
-    path: 'formulario',
-    loadChildren: () => import('../pessoa-form/pessoa-form.module').then(m => m.PessoaFormPageModule),
-    data: {
-      tipoUsuario: Constants.ALUNO_ID
-    }
-  },
+
   {
     path: 'historico/:id',
     loadChildren: () => import('./historico-aluno/historico-aluno.module').then(m => m.HistoricoAlunoPageModule)

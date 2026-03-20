@@ -59,274 +59,188 @@
                         </ion-col>
                     </ion-row>
 
-                    <ion-item lines="none" class="readonly-item">
-                        <ion-label position="stacked">Tipo de Usuário</ion-label>
-                        <ion-badge color="primary" class="ion-margin-top">{{ tipoUsuarioForm?.nome || 'Selecionado'
-                            }}</ion-badge>
-                    </ion-item>
+
                 </ion-card-content>
             </ion-card>
 
-            <!-- Collaborator Context (NOT ALUNO) -->
-            <ng-container *ngIf="form.getRawValue().tipo_usuario !== Constants.ALUNO_ID">
-                <ion-card class="modern-card">
-                    <ion-card-header>
-                        <ion-card-title>
-                            <ion-icon name="briefcase-outline" color="secondary"></ion-icon>
-                            Dados Profissionais
-                        </ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                        <!-- <ion-item lines="none" class="checkbox-item" *ngIf="form.getRawValue().tipo_usuario">
-                            <ion-checkbox formControlName="flagAdmin" labelPlacement="end">Administrador do
-                                Sistema</ion-checkbox>
-                        </ion-item> -->
 
-                        <ng-container *ngIf="form.getRawValue().tipo_usuario === Constants.INSTRUTOR_ID">
-                            <ion-row>
-                                <ion-col size="12" size-md="6">
-                                    <ion-input formControlName="cref" label="Registro CREF *" labelPlacement="floating"
-                                        fill="outline" class="modern-input" type="text" placeholder="Ex: 000000-G/UF">
-                                    </ion-input>
-                                </ion-col>
-                                <ion-col size="12" size-md="6">
-                                    <ion-select formControlName="status_instrutor" label="Status"
-                                        labelPlacement="floating" fill="outline" class="modern-input"
-                                        interface="popover">
-                                        <ion-select-option value="ACTIVE">Ativo</ion-select-option>
-                                        <ion-select-option value="INACTIVE">Inativo</ion-select-option>
-                                    </ion-select>
-                                </ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size="12" size-md="6">
-                                    <ion-select formControlName="specialties" label="Especialidades"
-                                        labelPlacement="floating" fill="outline" class="modern-input" [multiple]="true"
-                                        interface="alert">
-                                        <ion-select-option *ngFor="let spec of specialtiesList"
-                                            [value]="spec.id">{{spec.nome}}</ion-select-option>
-                                    </ion-select>
-                                </ion-col>
-                                <ion-col size="12" size-md="6">
-                                    <ion-select formControlName="services" label="Serviços (Extras)"
-                                        labelPlacement="floating" fill="outline" class="modern-input" [multiple]="true"
-                                        interface="alert">
-                                        <ion-select-option *ngFor="let serv of servicesList"
-                                            [value]="serv.id">{{serv.nome}}</ion-select-option>
-                                    </ion-select>
-                                </ion-col>
-                            </ion-row>
-                        </ng-container>
 
-                        <!-- Other collaborators -->
-                        <ng-container
-                            *ngIf="form.getRawValue().tipo_usuario !== Constants.INSTRUTOR_ID && form.getRawValue().tipo_usuario !== Constants.ALUNO_ID && form.getRawValue().tipo_usuario !== Constants.GERENCIA_ID">
-                            <ion-row>
-                                <ion-col size="12" size-md="6">
-                                    <ion-select formControlName="turno" label="Turno de Trabalho"
-                                        labelPlacement="floating" fill="outline" class="modern-input"
-                                        interface="popover">
-                                        <ion-select-option value="Manhã">Manhã</ion-select-option>
-                                        <ion-select-option value="Tarde">Tarde</ion-select-option>
-                                        <ion-select-option value="Noite">Noite</ion-select-option>
-                                        <ion-select-option value="Integral">Integral</ion-select-option>
-                                    </ion-select>
-                                </ion-col>
-                                <ion-col size="12" size-md="6">
-                                    <ion-input formControlName="funcao" label="Função/Cargo" labelPlacement="floating"
-                                        fill="outline" class="modern-input" type="text"
-                                        placeholder="Ex: Recepcionista, Zelador">
-                                    </ion-input>
-                                </ion-col>
-                            </ion-row>
-                        </ng-container>
-
-                    </ion-card-content>
-                </ion-card>
-            </ng-container>
-
-            <!-- Student Context (ALUNO) -->
-            <ng-container *ngIf="form.getRawValue().tipo_usuario === Constants.ALUNO_ID">
-                <ion-card class="modern-card">
-                    <ion-card-header>
-                        <ion-card-title>
-                            <ion-icon name="fitness-outline" color="tertiary"></ion-icon>
-                            Plano e Horário
-                        </ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                        <ion-row>
-                            <ion-col size="12" size-md="6">
-                                <ion-select formControlName="plano" label="Plano *" labelPlacement="floating"
-                                    fill="outline" class="modern-input" interface="popover"
-                                    placeholder="Selecione o plano">
-                                    <ion-select-option *ngFor="let plano of planos" [value]="plano.id">
-                                        {{plano.descricao}}
-                                    </ion-select-option>
-                                </ion-select>
-                            </ion-col>
-                            <ion-col size="12" size-md="6">
-                                <ion-select formControlName="horario_id" label="Horário *" labelPlacement="floating"
-                                    fill="outline" class="modern-input" interface="popover"
-                                    placeholder="Selecione o horário">
-                                    <ion-select-option *ngFor="let horario of horarios" [value]="horario.id">
-                                        {{horario.hora_inicio}} - {{horario.hora_fim}}
-                                    </ion-select-option>
-                                </ion-select>
-                            </ion-col>
-                        </ion-row>
-
-                        <ion-row>
-                            <ion-col size="12">
-                                <ion-select formControlName="data_vencimento" label="Dia de Vencimento"
-                                    labelPlacement="floating" fill="outline" class="modern-input" interface="popover"
-                                    placeholder="Selecione o dia">
-                                    <ion-select-option *ngFor="let dia of [1, 5, 10, 15, 20, 25, 30]" [value]="dia">
-                                        {{dia}}
-                                    </ion-select-option>
-                                </ion-select>
-                            </ion-col>
-                        </ion-row>
-                    </ion-card-content>
-                </ion-card>
-
-                <!-- Anamnesis / Health Data inside Accordion to save space -->
-                <ion-accordion-group class="modern-accordion">
-                    <ion-accordion value="medidas">
-                        <ion-item slot="header" color="light">
-                            <ion-label>
-                                <h2><ion-icon name="body-outline"></ion-icon> Medidas Básicas</h2>
-                            </ion-label>
-                        </ion-item>
-                        <div class="ion-padding" slot="content">
-                            <ion-row>
-                                <ion-col size="6">
-                                    <ion-input formControlName="altura" [maskitoElement]="maskPredicate"
-                                        [maskito]="alturaMask" label="Altura *" labelPlacement="floating" fill="outline"
-                                        class="modern-input" type="text" placeholder="0.00 m" (ionChange)="calcIMC()">
-                                    </ion-input>
-                                </ion-col>
-                                <ion-col size="6">
-                                    <ion-input formControlName="peso" [maskitoElement]="maskPredicate"
-                                        [maskito]="pesoMask" label="Peso *" labelPlacement="floating" fill="outline"
-                                        class="modern-input" type="text" placeholder="00.00 kg" (ionChange)="calcIMC()">
-                                    </ion-input>
-                                </ion-col>
-                                <ion-col size="12">
-                                    <ion-input label="IMC" labelPlacement="floating" fill="outline" class="modern-input"
-                                        type="number" placeholder="00.00" [(ngModel)]="imcIdeal"
-                                        [ngModelOptions]="{standalone: true}" disabled>
-                                    </ion-input>
-                                </ion-col>
-                            </ion-row>
-                        </div>
-                    </ion-accordion>
-
-                    <ion-accordion value="anamnese">
-                        <ion-item slot="header" color="light">
-                            <ion-label>
-                                <h2><ion-icon name="medical-outline"></ion-icon> Anamnese & Saúde</h2>
-                            </ion-label>
-                        </ion-item>
-                        <div class="ion-padding" slot="content">
-                            <div class="checkbox-group">
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox #temDoenca [checked]="form.value.doencas" labelPlacement="end">
-                                        <div class="ion-text-wrap">Tenho alguma patologia</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <div class="conditional-input" *ngIf="temDoenca.checked === true">
-                                    <ion-input formControlName="doencas" label="Qual(s)?" labelPlacement="floating"
-                                        fill="outline" class="modern-input"></ion-input>
-                                </div>
-
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox #flagMedicamento [checked]="form.value.medicacao_em_uso"
-                                        labelPlacement="end">
-                                        <div class="ion-text-wrap">Uso ou estou usando alguma medicação</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <div class="conditional-input" *ngIf="flagMedicamento.checked === true">
-                                    <ion-input formControlName="medicacao_em_uso" label="Qual(s)?"
-                                        labelPlacement="floating" fill="outline" class="modern-input"></ion-input>
-                                </div>
-
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox #cirurgia formControlName="cirurgia" labelPlacement="end">
-                                        <div class="ion-text-wrap">Passei por cirurgia, internação e/ou fraturas nos
-                                            últimos 6 meses.</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <div class="conditional-input" *ngIf="cirurgia.checked === true">
-                                    <ion-input formControlName="cirurgia" label="Qual(s)?" labelPlacement="floating"
-                                        fill="outline" class="modern-input"></ion-input>
-                                </div>
-
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox formControlName="cardiopata" labelPlacement="end">
-                                        <div class="ion-text-wrap">Eu sou, ou tenho cardiopata(s) na família</div>
-                                    </ion-checkbox>
-                                </ion-item>
-
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox #relato_dor [checked]="form.value.relato_dor" labelPlacement="end">
-                                        <div class="ion-text-wrap">Sinto dores frequentes, ou senti dores nas últimas
-                                            semanas.</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <div class="conditional-input" *ngIf="relato_dor.checked === true">
-                                    <ion-input formControlName="relato_dor" label="Qual(s)?" labelPlacement="floating"
-                                        fill="outline" class="modern-input"></ion-input>
-                                </div>
-                            </div>
-
-                            <h3 class="ion-margin-top ion-margin-bottom mt-4">Antecedentes Familiares</h3>
-                            <div class="checkbox-group">
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox formControlName="avc" labelPlacement="end">
-                                        <div class="ion-text-wrap">Tenho diabetes ou alguém próximo de mim tem.</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox formControlName="diabete" labelPlacement="end">
-                                        <div class="ion-text-wrap">Já houve Acidente Vascular Cerebral (AVC) na família.
-                                        </div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox formControlName="infarto" labelPlacement="end">
-                                        <div class="ion-text-wrap">Já infartei, ou alguém próximo infartou.</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                                <ion-item lines="none" class="checkbox-item">
-                                    <ion-checkbox formControlName="pressao_arterial" labelPlacement="end">
-                                        <div class="ion-text-wrap">Tenho pressão arterial fora do padrão para minha
-                                            idade.</div>
-                                    </ion-checkbox>
-                                </ion-item>
-                            </div>
-
-                            <h3 class="ion-margin-top ion-margin-bottom mt-4">Avaliação Geral</h3>
-                            <ion-select formControlName="classificacao_risco" id="classificacao_risco"
-                                interface="popover" label="Classificação de Risco" labelPlacement="floating"
-                                fill="outline" class="modern-input"
-                                [ngClass]="form.value.classificacao_risco === 1 ? 'ion-text-success' : form.value.classificacao_risco === 2 ? 'ion-text-warning' : 'ion-text-danger'">
-                                <ion-select-option *ngFor="let grau of [1, 2, 3]" [value]="grau">
-                                    Grau {{grau}}
+            <ion-card class="modern-card">
+                <ion-card-header>
+                    <ion-card-title>
+                        <ion-icon name="fitness-outline" color="tertiary"></ion-icon>
+                        Plano e Horário
+                    </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-row>
+                        <ion-col size="12" size-md="6">
+                            <ion-select formControlName="plano" label="Plano *" labelPlacement="floating" fill="outline"
+                                class="modern-input" interface="popover" placeholder="Selecione o plano">
+                                <ion-select-option *ngFor="let plano of planos" [value]="plano.id">
+                                    {{plano.descricao}}
                                 </ion-select-option>
                             </ion-select>
+                        </ion-col>
+                        <ion-col size="12" size-md="6">
+                            <ion-select formControlName="horario_id" label="Horário *" labelPlacement="floating"
+                                fill="outline" class="modern-input" interface="popover"
+                                placeholder="Selecione o horário">
+                                <ion-select-option *ngFor="let horario of horarios" [value]="horario.id">
+                                    {{horario.hora_inicio}} - {{horario.hora_fim}}
+                                </ion-select-option>
+                            </ion-select>
+                        </ion-col>
+                    </ion-row>
 
-                            <ion-textarea formControlName="observacoes" label="Observações:" labelPlacement="floating"
-                                fill="outline" class="modern-input ion-margin-top" placeholder="Escreva aqui..."
-                                maxlength="250" [counter]="true" [counterFormatter]="customCounterFormatter">
-                            </ion-textarea>
+                    <ion-row>
+                        <ion-col size="12">
+                            <ion-select formControlName="data_vencimento" label="Dia de Vencimento"
+                                labelPlacement="floating" fill="outline" class="modern-input" interface="popover"
+                                placeholder="Selecione o dia">
+                                <ion-select-option *ngFor="let dia of [1, 5, 10, 15, 20, 25, 30]" [value]="dia">
+                                    {{dia}}
+                                </ion-select-option>
+                            </ion-select>
+                        </ion-col>
+                    </ion-row>
+                </ion-card-content>
+            </ion-card>
 
+            <!-- Anamnesis / Health Data inside Accordion to save space -->
+            <ion-accordion-group class="modern-accordion">
+                <ion-accordion value="medidas">
+                    <ion-item slot="header" color="light">
+                        <ion-label>
+                            <h2><ion-icon name="body-outline"></ion-icon> Medidas Básicas</h2>
+                        </ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                        <ion-row>
+                            <ion-col size="6">
+                                <ion-input formControlName="altura" [maskitoElement]="maskPredicate"
+                                    [maskito]="alturaMask" label="Altura *" labelPlacement="floating" fill="outline"
+                                    class="modern-input" type="text" placeholder="0.00 m" (ionChange)="calcIMC()">
+                                </ion-input>
+                            </ion-col>
+                            <ion-col size="6">
+                                <ion-input formControlName="peso" [maskitoElement]="maskPredicate" [maskito]="pesoMask"
+                                    label="Peso *" labelPlacement="floating" fill="outline" class="modern-input"
+                                    type="text" placeholder="00.00 kg" (ionChange)="calcIMC()">
+                                </ion-input>
+                            </ion-col>
+                            <ion-col size="12">
+                                <ion-input label="IMC" labelPlacement="floating" fill="outline" class="modern-input"
+                                    type="number" placeholder="00.00" [(ngModel)]="imcIdeal"
+                                    [ngModelOptions]="{standalone: true}" disabled>
+                                </ion-input>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </ion-accordion>
+
+                <ion-accordion value="anamnese">
+                    <ion-item slot="header" color="light">
+                        <ion-label>
+                            <h2><ion-icon name="medical-outline"></ion-icon> Anamnese & Saúde</h2>
+                        </ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                        <div class="checkbox-group">
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox #temDoenca [checked]="form.value.doencas" labelPlacement="end">
+                                    <div class="ion-text-wrap">Tenho alguma patologia</div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <div class="conditional-input" *ngIf="temDoenca.checked === true">
+                                <ion-input formControlName="doencas" label="Qual(s)?" labelPlacement="floating"
+                                    fill="outline" class="modern-input"></ion-input>
+                            </div>
+
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox #flagMedicamento [checked]="form.value.medicacao_em_uso"
+                                    labelPlacement="end">
+                                    <div class="ion-text-wrap">Uso ou estou usando alguma medicação</div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <div class="conditional-input" *ngIf="flagMedicamento.checked === true">
+                                <ion-input formControlName="medicacao_em_uso" label="Qual(s)?" labelPlacement="floating"
+                                    fill="outline" class="modern-input"></ion-input>
+                            </div>
+
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox #cirurgia formControlName="cirurgia" labelPlacement="end">
+                                    <div class="ion-text-wrap">Passei por cirurgia, internação e/ou fraturas nos
+                                        últimos 6 meses.</div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <div class="conditional-input" *ngIf="cirurgia.checked === true">
+                                <ion-input formControlName="cirurgia" label="Qual(s)?" labelPlacement="floating"
+                                    fill="outline" class="modern-input"></ion-input>
+                            </div>
+
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox formControlName="cardiopata" labelPlacement="end">
+                                    <div class="ion-text-wrap">Eu sou, ou tenho cardiopata(s) na família</div>
+                                </ion-checkbox>
+                            </ion-item>
+
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox #relato_dor [checked]="form.value.relato_dor" labelPlacement="end">
+                                    <div class="ion-text-wrap">Sinto dores frequentes, ou senti dores nas últimas
+                                        semanas.</div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <div class="conditional-input" *ngIf="relato_dor.checked === true">
+                                <ion-input formControlName="relato_dor" label="Qual(s)?" labelPlacement="floating"
+                                    fill="outline" class="modern-input"></ion-input>
+                            </div>
                         </div>
-                    </ion-accordion>
-                </ion-accordion-group>
-                <br>
-            </ng-container>
 
+                        <h3 class="ion-margin-top ion-margin-bottom mt-4">Antecedentes Familiares</h3>
+                        <div class="checkbox-group">
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox formControlName="avc" labelPlacement="end">
+                                    <div class="ion-text-wrap">Tenho diabetes ou alguém próximo de mim tem.</div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox formControlName="diabete" labelPlacement="end">
+                                    <div class="ion-text-wrap">Já houve Acidente Vascular Cerebral (AVC) na família.
+                                    </div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox formControlName="infarto" labelPlacement="end">
+                                    <div class="ion-text-wrap">Já infartei, ou alguém próximo infartou.</div>
+                                </ion-checkbox>
+                            </ion-item>
+                            <ion-item lines="none" class="checkbox-item">
+                                <ion-checkbox formControlName="pressao_arterial" labelPlacement="end">
+                                    <div class="ion-text-wrap">Tenho pressão arterial fora do padrão para minha
+                                        idade.</div>
+                                </ion-checkbox>
+                            </ion-item>
+                        </div>
+
+                        <h3 class="ion-margin-top ion-margin-bottom mt-4">Avaliação Geral</h3>
+                        <ion-select formControlName="classificacao_risco" id="classificacao_risco" interface="popover"
+                            label="Classificação de Risco" labelPlacement="floating" fill="outline" class="modern-input"
+                            [ngClass]="form.value.classificacao_risco === 1 ? 'ion-text-success' : form.value.classificacao_risco === 2 ? 'ion-text-warning' : 'ion-text-danger'">
+                            <ion-select-option *ngFor="let grau of [1, 2, 3]" [value]="grau">
+                                Grau {{grau}}
+                            </ion-select-option>
+                        </ion-select>
+
+                        <ion-textarea formControlName="observacoes" label="Observações:" labelPlacement="floating"
+                            fill="outline" class="modern-input ion-margin-top" placeholder="Escreva aqui..."
+                            maxlength="250" [counter]="true" [counterFormatter]="customCounterFormatter">
+                        </ion-textarea>
+
+                    </div>
+                </ion-accordion>
+            </ion-accordion-group>
+            <br>
             <div class="action-container">
                 <ion-button expand="block" shape="round" size="large" type="submit" (click)="submitForm()"
                     color="primary" [disabled]="form.invalid || loading"

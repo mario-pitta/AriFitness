@@ -1,6 +1,6 @@
 import Constants from 'src/core/Constants';
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { ItemReorderEventDetail, ModalController } from '@ionic/angular';
+import { AlertController, ItemReorderEventDetail, ModalController } from '@ionic/angular';
 import { IUsuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { Treino } from 'src/core/models/Treino';
@@ -57,6 +57,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     public workoutState: WorkoutTemplateStateService,
     private exportService: WorkoutExportService,
     private teamMemberService: TeamMemberService,
+    private alertController: AlertController
   ) {
     this.subs$.add(
       this.aRoute.queryParams.subscribe(params => {
@@ -423,16 +424,40 @@ export class FichaTreinoAlunoPage implements OnInit {
   }
 
   submitForm() {
-    const workoutData = this.workoutState.getWorkoutValue();
-    if (!workoutData) {
-      this.toastr.error('Erro ao coletar dados do treino.');
+    if (this.f.value.id && !this.fichaAtual?.fl_ativo) {
+      this.confirmReactivation();
       return;
     }
 
-    console.log('submitting ficha', this.f.value, workoutData);
+    this.executeSubmit();
+  }
 
-    if (this.f.value.id && !this.fichaAtual?.fl_ativo) {
-      this.toastr.error('Apenas fichas ativas podem ser alteradas. Reative esta ficha para editá-la.');
+  async confirmReactivation() {
+    const alert = await this.alertController.create({
+      header: 'Reativar Ficha',
+      message: 'Uma nova versão desta ficha será gerada e todas as outras fichas deste aluno nesta empresa serão desativadas. Deseja continuar?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Reativar',
+          handler: () => {
+            this.executeSubmit(true);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  executeSubmit(isReactivation: boolean = false) {
+    const workoutData = this.workoutState.getWorkoutValue();
+    if (!workoutData) {
+      this.toastr.error('Erro ao coletar dados do treino.');
       return;
     }
 
@@ -443,8 +468,13 @@ export class FichaTreinoAlunoPage implements OnInit {
       cadastrado_por: this.user.id,
       instrutor_id: this.f.get('instrutor_id')?.value || this.user.id,
       usuario_id: this.aluno?.value.id,
-      sessoes: workoutData.sessoes
+      sessoes: workoutData.sessoes,
+      fl_ativo: true
     };
+
+    if (isReactivation) {
+      delete body.id;
+    }
 
     // Cleanup redundant fields
     delete body.aluno;
@@ -464,14 +494,18 @@ export class FichaTreinoAlunoPage implements OnInit {
           return;
         }
 
-        this.toastr.success('Ficha personalizada salva com sucesso!');
+        this.toastr.success(isReactivation ? 'Ficha reativada com sucesso!' : 'Ficha personalizada salva com sucesso!');
 
         // If updating own ficha, refresh auth session
         if (this.aluno?.value.id == this.user.id) {
           this.auth.login(this.user.cpf, this.user.data_nascimento).subscribe();
         }
 
-        this.checkUserParams(); // Refresh view
+        if (isReactivation && res.data?.id) {
+          this.viewFicha(res.data.id);
+        } else {
+          this.checkUserParams(); // Refresh view
+        }
       },
       error: (err) => {
         this.loading = false;
@@ -507,25 +541,6 @@ export class FichaTreinoAlunoPage implements OnInit {
     });
   }
 
-  reactivateFicha(ficha: any) {
-    if (!this.isManagerOrInstructor) return;
-
-    // We basically do an "Update" on this ficha but as a new one
-    // The current update logic in the service handles creating a new record
-    const body = { ...ficha };
-    delete body.id;
-    delete body.created_at;
-    delete body.updated_at;
-    body.fl_ativo = true;
-
-    this.fichaService.create(body).subscribe({
-      next: (res: any) => {
-        this.toastr.success('Ficha reativada como versão atual!');
-        this.viewFicha(res.id);
-      },
-      error: () => this.toastr.error('Erro ao reativar ficha.')
-    });
-  }
 
   ngOnDestroy() {
     console.log('destruindo ficha-treino-aluno...');

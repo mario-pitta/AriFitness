@@ -24,6 +24,7 @@ export class AuthService {
       .from('usuario')
       .select(`
           *,
+          tipo_usuario(*),
           empresa(*)
         `)
       .eq('cpf', cpf)
@@ -43,6 +44,7 @@ export class AuthService {
         .from('team_member')
         .select(`
             *,
+            tipo_usuario: function_id(*),
             empresa:empresa_id(*)
           `)
         .eq('cpf', cpf)
