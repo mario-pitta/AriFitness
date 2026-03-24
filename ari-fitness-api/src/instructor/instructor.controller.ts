@@ -1,17 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { InstructorService } from './instructor.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../core/Constants/UserRole';
 import { Instructor } from './entities/instructor.entity';
 
 @Controller('instructors')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class InstructorController {
     constructor(private readonly instructorService: InstructorService) { }
 
     @Get()
+    @Roles(UserRole.ADMIN)
     async findAll(@Query('empresa_id') empresa_id: string): Promise<any[]> {
         return this.instructorService.findAll(empresa_id);
     }
 
     @Get(':id')
+    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
     async findOne(
         @Param('id') id: string,
         @Query('empresa_id') empresa_id: string,
@@ -20,6 +27,7 @@ export class InstructorController {
     }
 
     @Get('user/:userId')
+    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
     async findByUserId(
         @Param('userId') userId: string,
         @Query('empresa_id') empresa_id: string,
@@ -28,11 +36,13 @@ export class InstructorController {
     }
 
     @Post()
+    @Roles(UserRole.ADMIN)
     async create(@Body() data: any): Promise<any> {
         return this.instructorService.create(data);
     }
 
     @Patch(':id')
+    @Roles(UserRole.ADMIN)
     async update(
         @Param('id') id: string,
         @Query('empresa_id') empresa_id: string,
@@ -42,6 +52,7 @@ export class InstructorController {
     }
 
     @Delete(':id')
+    @Roles(UserRole.ADMIN)
     async remove(
         @Param('id') id: string,
         @Query('empresa_id') empresa_id: string,

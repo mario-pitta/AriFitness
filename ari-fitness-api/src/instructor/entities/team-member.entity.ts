@@ -20,6 +20,9 @@ export class TeamMember {
     telefone: string;
 
     @Column({ nullable: true })
+    email: string;
+
+    @Column({ nullable: true })
     foto_url: string;
 
     @Column({ type: 'varchar', default: 'ACTIVE' })

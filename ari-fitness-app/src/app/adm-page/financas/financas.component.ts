@@ -367,7 +367,7 @@ export class FinancasComponent implements OnInit {
   ) {
     this.reciboService.buildRecibo(
       transacao as TransacaoFinanceira,
-      this.user,
+      this.user as IUsuario,
       callback
     );
   }

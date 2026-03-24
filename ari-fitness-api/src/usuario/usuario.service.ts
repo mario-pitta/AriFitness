@@ -108,6 +108,9 @@ export class UsuarioService {
       .order('nome', { ascending: true });
 
     if (!res.error && res.data) {
+
+      console.log('res.data = ', res.data)
+
       res.data = res.data.map(u => ({
         ...u,
         status_pagamento: this.checkStatusPagamento(u, u.transacao_financeira as TransacaoFinanceira[]),

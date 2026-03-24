@@ -132,6 +132,9 @@ export class FichaAlunoService {
       )
       .eq('id', id)
       .then((res) => {
+
+        console.log('res = ', res)
+
         if (res.error) return res;
 
         return res;

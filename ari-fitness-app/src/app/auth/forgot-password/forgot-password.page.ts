@@ -23,7 +23,8 @@ export class ForgotPasswordPage implements OnInit {
 
     ngOnInit() {
         this.form = this.fb.group({
-            email: ['', [Validators.required, Validators.email]]
+            email: ['', [Validators.required, Validators.email]],
+            tipo: ['STUDENT', [Validators.required]]
         });
     }
 
@@ -36,7 +37,8 @@ export class ForgotPasswordPage implements OnInit {
         await loading.present();
 
         try {
-            this.auth.requestPasswordReset(this.form.value.email).subscribe({
+            const { email, tipo } = this.form.value;
+            this.auth.requestPasswordReset(email, tipo).subscribe({
                 next: () => {
                     loading.dismiss();
                     this.submitted = true;

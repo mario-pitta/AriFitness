@@ -67,6 +67,7 @@ export class InstrutorFormPage implements OnInit {
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       cpf: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       whatsapp: ['', [Validators.required]],
       genero: ['', [Validators.required]],
       foto_url: [''],
@@ -114,6 +115,7 @@ export class InstrutorFormPage implements OnInit {
           this.form.patchValue({
             nome: inst.nome,
             cpf: inst.cpf,
+            email: inst.email,
             whatsapp: inst.telefone || inst.whatsapp,
             genero: inst.genero || inst.usuario?.genero,
             foto_url: inst.foto_url,
@@ -155,6 +157,7 @@ export class InstrutorFormPage implements OnInit {
       cref: val.cref,
       password: val.password,
       cpf: val.cpf,
+      email: val.email,
       genero: val.genero,
       specialties: val.function_id === Constants.INSTRUTOR_ID ? val.specialties : [],
       services: val.function_id === Constants.INSTRUTOR_ID ? val.services : [],

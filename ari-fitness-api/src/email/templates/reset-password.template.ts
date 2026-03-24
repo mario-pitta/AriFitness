@@ -9,7 +9,7 @@ import { emailFallbackLink } from '../components/fallback-link'
 
 export function resetPasswordTemplate(data: ResetPasswordEmail): string {
 
-    const content = `
+  const content = `
     <p>Olá <strong>${data.name}</strong>,</p>
 
     <p>
@@ -17,15 +17,15 @@ export function resetPasswordTemplate(data: ResetPasswordEmail): string {
       <strong>MvK Gym Manager</strong>.
     </p>
 
-    ${emailButton('Redefinir Minha Senha', data.resetLink)}
+    ${emailButton('Redefinir Minha Senha', data.redirectUrl)}
 
     ${emailMessageBox(`
       <strong>Segurança:</strong> Se você não solicitou a redefinição de senha,
       nenhuma ação é necessária.
     `)}
 
-    ${emailFallbackLink(data.resetLink)}
+    ${emailFallbackLink(data.redirectUrl)}
   `
 
-    return emailLayout('Redefinição de Senha', content)
+  return emailLayout('Redefinição de Senha', content)
 }

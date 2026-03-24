@@ -10,11 +10,11 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() body: { cpf: string; senha: string },
+    @Body() body: { cpf: string; senha: string; type: 'STUDENT' | 'TEAM' },
     @Res() res: Response,
   ) {
     console.log('Login attempt for CPF:', body.cpf);
-    const result = await this.auth.login(body.cpf, body.senha);
+    const result = await this.auth.login(body.cpf, body.senha, body.type);
 
     if (result.error) {
       return res.status(401).send({ status: 401, message: result.error.message });
@@ -29,8 +29,10 @@ export class AuthController {
     // If we want to allow only them to log in to the manager:
     const validUserProfiles = [3, 2];
 
+    console.log('user.tipo_usuario = ', user.tipo_usuario)
+    console.log('user.function_id = ', user.function_id)
 
-    if (!validUserProfiles.includes(user.tipo_usuario) && !validUserProfiles.includes(user.function_id)) {
+    if (!validUserProfiles.includes(user.tipo_usuario.id) && !validUserProfiles.includes(user.function.id)) {
       return res.status(401).send({
         status: 401,
         message: 'Acesso restrito a Administradores e Instrutores.'
@@ -54,10 +56,12 @@ export class AuthController {
   }
 
   @Post('request-password-reset')
-  async requestPasswordReset(@Body() body: { email: string }, @Res() res: Response) {
+  async requestPasswordReset(@Body() body: { email: string, type: 'STUDENT' | 'TEAM' }, @Res() res: Response) {
     console.log('body = ', body)
 
-    const result = await this.auth.requestPasswordReset(body.email);
+
+
+    const result = await this.auth.requestPasswordReset(body.email, body.type);
     return res.send(result);
   }
 

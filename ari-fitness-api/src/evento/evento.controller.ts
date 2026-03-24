@@ -1,12 +1,16 @@
-/* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { EventoService } from './evento.service';
 import { IEvento } from './Evento.interface';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from 'src/core/Constants/UserRole';
 
 @Controller('evento')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class EventoController {
-  constructor(private eventoService: EventoService) {}
+  constructor(private eventoService: EventoService) { }
 
   sortByStartDay(eventos: IEvento[]) {
     return eventos.sort(
@@ -16,6 +20,7 @@ export class EventoController {
   }
 
   @Get()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAllByFilters(@Query() query: Partial<IEvento>, @Res() res: Response) {
     return this.eventoService.findAllByFilters(query).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
@@ -24,6 +29,7 @@ export class EventoController {
   }
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   create(@Body() body: IEvento, @Res() res: Response) {
     console.log('criando evento: ', body);
     return this.eventoService.create(body).then((_res) => {
@@ -33,6 +39,7 @@ export class EventoController {
   }
 
   @Put()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<IEvento>, @Res() res: Response) {
     console.log('atualizando evento: ', body);
 

@@ -10,7 +10,16 @@
       </div>
 
       <!-- Form Section -->
-      <div class="form-section" [formGroup]="form">
+      <div class="form-section" [formGroup]="form" *ngIf="form">
+        <ion-segment formControlName="tipo" mode="ios" class="type-segment">
+          <ion-segment-button value="STUDENT">
+            <ion-label>Aluno</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="TEAM">
+            <ion-label>Equipe</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
         <ion-list lines="none">
           <ion-item>
             <ion-label position="floating">CPF</ion-label>

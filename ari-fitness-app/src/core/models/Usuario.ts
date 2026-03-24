@@ -121,6 +121,13 @@ export class Usuario implements IUsuario {
 }
 
 
+export interface ITipoUsuario {
+  id: number;
+  nome: string;
+  fl_ativo: boolean;
+  created_at: Date | string;
+}
+
 
 export interface ITeamMember {
   id: number;

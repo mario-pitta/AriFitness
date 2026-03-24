@@ -13,11 +13,18 @@ import {
   Put,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from 'src/core/Constants/UserRole';
 import { TransacaoFinanceiraService } from './transacao-financeira.service';
 import { TransacaoFinanceira } from './TransacaoFinanceira.interface';
 
 @Controller('transacao-financeira')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class TransacaoFinanceiraController {
   constructor(
     private TransacaoFinanceiraService: TransacaoFinanceiraService,

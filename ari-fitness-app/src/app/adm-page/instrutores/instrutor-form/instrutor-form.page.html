@@ -45,6 +45,16 @@
     <ion-note color="danger" *ngIf="form.get('cpf')?.touched && form.get('cpf')?.hasError('required')">
       CPF é obrigatório
     </ion-note>
+    <ion-item>
+      <ion-label position="stacked">Email <span class="text-danger">*</span></ion-label>
+      <ion-input type="email" formControlName="email" placeholder="email@exemplo.com"></ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">
+      Email é obrigatório
+    </ion-note>
+    <ion-note color="danger" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
+      Formato de email inválido
+    </ion-note>
 
     <ion-item>
       <ion-label position="stacked">WhatsApp <span class="text-danger">*</span></ion-label>

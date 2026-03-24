@@ -74,6 +74,7 @@ export class TeamMemberService {
                 user_id: body.user_id,
                 nome: body.nome,
                 telefone: body.telefone,
+                email: body.email,
                 foto_url: body.foto_url,
                 status: body.status || 'ACTIVE',
                 salario: body.salario ?? null,
@@ -112,6 +113,7 @@ export class TeamMemberService {
         const updateData: any = {};
         if (body.nome !== undefined) updateData.nome = body.nome;
         if (body.telefone !== undefined) updateData.telefone = body.telefone;
+        if (body.email !== undefined) updateData.email = body.email;
         if (body.foto_url !== undefined) updateData.foto_url = body.foto_url;
         if (body.status !== undefined) updateData.status = body.status;
         if (body.salario !== undefined) updateData.salario = body.salario;

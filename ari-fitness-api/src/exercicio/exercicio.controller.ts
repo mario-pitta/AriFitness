@@ -2,12 +2,17 @@
 import { Response } from 'express';
 import { Exercicio } from './exercicio.interface';
 import { ExercicioService } from './exercicio.service';
-import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from 'src/core/Constants/UserRole';
 
 
 
 const controller = 'exercicios'
 @Controller(controller)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ExercicioController {
   constructor(private musculoService: ExercicioService) { }
 
@@ -23,6 +28,7 @@ export class ExercicioController {
    * successful, it will send a response with the data of all users.
    */
   @Get()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(
     @Res() res: Response,
     @Query() filter: Partial<Exercicio> | Exercicio,
@@ -53,6 +59,7 @@ export class ExercicioController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   create(@Body() body: Exercicio, @Res() res: Response) {
     return this.musculoService.create({
       ...body,
@@ -82,11 +89,13 @@ export class ExercicioController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Put()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<Exercicio>) {
     return this.musculoService.update(body);
   }
 
   @Get('niveis')
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getNiveis(@Res() res: Response) {
     return this.musculoService.findNiveis().then((_res) => {
       if (_res.error) {

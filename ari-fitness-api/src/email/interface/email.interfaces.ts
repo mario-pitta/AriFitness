@@ -2,7 +2,7 @@
 
 export interface ResetPasswordEmail {
     name: string
-    resetLink: string
+    redirectUrl: string
 }
 
 export interface NewUserEmail {

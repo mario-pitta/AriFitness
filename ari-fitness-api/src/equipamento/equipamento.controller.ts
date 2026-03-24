@@ -2,12 +2,17 @@
 import { Response } from 'express';
 import { Equipamento } from './equipamento.interface';
 import { EquipamentoService } from './equipamento.service';
-import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from 'src/core/Constants/UserRole';
 
 const controller = 'equipamentos';
 @Controller(controller)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class EquipamentoController {
-  constructor(private equipamentoService: EquipamentoService) {}
+  constructor(private equipamentoService: EquipamentoService) { }
 
   /**
    * The function `findAll` retrieves all users and sends the data or an error response using the
@@ -21,6 +26,7 @@ export class EquipamentoController {
    * successful, it will send a response with the data of all users.
    */
   @Get()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(
     @Res() res: Response,
     @Query() filter: Partial<Equipamento> | Equipamento,
@@ -35,7 +41,7 @@ export class EquipamentoController {
         });
       }
 
-      return res.send(_res.data?.sort((a, b) => a.nome.localeCompare(b.nome) ));
+      return res.send(_res.data?.sort((a, b) => a.nome.localeCompare(b.nome)));
     });
   }
 
@@ -49,6 +55,7 @@ export class EquipamentoController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   create(@Body() body: Equipamento) {
     return this.equipamentoService.create(body);
   }
@@ -63,6 +70,7 @@ export class EquipamentoController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Put()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<Equipamento>) {
     console.log('Body', body);
 

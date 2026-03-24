@@ -4,6 +4,10 @@ const Constants = {
   ALUNO_ID: 5,
   INSTRUTOR_ID: 2,
   GERENCIA_ID: 3,
+  LIMPEZA_ID: 4,
+  VISITANTE_ID: 6,
+  SEGURANCA_ID: 7,
+  RECEPCAO_ID: 10,
   phoneMask: {
     mask: [
       '(',

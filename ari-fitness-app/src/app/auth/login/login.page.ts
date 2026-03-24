@@ -28,6 +28,7 @@ export class LoginPage implements OnInit {
     this.form = this.fb.group({
       cpf: ['', [Validators.required]],
       senha: ['', [Validators.required]],
+      tipo: [Constants.ALUNO_ID, [Validators.required]],
     });
   }
 
@@ -36,7 +37,10 @@ export class LoginPage implements OnInit {
 
     this.auth.login(this.form.value.cpf, md5(this.form.value.senha)).subscribe({
       next: (user: IUsuario) => {
-        if (user.tipo_usuario !== Constants.GERENCIA_ID) {
+        console.log('user = ', user)
+
+
+        if (user.tipo_usuario === Constants.ALUNO_ID) {
           this.router.navigate(['/home']);
         } else {
           this.router.navigate(['/admin']);

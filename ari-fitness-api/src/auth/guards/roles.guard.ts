@@ -12,14 +12,17 @@ export class RolesGuard implements CanActivate {
             context.getHandler(),
             context.getClass(),
         ]);
+        console.log('requiredRoles = ', requiredRoles)
         if (!requiredRoles) {
             return true;
         }
         const { user } = context.switchToHttp().getRequest();
 
         // Suportando tanto tipo_usuario quanto role do payload JWT
-        const userRole = user.tipo_usuario || user.role;
-
+        const userRole = user.tipo_usuario.id || user.tipo_usuario || user.role;
+        console.log('userRole = ', userRole)
+        console.log('requiredRoles = ', requiredRoles)
+        console.log('requiredRoles.some((role) => userRole === role) = ', requiredRoles.some((role) => userRole === role))
         return requiredRoles.some((role) => userRole === role);
     }
 }

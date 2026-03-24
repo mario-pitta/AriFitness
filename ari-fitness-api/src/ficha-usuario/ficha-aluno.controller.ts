@@ -19,12 +19,13 @@ import { FichaAlunoService } from './ficha-aluno.service';
 import { IFichaAluno } from './FichaAluno.interface';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../core/Constants/UserRole';
 
 @Controller('/ficha-aluno')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class FichaAlunoController {
   constructor(private fichaAlunoService: FichaAlunoService) { }
 
@@ -43,6 +44,7 @@ export class FichaAlunoController {
    * `fichaAlunoService.findAll` method.
    */
   @Get()
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(@Query() query: IFichaAluno, @Res() res: Response) {
     return this.fichaAlunoService.findAll(query).then((_res) => {
       if (_res.error)
@@ -66,6 +68,7 @@ export class FichaAlunoController {
    * status response with the data object fetched by calling `this.fichaAlunoService.getById(param.id)`.
    */
   @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getById(@Param() param: { id: number }, @Res() res: Response) {
     return this.fichaAlunoService.getById(param.id).then((_res) => {
       if (_res.error)
@@ -92,7 +95,7 @@ export class FichaAlunoController {
    * and the error message from `_res.error`.
    */
   @Get('aluno/:id')
-
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getByUser(@Param() param: { id: number }, @Query() query: Partial<IFichaAluno>, @Res() res: Response) {
     console.log('getting ficha by user...', param.id);
     return this.fichaAlunoService.getByUser(param.id, query).then((_res) => {
@@ -142,6 +145,7 @@ export class FichaAlunoController {
   }
 
   @Post(':fichaId/apply-template/:treinoId')
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
   applyTemplate(
     @Param('fichaId') fichaId: number,
     @Param('treinoId') treinoId: number,

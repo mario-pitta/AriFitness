@@ -62,13 +62,16 @@ export class AuthService {
     });
   }
 
-  login(cpf: string, senha: string | Date) {
+  login(cpf: string, senha: string | Date, type: 'STUDENT' | 'TEAM' = 'STUDENT') {
     return this.http
-      .post<any>(`${environment.apiUrl}/auth/login`, { cpf, senha })
+      .post<any>(`${environment.apiUrl}/auth/login`, { cpf, senha, type })
       .pipe(
         map((response: any) => {
           const user = response.user;
           const token = response.access_token;
+
+          user.tipo_usuario = user.tipo_usuario.id;
+          user.function_id = user.function?.id;
 
           if (token) {
             localStorage.setItem('access_token', token);
@@ -90,8 +93,8 @@ export class AuthService {
     return this.http.post(`${environment.apiUrl}/auth/register`, { user, company, planId });
   }
 
-  requestPasswordReset(email: string) {
-    return this.http.post(`${environment.apiUrl}/auth/request-password-reset`, { email });
+  requestPasswordReset(email: string, type: 'STUDENT' | 'TEAM' = 'STUDENT') {
+    return this.http.post(`${environment.apiUrl}/auth/request-password-reset`, { email, type });
   }
 
   resetPassword(token: string, novaSenha: string) {

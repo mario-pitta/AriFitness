@@ -169,7 +169,7 @@ export class FichaTreinoAlunoPage implements OnInit {
             nome: instrutor.nome,
             genero: instrutor.genero,
             foto_url: instrutor.foto_url,
-            tipo_usuario: instrutor.tipo_usuario,
+            tipo_usuario: instrutor.tipo_usuario.id,
             specialties: instrutor.specialties,
             services: instrutor.services,
             status: instrutor.status,

@@ -14,8 +14,11 @@ export class ResetTokenEntity {
     @CreateDateColumn()
     created_at: Date;
 
-    @Column()
+    @Column({ nullable: true })
     user_id: number;
+
+    @Column({ nullable: true })
+    team_member_id: string;
 
     @Column({ nullable: true })
     token: string;
