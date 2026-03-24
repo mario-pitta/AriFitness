@@ -1,5 +1,4 @@
-Expandir a recuperação de senha para contemplar membros da equipe (instrutores e gestores). Atualmente, o fluxo é restrito a alunos.
-Impacto: Segurança e autonomia para todos os níveis de acesso.
-Impedimentos: Filtros de consulta no backend que restringem a busca de e-mail por tipo de usuário.
-Mitigação: Unificar o serviço de busca de e-mail no backend para a tabela usuario global, validando o tipo_usuario apenas no envio do link.
-Caminho Dinâmico: Implementar variáveis de ambiente (env) para que o link no e-mail mude automaticamente entre localhost:8100 e o dominio oficial da plataforma
+Implementar uma tela onde o próprio usuário logado (gestor, instrutor ou aluno) consiga alterar sua foto, peso, altura e contatos.
+Impacto: Melhora a qualidade dos dados e reduz a carga operacional do gestor/admin.
+Impedimentos: Não há a tela para isso, vai ser necessario criá-la ou reutilizar a tela de edição de usuário existente.
+Mitigação: adicionar permissão de escrita para o usuário logado para que apenas o proprio usuario possa alterar seus dados, ou o gestor possa alterar os dados de qualquer usuario, e o instrutor possa alterar os dados de qualquer aluno da sua academia.

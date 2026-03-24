@@ -165,8 +165,10 @@ export class GeminiService {
   }
 
   async runPrompt(prompt: string) {
+    console.log('runPrompt = ', prompt)
+
     const result = await this.model.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
 
       contents: [
         {
@@ -180,6 +182,7 @@ export class GeminiService {
     });
 
     const response = await result.response;
+    console.log('response = ', response)
 
     let text = response.text();
 
@@ -409,10 +412,12 @@ export class GeminiService {
   }
 
   async createGen() {
+    console.log('process.env.GOOGLE_GEMINI_KEY = ', process.env.GOOGLE_GEMINI_KEY)
+
     this.gen = await new GoogleGenerativeAI(
       process.env.GOOGLE_GEMINI_KEY as string,
     );
-    this.setModel('gemini-1.5-flash');
+    this.setModel('gemini-2.5-flash');
   }
 
   async setModel(model: string) {

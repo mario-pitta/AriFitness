@@ -94,7 +94,7 @@ NUNCA quebrar o layout existente.
 
 ## Criar (se não existir) um arquivo com o mapeamento da identidade:
 
-  - ./identidade-visual.md
+  - [identidade-visual.md](./identidade-visual.md)
 
 ### Esse arquivo deve conter:
 
@@ -204,6 +204,10 @@ Sempre seguir:
 
 ---
 
+
+## 🛡️ SEGURANÇA, CONSTANTES E OPERAÇÃO SEGURA
+
+ - Utilize as diretrizes e orientações presentes no arquivo [security.md](./security.md)
 
 
 ## 🚫 RESTRIÇÕES GERAIS

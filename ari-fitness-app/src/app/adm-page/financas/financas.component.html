@@ -17,18 +17,18 @@
         </ion-item>
       </ion-col>
       <div class="ion-text-end">
-        <ion-button class="ai-analysis-btn" id="analysisIAButton">
+        <ion-button class="ai-analysis-btn" id="analysisIAButton" (click)="newAnaliseAI()">
           <div class="btn-content">
             <ion-icon name="logo-ionitron" class="ai-icon"></ion-icon>
             <ion-text>Análise de IA</ion-text>
           </div>
         </ion-button>
       </div>
-      <ion-popover trigger="analysisIAButton" triggerAction="hover">
+      <!-- <ion-popover trigger="analysisIAButton" triggerAction="hover">
         <ng-template>
           <ion-content class="ion-padding">Em breve</ion-content>
         </ng-template>
-      </ion-popover>
+      </ion-popover> -->
     </ion-row>
     <ion-row *ngIf="periodo.value === null">
       <ion-col size="12" size-md="6">
