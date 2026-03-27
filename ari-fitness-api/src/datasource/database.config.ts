@@ -1,17 +1,18 @@
 /* eslint-disable prettier/prettier */
 import { DataSource, DataSourceOptions } from 'typeorm';
-import * as dotenv from 'dotenv';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-const env = dotenv.config({ path: '.env' });
+
+
 
 export const typeOrmConfig: DataSourceOptions = {
     type: 'postgres',
-    url: env.parsed?.DATABASE_URL,
+    url: ConfigService.prototype.get<string>('DATABASE_URL'),
     ssl: { rejectUnauthorized: false },
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../../migrations/**/*{.ts,.js}'],
     synchronize: false, // NEVER true in production — use migrations
-    logging: process.env.NODE_ENV !== 'production',
+    logging: ConfigService.prototype.get<string>('NODE_ENV') !== 'production',
 };
 
 /**

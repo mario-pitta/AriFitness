@@ -94,10 +94,10 @@ export class UsuarioService {
       .select(
         `*,
         horarios ( 
-          *
+         *
         ), 
         planos (
-          *
+         *
         ), 
         transacao_financeira!transacao_financeira_pago_por_fkey ( 
           id, tr_categoria_id, fl_pago, ano, mes, data_lancamento
@@ -107,14 +107,31 @@ export class UsuarioService {
       .match({ ...filters })
       .order('nome', { ascending: true });
 
+    console.log('res = ', res)
+
+
+    const dataDezDiasAtras = new Date(new Date().setDate(new Date().getDate() - 10)).toISOString().split('T')[0];
+
+    const { data: checkins, error: checkinError } = await this.database.supabase
+      .from('checkin_acesso')
+      .select('*')
+      .eq('empresa_id', filters.empresa_id)
+      //filtrar apenas os checkins dos ultimos 14 dias
+      // .gte('data_hora', dataDezDiasAtras)
+      .order('data_hora', { ascending: false });
+
+
+    console.log('checkins = ', checkins)
+
     if (!res.error && res.data) {
+      res.data = res.data.map(u => {
+        delete u.senha;
+        u.status_pagamento = this.checkStatusPagamento(u, u.transacao_financeira as TransacaoFinanceira[])
+        delete u.transacao_financeira;
+        u.data_ultimo_checkin = checkins?.filter(c => c.cpf_aluno === u.cpf)[0]?.data_hora || null;
 
-      console.log('res.data = ', res.data)
-
-      res.data = res.data.map(u => ({
-        ...u,
-        status_pagamento: this.checkStatusPagamento(u, u.transacao_financeira as TransacaoFinanceira[]),
-      }));
+        return u;
+      });
     }
 
     return res;

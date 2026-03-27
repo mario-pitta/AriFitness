@@ -29,6 +29,7 @@ import { EmpresaModule } from './empresa/empresa.module';
 import { TeamMemberModule } from './instructor/team-member.module';
 import { SpecialtyModule } from './specialty/specialty.module';
 import { ServiceModule } from './service/service.module';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
@@ -36,6 +37,7 @@ import { ServiceModule } from './service/service.module';
     GeminiModule,
     DashboardModule,
     FichaAlunoModule,
+    ConfigModule.forRoot({ isGlobal: true }), // <-- Add this to load .env globally
     ServeStaticModule.forRoot({
       // rootPath: join(__dirname, '..', 'client'),
       // serveRoot: join(__dirname, '..', 'client'),

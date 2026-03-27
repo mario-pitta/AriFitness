@@ -5,8 +5,7 @@ import { EmailService } from 'src/email/email.service';
 import { resetPasswordTemplate } from '../email/templates/reset-password.template';
 import { JwtService } from '@nestjs/jwt';
 import { UserRole } from 'src/core/Constants/UserRole';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
@@ -14,7 +13,8 @@ export class AuthService {
   constructor(
     private supabase: DataBaseService,
     private emailService: EmailService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService
   ) { }
 
   async login(cpf: string, senha: string, type: 'STUDENT' | 'TEAM' = 'STUDENT') {
@@ -211,7 +211,7 @@ export class AuthService {
     };
 
     // 3. Generate HTML content for email
-    const isProdEnv = Boolean(process.env.PROD_ENV);
+    const isProdEnv = Boolean(this.configService.get<string>('PROD_ENV'));
     console.log('isProdEnv = ', isProdEnv)
 
     const frontendUrl = isProdEnv ? 'https://mvkgymm.vercel.app' : 'http://localhost:8100';

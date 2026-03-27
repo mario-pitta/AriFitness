@@ -25,6 +25,11 @@ export class EmpresaController {
         return await this.empresaService.getEmpresa(empresaId);
     }
 
+    @Get()
+    async getAllEmpresas() {
+        return await this.empresaService.findAll();
+    }
+
     @Post()
     @Roles(UserRole.ADMIN)
     async createEmpresa(@Body() empresa: Empresa) {

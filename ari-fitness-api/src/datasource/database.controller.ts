@@ -1,25 +1,18 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Injectable, Scope } from "@nestjs/common";
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
-import * as dotenv from "dotenv";
-
-const env = dotenv.config({ path: ".env" });
-
-if (!env) {
-	throw new Error("No environment variables loaded");
-}
-
-const supabaseUrl = env.parsed?.SUPABASE_URL as string;
-const supabaseKey = env.parsed?.SUPABASE_KEY as string;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { DataBaseService } from "./database.service";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 @Controller({
 	scope: Scope.DEFAULT,
 
 })
 export class DataBaseController {
-	supabase: SupabaseClient = supabase;
+	supabase: SupabaseClient;
+	constructor(private databaseService: DataBaseService) {
+		this.supabase = this.databaseService.getSupabaseClient();
 
-	constructor() {}
+	}
+
+
 }

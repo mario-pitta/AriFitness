@@ -187,5 +187,16 @@ export class EmpresaService {
       throw error;
     }
   }
+
+  async findAll() {
+    return await this.databaseService.supabase
+      .from('empresa')
+      .select(
+        `
+          id, nome, email, telefone, endereco, cidade, estado, cep, cnpj, logo_url, banner_url, created_at, updated_at
+        `,
+      )
+      .order('nome', { ascending: true });
+  }
 }
 

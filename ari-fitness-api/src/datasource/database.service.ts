@@ -1,19 +1,34 @@
-/* eslint-disable prettier/prettier */
-/*
-https://docs.nestjs.com/providers#services
-*/
-
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-const env = dotenv.config({ path: '.env' });
+import { ConfigService } from '@nestjs/config';
 
-const supabaseUrl = env.parsed?.SUPABASE_URL as string;
-const supabaseKey = env.parsed?.SUPABASE_KEY as string;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
 @Injectable()
-export class DataBaseService {
-  supabase: SupabaseClient = supabase;
-  constructor() {}
+export class DataBaseService implements OnModuleInit {
+  public supabase: SupabaseClient;
+
+  constructor(private configService: ConfigService) { }
+
+  onModuleInit() {
+    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+    const supabaseKey = this.configService.get<string>('SUPABASE_KEY');
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('SUPABASE_URL or SUPABASE_KEY is missing in environment variables');
+      return;
+    }
+
+    try {
+      this.supabase = createClient(supabaseUrl, supabaseKey);
+    } catch (error) {
+      console.error('Error creating supabase client:', error);
+    }
+  }
+
+  getSupabaseClient(): SupabaseClient {
+    if (!this.supabase) {
+      this.onModuleInit();
+    }
+
+    return this.supabase;
+  }
 }

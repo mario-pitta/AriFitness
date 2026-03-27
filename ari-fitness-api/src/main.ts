@@ -5,8 +5,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path'
 import * as bodyParser from 'body-parser';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 
 
@@ -19,9 +17,7 @@ async function bootstrap() {
     "credentials": true,
   };
 
-  console.log('PROD_ENV = ', Boolean(process.env.PROD_ENV))
 
-  console.log('process.env.PROD_ENV = ', process.env.PROD_ENV)
 
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: corsConfig });

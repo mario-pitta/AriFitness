@@ -29,6 +29,7 @@
     "@emailjs/nodejs": "^5.0.2",
     "@google/generative-ai": "^0.24.0",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
