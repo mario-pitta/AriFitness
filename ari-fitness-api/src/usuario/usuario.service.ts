@@ -166,6 +166,38 @@ export class UsuarioService {
   }
 
   /**
+   * Atualiza apenas os campos de perfil que o próprio usuário logado tem permissão de editar.
+   * Campos sensíveis como cpf, tipo_usuario, plano e empresa_id são ignorados por whitelist.
+   *
+   * @param {number} userId - ID do usuário autenticado (extraído do JWT, nunca do body).
+   * @param {Partial<Usuario>} data - Dados enviados pelo usuário (somente campos permitidos serão salvos).
+   * @returns {Promise} Resultado da atualização no Supabase.
+   */
+  async updateMeuPerfil(userId: number, data: Partial<Usuario>) {
+    const camposPermitidos: (keyof Usuario)[] = [
+      'foto_url',
+      'peso',
+      'altura',
+      'whatsapp',
+      'email',
+      'instagram_username',
+    ];
+
+    const dadosFiltrados: Partial<Usuario> = {};
+    for (const campo of camposPermitidos) {
+      if (data[campo] !== undefined) {
+        (dadosFiltrados as any)[campo] = data[campo];
+      }
+    }
+
+    return await this.database.supabase
+      .from(tableName)
+      .update(dadosFiltrados)
+      .eq('id', userId)
+      .select('*');
+  }
+
+  /**
    * This TypeScript function retrieves instructors based on specified filters for a given company ID
    * from a Supabase database.
    * @param {number} empresaId - The `empresaId` parameter is a number that represents the ID of the

@@ -1,0 +1,128 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/admin/configuracoes"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Meu Perfil</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+    <div class="perfil-container ion-padding">
+
+        <!-- Avatar / Foto -->
+        <div class="avatar-section">
+            <div class="avatar-wrapper">
+                <img *ngIf="form.value.foto_url && form.value.foto_url !== 'false'" [src]="form.value.foto_url"
+                    alt="Foto de perfil" class="avatar-img" />
+                <div *ngIf="!form.value.foto_url || form.value.foto_url === 'false'" class="avatar-placeholder">
+                    <ion-icon name="person" class="avatar-icon"></ion-icon>
+                </div>
+            </div>
+            <h2 class="user-name">{{ user?.nome }}</h2>
+            <p class="user-subtitle ion-text-center">
+                <ion-badge
+                    [color]="user?.tipo_usuario === Constants.ALUNO_ID ? 'primary' : (user?.tipo_usuario === Constants.INSTRUTOR_ID ? 'tertiary' : 'success')">
+                    {{
+                    user?.tipo_usuario === Constants.ALUNO_ID ? 'Aluno' :
+                    (user?.tipo_usuario === Constants.INSTRUTOR_ID ? 'Instrutor' :
+                    (user?.tipo_usuario === Constants.GERENCIA_ID ? 'Gestor' : 'Usuário'))
+                    }}
+                </ion-badge>
+            </p>
+        </div>
+
+        <form [formGroup]="form">
+
+            <!-- Contatos -->
+            <ion-card class="modern-card">
+                <ion-card-header>
+                    <ion-card-title>
+                        <ion-icon name="call-outline" color="primary"></ion-icon>
+                        Contatos
+                    </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+
+                    <ion-input formControlName="email" label="E-mail" labelPlacement="floating" fill="outline"
+                        class="modern-input" type="email" placeholder="nome@exemplo.com">
+                    </ion-input>
+
+                    <ion-input formControlName="whatsapp" [maskito]="phoneMask" [maskitoElement]="maskPredicate"
+                        label="WhatsApp" labelPlacement="floating" fill="outline" class="modern-input" type="text"
+                        placeholder="(00) 0 0000-0000">
+                    </ion-input>
+
+                    <ion-input formControlName="instagram_username" label="Instagram (@usuario)"
+                        labelPlacement="floating" fill="outline" class="modern-input" placeholder="@seuperfil">
+                    </ion-input>
+
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Medidas -->
+            <ion-card class="modern-card">
+                <ion-card-header>
+                    <ion-card-title>
+                        <ion-icon name="body-outline" color="tertiary"></ion-icon>
+                        Medidas
+                    </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-row>
+                        <ion-col size="6">
+                            <ion-input formControlName="altura" [maskito]="alturaMask" [maskitoElement]="maskPredicate"
+                                label="Altura" labelPlacement="floating" fill="outline" class="modern-input" type="text"
+                                placeholder="0.00 m" (ionChange)="calcIMC()">
+                            </ion-input>
+                        </ion-col>
+                        <ion-col size="6">
+                            <ion-input formControlName="peso" [maskito]="pesoMask" [maskitoElement]="maskPredicate"
+                                label="Peso" labelPlacement="floating" fill="outline" class="modern-input" type="text"
+                                placeholder="00.00 kg" (ionChange)="calcIMC()">
+                            </ion-input>
+                        </ion-col>
+                        <ion-col size="12">
+                            <ion-input label="IMC" labelPlacement="floating" fill="outline" class="modern-input"
+                                type="number" placeholder="00.00" [(ngModel)]="imcIdeal"
+                                [ngModelOptions]="{standalone: true}" [readonly]="true">
+                            </ion-input>
+                        </ion-col>
+                    </ion-row>
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Foto URL -->
+            <ion-card class="modern-card">
+                <ion-card-header>
+                    <ion-card-title>
+                        <ion-icon name="image-outline" color="warning"></ion-icon>
+                        Foto de Perfil
+                    </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-input formControlName="foto_url" label="URL da foto" labelPlacement="floating" fill="outline"
+                        class="modern-input" placeholder="https://...">
+                    </ion-input>
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Action -->
+            <div class="action-container">
+                <ion-button expand="block" shape="round" size="large" (click)="submitForm()" color="primary"
+                    [disabled]="loading">
+                    <span *ngIf="!loading; else spinner">
+                        Salvar Alterações
+                        <ion-icon slot="end" name="checkmark-circle-outline"></ion-icon>
+                    </span>
+                </ion-button>
+            </div>
+
+        </form>
+    </div>
+</ion-content>
+
+<ng-template #spinner>
+    <ion-spinner name="crescent"></ion-spinner>
+    <span class="ion-margin-start">Salvando...</span>
+</ng-template>

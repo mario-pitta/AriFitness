@@ -22,6 +22,10 @@ const routes: Routes = [
     path: 'faq',
     loadChildren: () => import('./faq/faq.module').then(m => m.FaqPageModule)
   },
+  {
+    path: 'meu-perfil',
+    loadChildren: () => import('../../meu-perfil/meu-perfil.module').then(m => m.MeuPerfilPageModule)
+  },
 
 ];
 

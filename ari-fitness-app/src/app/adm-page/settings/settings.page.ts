@@ -13,7 +13,7 @@ export class SettingsPage implements OnInit {
       title: 'Meu Usuário',
       subtitle: 'Edite seus dados pessoais',
       icon: 'person-outline',
-      path: 'perfil',
+      path: 'meu-perfil',
       color: 'receita'
     },
     {

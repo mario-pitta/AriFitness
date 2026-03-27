@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { Usuario } from './Usuario.interface';
 import { UsuarioService } from './usuario.service';
 import {
@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -116,6 +117,25 @@ export class UsuarioController {
       if (_res.error) res.status(500).send(_res.error);
 
       res.status(201).send(_res.data);
+    });
+  }
+
+  /**
+   * Permite que o próprio usuário logado atualize seus dados de perfil (foto, peso, altura, contatos).
+   * O userId é extraído do token JWT — nunca do body — garantindo que cada usuário só edite a si mesmo.
+   *
+   * @param req - Request com o payload JWT decodificado em `req.user`.
+   * @param body - Dados permitidos: foto_url, peso, altura, whatsapp, email, instagram_username.
+   * @param res - Response Express.
+   * @returns {Promise} Dados atualizados do usuário ou erro 500.
+   */
+  @Put('meu-perfil')
+  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  updateMeuPerfil(@Req() req: Request & { user: any }, @Body() body: Partial<Usuario>, @Res() res: Response) {
+    const userId = req.user?.userId;
+    return this.usuarioService.updateMeuPerfil(userId, body).then((_res) => {
+      if (_res.error) res.status(500).send(_res.error);
+      res.status(200).send(_res.data?.[0] ?? _res.data);
     });
   }
 

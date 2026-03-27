@@ -38,6 +38,19 @@ export class UsuarioService {
       .pipe(take(1));
   }
 
+  /**
+   * Atualiza os dados do próprio usuário logado (foto, peso, altura, contatos).
+   * O userId é resolvido no backend via JWT — não é necessário passá-lo aqui.
+   *
+   * @param data - Campos permitidos: foto_url, peso, altura, whatsapp, email, instagram_username.
+   * @returns Observable com o usuário atualizado.
+   */
+  updateMeuPerfil(data: Partial<Usuario>) {
+    return this.http
+      .put<Usuario>(environment.apiUrl + '/usuario/meu-perfil', data)
+      .pipe(take(1));
+  }
+
   findByFilters(filters: Partial<Usuario> | Usuario) {
     const query = Object.keys(filters).map(
       (k: string) => `${k}=${filters[k as keyof Usuario]}`
