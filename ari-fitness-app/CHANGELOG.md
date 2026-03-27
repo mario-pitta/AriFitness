@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/mario-pitta/AriFitness/compare/v1.8.0...v1.9.0) (2026-03-27)
+
+
+### Features
+
+* :art: redesign setting and tenant configs ([d741e1e](https://github.com/mario-pitta/AriFitness/commit/d741e1e2769494e5e74c961cde23f2be6227b28b))
+* :construction: Add student workout sheet page with workout preview modal and export capabilities for PDF, Excel, and thermal print. ([9e5d3f9](https://github.com/mario-pitta/AriFitness/commit/9e5d3f9054b9be81dc3ee6dd464305a1a866a815))
+* :ok_hand:  student workout sheet page with workout preview modal and export capabilities for PDF, Excel, and thermal print with tenant customizations ([78e55e8](https://github.com/mario-pitta/AriFitness/commit/78e55e8bcb893affc09159f2422146697ac79854))
+* add fullstack MVP skill definition and include the skills directory in version control. ([021f0d7](https://github.com/mario-pitta/AriFitness/commit/021f0d7463b3631cff611bad9086ec008fc5d97e))
+* Add visual identity guidelines, including brand concept, color palette, typography, and UI/UX style. ([eef1bee](https://github.com/mario-pitta/AriFitness/commit/eef1beed73ca388e5a1cea1ce919d7d097d6a804))
+* Implement administrative panel with management for services, specialties, instructors, and users across API and application. ([fdf513b](https://github.com/mario-pitta/AriFitness/commit/fdf513b9e8a8e5d24bb272968b596367053ec895))
+* Implement core navigation structure with role-based access control and admin home page and fix send email destiny variable. ([9fb37f3](https://github.com/mario-pitta/AriFitness/commit/9fb37f372220245b6d142e46aa4339fd65c0fe9a))
+* Implement user management API, services, and UI for 'Meu Perfil' and settings pages. ([d88f3d8](https://github.com/mario-pitta/AriFitness/commit/d88f3d888a8aec34ddbad5c435cdf9b33789be79))
+* new authentication flows including login and forgot password with user type and  security improvement  api requests. ([3501f87](https://github.com/mario-pitta/AriFitness/commit/3501f876409343448733cb78884eb4c7fe71b17f))
+
+
+### Bug Fixes
+
+*  student history page displaying attendance, evolution, and workout sheets, alongside new student workout sheet and person form pages. ([8863eeb](https://github.com/mario-pitta/AriFitness/commit/8863eeb6abdb87d14001b8b292f4ebec5fcc41ef))
+* :art: add visual identity document to manifest ([c62b73e](https://github.com/mario-pitta/AriFitness/commit/c62b73e566175a6defd2ef0128dc64c95b44e777))
+* :bug: :art: fix heigth page explode ([405cb55](https://github.com/mario-pitta/AriFitness/commit/405cb5531fde44eb082d95d133f8d3185e567c9a))
+* implement core NestJS API structure including company and user management, database, and storage services. ([685405e](https://github.com/mario-pitta/AriFitness/commit/685405e8af7ee2064b6dddd386900ede38ce348f))
+
 ## [1.8.0](https://github.com/mario-pitta/AriFitness/compare/v1.7.0...v1.8.0) (2026-03-17)
 
 
