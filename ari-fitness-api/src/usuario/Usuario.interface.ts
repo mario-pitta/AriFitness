@@ -25,6 +25,7 @@ export interface Usuario {
   genero: string;
   fumante: boolean;
   tipo_alimentacao: string;
+  tipo_usuario: number | string;
   relato_dor: boolean;
   medicacao_em_uso: string;
   profissao: string;

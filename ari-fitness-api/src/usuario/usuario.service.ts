@@ -14,16 +14,6 @@ export class UsuarioService {
 
   constructor(private database: DataBaseService) { }
 
-  /**
-   * The `findAll` function retrieves all records from a specified table in a database.
-   * @returns An array of all records from the specified table in the database with all columns
-   * selected.
-   */
-  findAll() {
-    return this.database.supabase.from(tableName).select('*').order('nome', {
-      ascending: true,
-    });
-  }
 
   /**
    * Analisa o status de pagamento do aluno com base nas transações de Matrícula (14) e Mensalidade (1).

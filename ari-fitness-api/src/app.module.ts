@@ -30,6 +30,7 @@ import { TeamMemberModule } from './instructor/team-member.module';
 import { SpecialtyModule } from './specialty/specialty.module';
 import { ServiceModule } from './service/service.module';
 import { ConfigModule } from '@nestjs/config';
+import { AutomationsModule } from './automations/automations.module';
 
 
 @Module({
@@ -69,6 +70,7 @@ import { ConfigModule } from '@nestjs/config';
     TeamMemberModule,
     SpecialtyModule,
     ServiceModule,
+    AutomationsModule
   ],
   controllers: [AppController],
   providers: [AppService],
