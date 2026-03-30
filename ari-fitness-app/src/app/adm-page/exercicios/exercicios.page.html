@@ -1,4 +1,4 @@
-<ion-content class=" mb-5 bg-light">
+<ion-content class="mb-5">
     <!-- Header Section -->
     <div class="header-section mb-4">
         <div class="d-flex align-items-center gap-2 mb-3">
@@ -12,8 +12,8 @@
         </div>
 
         <!-- Advanced Filters Area -->
-        <div class="filter-panel p-3 mb-3 bg-white rounded-3 shadow-sm" *ngIf="showFilters">
-            <h6 class="mb-3 text-info d-flex align-items-center">
+        <div class="filter-panel p-3 mb-3 rounded-3 shadow-sm" *ngIf="showFilters">
+            <h6 class="mb-3 d-flex align-items-center" style="color: var(--ion-color-tertiary)">
                 <ion-icon name="funnel-outline" class="me-2"></ion-icon> Filtros Avançados
             </h6>
             <ion-grid class="ion-no-padding">
@@ -66,7 +66,7 @@
             <!-- Skeleton Loading State -->
             <ng-container *ngIf="loading && exercicios.length === 0">
                 <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let i of [1,2,3,4,5,6,7,8]" class="mb-2">
-                    <div class="premium-card shadow-sm h-100 bg-white rounded-4 overflow-hidden d-flex flex-column">
+                    <div class="premium-card shadow-sm h-100 rounded-4 overflow-hidden d-flex flex-column">
                         <div class="card-media-wrapper position-relative">
                             <ion-skeleton-text animated style="width: 100%; height: 200px;"></ion-skeleton-text>
                         </div>
@@ -99,7 +99,7 @@
             <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let ex of exercicios; let i = index"
                 class="mb-2">
 
-                <div class="premium-card shadow-sm h-100 bg-white rounded-4 overflow-hidden d-flex flex-column"
+                <div class="premium-card shadow-sm h-100 rounded-4 overflow-hidden d-flex flex-column"
                     (click)="openDetail(ex)">
 
                     <!-- Media Area -->
@@ -143,7 +143,8 @@
                                     }}</span>
                             </ng-container>
                             <ng-template #legacyMuscle>
-                                <small class="text-muted text-capitalize bg-light px-2 py-1 rounded">{{ ex.musculo?.nome
+                                <small class="text-muted text-capitalize bg-transparent border px-2 py-1 rounded"
+                                    style="border-color: var(--ion-border-color) !important;">{{ ex.musculo?.nome
                                     || ex.grupo_muscular?.nome || 'Geral' }}</small>
                             </ng-template>
                         </div>

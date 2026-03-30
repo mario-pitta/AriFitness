@@ -67,7 +67,7 @@ export class CheckInPage implements OnInit {
             this.route.snapshot.queryParamMap.get('empresa_id');
           this.checkinUrl =
             location.origin +
-            '/#/check-in?empresa_id=' +
+            '/check-in?empresa_id=' +
             this.auth.getUser?.empresa_id ||
             this.route.snapshot.queryParamMap.get('empresa_id')
 

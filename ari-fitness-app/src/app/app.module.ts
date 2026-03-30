@@ -16,7 +16,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { MaskitoDirective } from '@maskito/angular';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { AuthInterceptor } from 'src/core/interceptors/http.interceptor';
 import { ErrorInterceptor } from 'src/core/interceptors/error.interceptor';
 
@@ -61,7 +61,7 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
   providers: [
     httpProviders(),
     provideMarkdown(),
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: LocationStrategy, useClass: PathLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     // ************************************

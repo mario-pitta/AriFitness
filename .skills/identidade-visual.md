@@ -1,60 +1,65 @@
-# Identidade Visual - MvK Gym Manager
+# Identidade Visual - AriFitness (MvK Gym Manager)
 
-Este documento define as diretrizes visuais e de marca para o ecossistema MvK Gym Manager, garantindo consistência entre o aplicativo e a futura landing page.
+Este documento define as diretrizes visuais e de marca para o ecossistema AriFitness, garantindo consistência entre o aplicativo e a futura landing page através do conceito **Cyber-Athletic Minimal**.
+
+---
 
 ## 1. Conceito da Marca
-**MvK Gym Manager** é sinônimo de alta performance, tecnologia e acompanhamento personalizado. A marca deve transmitir:
-- **Energia e Movimento**: Dinamismo e proatividade.
-- **Precisão**: Dados, métricas e resultados claros.
-- **Premium**: Uma experiência refinada e moderna.
+**AriFitness** é sinônimo de alta performance, tecnologia e acompanhamento personalizado. A marca deve transmitir:
+- **Energia e Movimento**: Dinamismo e proatividade (Verde Marca).
+- **Precisão Geométrica**: Uso de fontes calculadas e layouts limpos.
+- **Premium Dark**: Uma experiência refinada, focada no alto contraste.
 
 ---
 
-## 2. Paleta de Cores
+## 2. Paleta de Cores (Cyber-Athletic)
 
-### Cores Primárias (Ação e Destaque)
-- **Primary (Electric Green)**: `#2DE062` (Humberto/Energia)
-  - Uso: Botões de ação principal, status de sucesso, indicadores de progresso positivo.
-- **Secondary (Deep Slate)**: `#1A1B1E`
-  - Uso: Fundos em Modo Escuro, superfícies de cards.
+### Cores Primárias (Identidade)
+- **Primary (Brand Green)**: `#2D8A5E`
+  - Uso: Botões principais, ícones de progresso, acentos de marca.
+- **Surface (Deep Neutral)**: `#111827`
+  - Uso: Fundo padrão do modo escuro.
+- **Accent (Electric Emerald)**: `#10B981`
+  - Uso: Destaques secundários e micro-interações.
 
 ### Cores de Apoio
-- **Dark Background**: `#0F1012`
-- **Surface/Glass**: `rgba(255, 255, 255, 0.05)` (com `backdrop-filter: blur(10px)`)
-- **Accent (Blue Flow)**: `#3880FF`
-- **Text Primary**: `#FFFFFF`
-- **Text Secondary**: `#A0A0A0`
+- **Dark Surface**: `#1F2937` (Cards e itens de lista no modo escuro)
+- **Slate Secondary**: `#475569` (Subtítulos e elementos de apoio)
+- **Border/Line**: `#E2E8F0` (Claro) / `#1F2937` (Escuro)
+- **Text Primary**: `#F8FAFC` (Dark) / `#111827` (Light)
+- **Text Muted**: `#94A3B8`
 
 ---
 
-## 3. Tipografia
-Usar fontes modernas sem serifa (Sans Serif) para garantir legibilidade e ar tecnológico.
+## 3. Tipografia (Geometric Modernity)
 
-- **Principal**: `Inter` ou `Outfit` (Google Fonts)
-  - **Headings**: Semibold/Bold (700) - Para títulos impactantes.
-  - **Body**: Regular (400) - Para textos corridos.
-  - **Numbers**: Monospaced (opcional para métricas) ou Medium (500).
+- **Headlines (Títulos)**: `Space Grotesk` (Google Fonts)
+  - **Uso**: Todos os títulos (H1-H6) e etiquetas de KPI.
+  - **Estilo**: Semibold/Bold (600/700).
+- **Body & Controls (Corpo e Inputs)**: `Inter`
+  - **Uso**: Textos corridos, formulários e legendas.
+  - **Estilo**: Regular (400) / Medium (500).
 
 ---
 
 ## 4. Estilo Visual (UI/UX)
 
-### Glassmorphism & Depth
-- Uso frequente de cards com transparência sutil e bordas leves (`1px solid rgba(255, 255, 255, 0.1)`).
-- Sombras suaves (Glow effects) em cores correspondentes ao status (ex: glow verde para botões ativos).
+### Geometria e Forma
+- **Moderate Rounding**: Cantos arredondados padronizados em `8px` (`--ion-border-radius`).
+- **Clean Shadows**: Sombras focais suaves para elevar elementos importantes, seguindo a curvatura do elemento.
+
+### Navegação de Próxima Geração
+- **Clean URLs**: Uso obrigatório de `PathLocationStrategy` (sem `#`) para melhor SEO e trackeabilidade.
+- **Transições**: Animações suaves via `Animate.css` (fadeInUp) para entrada de seções.
 
 ### Iconografia
-- Ícones de linha (Outline) para um visual limpo.
-- Biblioteca sugerida: **Ionicons** ou **Lucide-angular**.
-
-### Micro-animações
-- Transições suaves de `0.3s ease-out`.
-- Efeitos de hover que aumentam levemente o brilho ou a escala (`transform: scale(1.02)`).
+- **Ionicons Outline**: Visual fino e tecnológico.
+- Ícones de marca sempre em cores sólidas da paleta.
 
 ---
 
 ## 5. Elementos de Design (Landing Page)
-Para a futura Landing Page, devemos focar em:
-- **Hero Section**: Imagem de alta qualidade + gradientes dinâmicos.
-- **Social Proof**: Cards de depoimentos com estilo "Glass".
-- **Feature Cards**: Divisão clara entre Aluno e Instrutor, usando as cores da paleta.
+Para a futura Landing Page, devemos manter:
+- **Hero Section**: Uso maciço de tipografia `Space Grotesk` em tamanho grande.
+- **Dark Dominance**: Site prioritariamente escuro com o Verde Marca como fio condutor.
+- **Performance**: Foco em tempos de carregamento rápidos e SEO.

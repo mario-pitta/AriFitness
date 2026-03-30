@@ -135,6 +135,8 @@
 
 .main-save-btn {
     --border-radius: 16px;
+    border-radius: 16px;
+    /* Necessary for box-shadow to follow curve on host */
     --padding-top: 20px;
     --padding-bottom: 20px;
     font-weight: 700;

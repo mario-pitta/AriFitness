@@ -67,9 +67,6 @@ $prefix: "mo-";
 @import "../node_modules/bootstrap/scss/helpers";
 @import "../node_modules/bootstrap/scss/utilities/api";
 
-@import url("https://fonts.googleapis.com/css2?family=Anton&family=Molle&family=PT+Serif:ital,wght@0,700;1,400;1,700&family=Playwrite+PE+Guides&display=swap");
-
-
 
 // ── Admin Dashboard Styles ──────────────────────────────────────────────
 @import 'app/adm-page/admin-dashboard';
@@ -83,24 +80,21 @@ ion-content {
   // overflow: auto;
 
   &::-webkit-scrollbar {
-    width: 10px;
-    height: 15px;
+    width: 6px;
+    height: 6px;
   }
 
   &::-webkit-scrollbar-track {
     background: var(--ion-background-color);
   }
 
-  &::-webkit-scrollbar-track:hover {
-    background: #f7f7f7;
-  }
-
   &::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: var(--ion-color-step-200);
+    border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #94173a;
+    background: var(--ion-color-primary);
   }
 
   .inner-scroll {
@@ -108,33 +102,32 @@ ion-content {
   }
 }
 
-html,
-body {
-  height: 100%;
-}
-
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.headline {
+  font-family: var(--font-headline);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 a {
   text-decoration: none;
-}
-
-.container {
-  text-align: center;
-
-  position: relative;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  color: var(--ion-color-primary);
 }
 
 .container strong {
-  font-size: 20px;
-  line-height: 26px;
+  font-family: var(--font-headline);
+  font-size: 24px;
+  line-height: 32px;
 }
 
 .container p {
@@ -154,8 +147,17 @@ ion-content {
   --padding-bottom: 80px;
 }
 
+/* Universal Shadow Fix for Ionic Buttons */
+ion-button {
+  border-radius: var(--border-radius, 8px);
+
+  &::part(native) {
+    border-radius: inherit;
+  }
+}
+
 * ion-button.ion-color-primary {
-  --ion-color-contrast: aliceblue !important;
+  --ion-color-contrast: #ffffff !important;
 }
 
 svg {

@@ -64,13 +64,13 @@
 }
 
 .dash-kpi-card--alunos {
-    background: linear-gradient(135deg, #2471a3 0%, #4d8dff 100%) !important;
+    background: linear-gradient(135deg, #2D8A5E 0%, #10B981 100%) !important;
     color: #fff !important;
     --color: #fff;
 }
 
 .dash-kpi-card--instrutores {
-    background: linear-gradient(135deg, #7d3c98 0%, #8482fb 100%) !important;
+    background: linear-gradient(135deg, #475569 0%, #64748b 100%) !important;
     color: #fff !important;
     --color: #fff;
 }
@@ -154,7 +154,8 @@
 .dash-chart-card {
     border-radius: 16px !important;
     overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+    background: var(--ion-card-background) !important;
     --background: var(--ion-card-background);
 
     ion-card-header {
@@ -176,6 +177,7 @@
     border-radius: 14px !important;
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+    background: var(--ion-card-background) !important;
     transition: transform 0.2s ease;
 
     &:hover {
