@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/mario-pitta/AriFitness/compare/v1.9.2...v1.10.0) (2026-03-30)
+
+
+### Features
+
+* implement checkin status validation in UsuarioService and scaffold Automations module ([33ecc22](https://github.com/mario-pitta/AriFitness/commit/33ecc22efae74e0cbdfe9b97a8bc214610a63b82))
+* implement new design system (Cyber-Athletic Minimal) and PathLocationStrategy ([a4173ff](https://github.com/mario-pitta/AriFitness/commit/a4173ffbec9d94c4451d8e56595f386d03ea88a8))
+
 ### [1.9.2](https://github.com/mario-pitta/AriFitness/compare/v1.9.1...v1.9.2) (2026-03-27)
 
 ### [1.9.1](https://github.com/mario-pitta/AriFitness/compare/v1.9.0...v1.9.1) (2026-03-27)
