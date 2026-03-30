@@ -334,6 +334,12 @@ export class UsuarioService {
       // O ID do novo check-in é: novoRegistro[0].id
       // await atualizarStreak(cpf, novoRegistro[0].data_checkin);
 
+      await this.database.supabase
+        .from('usuario')
+        .update({ data_ultimo_checkin: novoRegistro[0].data_hora })
+        .eq('cpf', cpf);
+
+
       return { success: true, data: novoRegistro[0], message: "Acesso Liberado!", error: null };
 
     } catch (error) {

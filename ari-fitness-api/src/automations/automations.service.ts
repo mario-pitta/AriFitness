@@ -1,50 +1,28 @@
 import { Injectable } from "@nestjs/common";
-import { DataBaseService } from "src/datasource/database.service";
-import { EmpresaService } from "src/empresa/empresa.service";
-import { UsuarioService } from "src/usuario/usuario.service";
+import { EmpresaService } from "../empresa/empresa.service";
+import { UsuarioService } from "../usuario/usuario.service";
 
 @Injectable()
 export class AutomationsService {
     constructor(
-        private databaseService: DataBaseService,
         private readonly usuarioService: UsuarioService,
         private readonly empresaService: EmpresaService,
 
 
     ) { }
 
+
     async getCompanies() {
-        const supabase = this.databaseService.getSupabaseClient();
-        const { data, error } = await supabase.from('empresa').select(`
-            id,
-            nome,
-            logo_url,
-            banner_url            
-            `);
+        const { data, error } = await this.empresaService.findAll();
         if (error) {
             throw error;
         }
         return data;
     }
 
-
-    async getCompanyById(id: string) {
-        const supabase = this.databaseService.getSupabaseClient();
-        const { data, error } = await supabase.from('empresa').select(`
-            id,
-            nome,
-            logo_url,
-            banner_url            
-            `).eq('id', id);
-        if (error) {
-            throw error;
-        }
-        return data;
-    }
 
 
     async getAlunosByEmpresaId(empresaId: string) {
-        const supabase = this.databaseService.getSupabaseClient();
         const { data, error } = await this.usuarioService.findByFilters({
             empresa_id: empresaId,
             tipo_usuario: 5,
