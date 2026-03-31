@@ -7,7 +7,7 @@ export interface TreinoExercicio {
     exercicio_id: number;
     exercicio?: Exercicio;
     series: number;
-    repeticoes: number;
+    repeticoes: string;
     carga: number;
     intervalo: number;
     ordem: number;
@@ -15,4 +15,5 @@ export interface TreinoExercicio {
     grupo_execucao?: number;
     tipo_progressao: number; // 1: NORMAL, 2: PIRÁMIDE CRESCENTE, 3: DECRESCENTE
     carga_series?: any;
+    sugestoes?: any[];
 }
