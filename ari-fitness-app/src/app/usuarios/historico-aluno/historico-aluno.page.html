@@ -102,26 +102,29 @@
                 <p>Nenhum dado de carga registrado.</p>
             </div>
 
-            <div class="evolution-container" *ngIf="!loadingEvolution && chartData.length > 0">
+            <div class="" *ngIf="!loadingEvolution && chartData.length > 0">
                 <h3 class="section-title">Evolução Prescrita (Cargas)</h3>
                 <p class="section-subtitle">Progresso baseado nos pesos definidos nas fichas ao longo do tempo.</p>
 
-                <ion-row>
-                    <ion-card class="exercise-card glass-card col-3" *ngFor="let exercise of chartData">
-                        <div class="card-header">
-                            <h4>{{exercise.name | titlecase}}</h4>
-                            <span class="badge"
-                                [ngClass]="exercise.evolution > 0 ? 'bg-success' : exercise.evolution == 0 ? 'bg-secondary' : 'bg-danger'">{{
-                                exercise.evolution}}kg</span>
-                        </div>
-                        <div class="chart-wrapper">
-                            <ngx-charts-line-chart [results]="[exercise]" [xAxis]="true" [yAxis]="true"
-                                [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true" [gradient]="true"
-                                [animations]="true" [view]="[300, 150]">
-                            </ngx-charts-line-chart>
-                        </div>
-                    </ion-card>
-                </ion-row>
+                <div class="row g-3">
+                    <div class="col-lg-4 col-md-6 col-12 mb-3" *ngFor="let exercise of chartData">
+                        <ion-card class="exercise-card glass-card h-100 m-0 animate__animated animate__zoomIn">
+                            <div class="card-header">
+                                <h4>{{exercise.name | titlecase}}</h4>
+                                <span class="badge"
+                                    [ngClass]="exercise.evolution > 0 ? 'bg-success' : exercise.evolution == 0 ? 'bg-secondary' : 'bg-danger'">
+                                    {{exercise.evolution}}kg
+                                </span>
+                            </div>
+                            <div class="chart-wrapper">
+                                <ngx-charts-line-chart [results]="[exercise]" [xAxis]="true" [yAxis]="true"
+                                    [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true"
+                                    [gradient]="true" [animations]="true">
+                                </ngx-charts-line-chart>
+                            </div>
+                        </ion-card>
+                    </div>
+                </div>
 
                 <h3 class="section-title ion-margin-top">Últimas Execuções</h3>
                 <p class="section-subtitle">Cargas reais registradas durante os treinos.</p>
