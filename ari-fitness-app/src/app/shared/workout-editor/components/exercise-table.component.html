@@ -1,5 +1,4 @@
-<div class="card border-0 shadow-lg rounded-4 overflow-hidden exercise-container-card"
-    [class.allow-overflow]="isDropdownVisible">
+<div class="card border-0 shadow-lg rounded-4 exercise-container-card allow-overflow">
     <div class="card-header border-0 py-3 px-4 d-flex justify-content-between align-items-center bg-card-header">
         <div class="d-flex align-items-center gap-2">
             <div class="header-icon-box p-2 rounded-3 text-primary">
@@ -41,7 +40,8 @@
                             <div class="d-flex flex-column position-relative">
                                 <input type="text"
                                     class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
-                                    [class.text-danger]="!ex.exercicio" [placeholder]="'Buscar exercício...'"
+                                    [class.text-danger]="!ex.exercicio_id || ex.exercicio_id === 0"
+                                    [placeholder]="'Buscar exercício...'"
                                     [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
                                     (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
                                     (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
@@ -49,7 +49,23 @@
                                 <span class="pill-meta mt-1"
                                     *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() ||
                                     'Livre'}}</span>
-                                <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicio">Não selecionado</span>
+                                <span class="pill-meta text-warning mt-1"
+                                    *ngIf="!ex.exercicio_id || ex.exercicio_id === 0">
+                                    <ion-icon name="alert-circle-outline"></ion-icon> Não encontrado na base
+                                </span>
+
+                                <!-- IMMEDIATE SUGGESTIONS DESKTOP -->
+                                <div class="suggestion-tray mt-2 d-flex flex-wrap gap-1"
+                                    *ngIf="(!ex.exercicio_id || ex.exercicio_id === 0) && ex.sugestoes?.length">
+                                    <small class="w-100 text-info fw-bold mb-1"
+                                        style="font-size: 0.65rem;">SUGESTÕES:</small>
+                                    <div class="suggestion-chip d-flex align-items-center gap-2 p-1 pe-2 rounded-pill cursor-pointer border"
+                                        *ngFor="let sug of ex.sugestoes" (click)="selectExercise(i, ex, sug)">
+                                        <img [src]="sug.img_url || 'assets/images/placeholder.png'"
+                                            class="rounded-circle suggestion-thumb" width="20" height="20">
+                                        <span class="small-text">{{sug.nome}}</span>
+                                    </div>
+                                </div>
 
                                 <!-- DROPDOWN DESKTOP -->
                                 <div *ngIf="activeSearchRow === i && isDropdownVisible" class="autocomplete-dropdown"
@@ -94,6 +110,15 @@
                             </button>
                         </td>
                     </tr>
+                    <tr *ngIf="exercicios.length === 0">
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <div class="d-flex flex-column align-items-center">
+                                <ion-icon name="barbell-outline" class="fs-1 mb-3 text-light"></ion-icon>
+                                <p class="fw-bold mb-1">Nenhum exercício adicionado</p>
+                                <p class="small">Adicione exercícios para montar seu treino</p>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -116,7 +141,22 @@
 
                             <span class="pill-meta mt-1"
                                 *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() || 'Livre'}}</span>
-                            <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicio">Não selecionado</span>
+                            <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicio_id || ex.exercicio_id === 0">
+                                <ion-icon name="alert-circle-outline"></ion-icon> Não encontrado na base
+                            </span>
+
+                            <!-- IMMEDIATE SUGGESTIONS MOBILE -->
+                            <div class="suggestion-tray mt-2 d-flex flex-wrap gap-1"
+                                *ngIf="(!ex.exercicio_id || ex.exercicio_id === 0) && ex.sugestoes?.length">
+                                <small class="w-100 text-info fw-bold mb-1"
+                                    style="font-size: 0.65rem;">SUGESTÕES:</small>
+                                <div class="suggestion-chip d-flex align-items-center gap-2 p-1 pe-2 rounded-pill cursor-pointer border bg-white"
+                                    *ngFor="let sug of ex.sugestoes" (click)="selectExercise(i, ex, sug)">
+                                    <img [src]="sug.img_url || 'assets/images/placeholder.png'"
+                                        class="rounded-circle suggestion-thumb" width="20" height="20">
+                                    <span class="small-text">{{sug.nome}}</span>
+                                </div>
+                            </div>
 
                             <!-- DROPDOWN MOBILE -->
                             <div *ngIf="activeSearchRow === i && isDropdownVisible" class="autocomplete-dropdown"
@@ -179,11 +219,15 @@
 <!-- AUTOCOMPLETE GLOBAL DROPDOWN TEMPLATE -->
 <ng-template #dropdownTemplate>
     <div class="autocomplete-dropdown-container">
-        <div class="dropdown-item py-2 px-3 cursor-pointer d-flex flex-column dropdown-hover"
+        <div class="dropdown-item py-2 px-3 cursor-pointer d-flex align-items-center gap-3 dropdown-hover"
             *ngFor="let result of filteredExercises"
             (click)="selectExercise(activeSearchRow!, exercicios[activeSearchRow!], result)">
-            <span class="fw-bold fs-6">{{result.nome}}</span>
-            <span class="pill-meta mt-1" style="font-size: 0.65rem;">{{result.equipamento?.nome || 'Livre'}}</span>
+            <img [src]="result.img_url || 'assets/images/placeholder.png'" class="rounded-3 border border-light"
+                width="40" height="40" style="object-fit: cover;">
+            <div class="d-flex flex-column">
+                <span class="fw-bold fs-6">{{result.nome}}</span>
+                <span class="pill-meta mt-1" style="font-size: 0.65rem;">{{result.equipamento?.nome || 'Livre'}}</span>
+            </div>
         </div>
         <div class="dropdown-item py-3 px-3 text-soft-muted small text-center" *ngIf="filteredExercises.length === 0">
             Nenhum exercício encontrado.

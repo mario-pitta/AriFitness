@@ -81,6 +81,9 @@ export class ImportacaoPage implements OnInit, CanComponentDeactivate {
             const rows = await this.importService.parseExcel(file);
             const validated = this.importService.validateRows(rows);
 
+
+
+
             // Match exercises
             const allRows = await this.importService.matchExercises([...validated.valid, ...validated.invalid], this.allExercises);
 
@@ -172,14 +175,15 @@ export class ImportacaoPage implements OnInit, CanComponentDeactivate {
                 nome: sName,
                 ordem: sIdx + 1,
                 exercicios: sectionRows.map((r: any) => ({
-                    exercicio_id: r.exerciseId || r.match?.id,
-                    exercicio: r.match || { id: r.exerciseId },
-                    series: r.sets,
-                    repeticoes: parseInt(r.reps) || 0,
-                    intervalo: r.rest,
+                    exercicio_id: r.match?.id || 0,
+                    exercicio: r.match || { nome: r.exerciseName, id: 0, },
+                    series: r.sets || 0,
+                    repeticoes: r.reps || '0',
+                    intervalo: r.rest || 0,
                     ordem: r.order,
                     tipo_execucao: 1,
-                    tipo_progressao: 1
+                    tipo_progressao: 1,
+                    sugestoes: r.suggestions
                 }))
             };
             previewTreino.sessoes.push(session);

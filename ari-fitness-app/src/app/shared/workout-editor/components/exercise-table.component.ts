@@ -38,7 +38,12 @@ export class ExerciseTableComponent implements OnInit {
         });
 
         this.exercicioService.find().subscribe(res => {
-            if (res) this.allExercises = res;
+            if (res) {
+                this.allExercises = res.map(ex => ({
+                    ...ex,
+                    img_url: ex.img_url || ex.midia_url || (ex.midias_url?.length ? ex.midias_url[0] : undefined)
+                }));
+            }
         });
     }
 
