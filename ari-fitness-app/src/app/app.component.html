@@ -1,4 +1,20 @@
 <ion-app>
+  <!-- Custom Glassmorphism Update Card -->
+  <div *ngIf="showUpdateNotify" class="update-notification-container animate__animated animate__slideInDown">
+    <div class="update-card glass-card">
+      <div class="update-icon">
+        <ion-icon name="rocket-outline"></ion-icon>
+      </div>
+      <div class="update-content">
+        <h3>🚀 Nova Versão!</h3>
+        <p>A versão <strong>{{newVersion}}</strong> está disponível com novidades e mais performance.</p>
+      </div>
+      <div class="update-actions">
+        <button class="btn-update" (click)="reloadApp()">Atualizar</button>
+        <button class="btn-close" (click)="showUpdateNotify = false">Depois</button>
+      </div>
+    </div>
+  </div>
   <ion-header [translucent]="true" *ngIf="user">
     <ion-toolbar class="d-flex">
       <!-- <ion-icon *ngIf="(route !== '/home' && route !== '/login')" slot="start"   size="large" class="ion-padding-start"  (click)="navigateBack()" name="arrow-back"></ion-icon> -->

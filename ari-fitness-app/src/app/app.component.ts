@@ -1,11 +1,11 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import {
   NavigationEnd,
   NavigationStart,
   Router,
-  RouterEvent,
 } from '@angular/router';
-import { Subject } from 'rxjs';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { filter } from 'rxjs/operators';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { OverlayControllerService } from 'src/core/services/overlay-controller.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
@@ -15,11 +15,8 @@ import { PagetitleService } from 'src/core/services/pagetitle.service';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { environment } from 'src/environments/environment';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: environment.apiKey,
   authDomain: environment.authDomain,
@@ -33,12 +30,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   route: string = '';
   showToastr: any;
   user: any;
@@ -46,24 +44,28 @@ export class AppComponent implements OnInit {
   showOptions: boolean = false;
   isDarkMode: boolean = false;
 
+  // Update Notification State
+  showUpdateNotify: boolean = false;
+  newVersion: string = '1.12.0';
+
+  isMobile = false;
+  screenSize = 0;
+
   constructor(
     private titleService: PagetitleService,
     private overlayService: OverlayControllerService,
     private router: Router,
     private authService: AuthService,
-    private pageSizeService: PageSizeService
+    private pageSizeService: PageSizeService,
+    private swUpdate: SwUpdate
   ) {
     this.pageSizeService.screenSizeChange$.subscribe((size) => {
       console.log('size: ', size);
     });
   }
 
-  isMobile = false;
-  screenSize = 0;
-
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    console.log(event);
     this.screenSize = window.innerWidth;
     this.pageSizeService.setSize(this.screenSize);
   }
@@ -71,8 +73,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.initializeTheme();
 
-    // Signal Electron that Angular has fully bootstrapped and is ready to show the window
-    // This precise timing prevents the blank screen on startup
     if (window.require) {
       try {
         const { ipcRenderer } = window.require('electron');
@@ -96,11 +96,30 @@ export class AppComponent implements OnInit {
         this.user = user;
       },
     });
+
     this.titleService.title.asObservable().subscribe({
       next: (title) => {
         this.pageTitle = title;
       },
     });
+
+    this.checkUpdate();
+  }
+
+  checkUpdate() {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates
+        .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
+        .subscribe(() => {
+          this.showUpdateNotify = true;
+        });
+
+      this.swUpdate.checkForUpdate();
+    }
+  }
+
+  reloadApp() {
+    window.location.reload();
   }
 
   initializeTheme() {
@@ -136,6 +155,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.authService.userValue.unsubscribe();
+    // Note: In a real app, you should unsubscribe from all subscriptions here
   }
 }

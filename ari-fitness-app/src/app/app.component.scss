@@ -31,3 +31,96 @@
     width: 37px;
     margin-left: 10px;
 }
+
+// Update Notification Premium Styles
+.update-notification-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 450px;
+    z-index: 999999;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 24px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.update-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(var(--ion-color-success-rgb), 0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ion-color-success);
+    font-size: 1.8rem;
+}
+
+.update-content {
+    flex: 1;
+
+    h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        color: white;
+    }
+
+    p {
+        margin: 4px 0 0;
+        font-size: 0.85rem;
+        color: var(--ion-color-step-300, #94a3b8);
+        line-height: 1.4;
+    }
+}
+
+.update-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .btn-update {
+        background: var(--ion-color-success);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    .btn-close {
+        background: transparent;
+        color: var(--ion-color-step-400, #64748b);
+        border: none;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+}
+
+// Dark Mode Overrides
+:host-context(body.dark) {
+    .glass-card {
+        background: rgba(15, 23, 42, 0.7);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+}
