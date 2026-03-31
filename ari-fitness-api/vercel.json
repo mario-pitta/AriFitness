@@ -9,12 +9,6 @@
     "installCommand": "npm install",
     "public": true,
     "devCommand": "npm run start:prod",
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ],
     "routes": [
         {
             "src": "/(.*)",

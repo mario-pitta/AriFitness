@@ -22,6 +22,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: corsConfig });
 
+  app.setGlobalPrefix('api', { exclude: ['/'] }); // Prefix all routes with /api except the root
+
   app.use(bodyParser.json({ limit: '5mb' })); // Ajuste o limite conforme necessário
   // app.use(bodyParser.urlencoded({ limit: '5mb', extended: true })); // Ajuste o limite conforme necessário
 

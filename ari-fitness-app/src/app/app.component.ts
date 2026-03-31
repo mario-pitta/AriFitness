@@ -11,7 +11,28 @@ import { OverlayControllerService } from 'src/core/services/overlay-controller.s
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
 import { PagetitleService } from 'src/core/services/pagetitle.service';
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { environment } from 'src/environments/environment';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: environment.apiKey,
+  authDomain: environment.authDomain,
+  projectId: environment.projectId,
+  storageBucket: environment.storageBucket,
+  messagingSenderId: environment.messagingSenderId,
+  appId: environment.appId,
+  measurementId: environment.measurementId
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',

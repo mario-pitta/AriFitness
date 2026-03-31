@@ -1,10 +1,13 @@
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
-
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000'
+  apiUrl: 'http://localhost:3000/api',
+  apiKey: "AIzaSyCwZDDdzkhjkws6ePnKOsxVqcEua1YhSeQ",
+  authDomain: "mvk-gym-manager-c567f.firebaseapp.com",
+  projectId: "mvk-gym-manager-c567f",
+  storageBucket: "mvk-gym-manager-c567f.firebasestorage.app",
+  messagingSenderId: "356649486961",
+  appId: "1:356649486961:web:1d947245b8a7493663e9d0",
+  measurementId: "G-D79TBM0871"
 };
 
 /*
