@@ -1,44 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { WorkoutTemplateStateService } from 'src/core/services/treino/state/workout-template-state.service';
-import { TreinoService } from 'src/core/services/treino/treino.service';
-import { ToastrService } from 'src/core/services/toastr/toastr.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Treino } from 'src/core/models/Treino';
-import { Observable } from 'rxjs';
 import { AuthService } from 'src/core/services/auth/auth.service';
-import { CanComponentDeactivate } from 'src/core/guards/pending-changes.guard';
+import { TreinoService } from 'src/core/services/treino/treino.service';
+import { WorkoutTemplateStateService } from 'src/core/services/treino/state/workout-template-state.service';
+import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'src/core/services/toastr/toastr.service';
 
 @Component({
     selector: 'app-treino-editor',
     templateUrl: './treino-editor.page.html',
-    styleUrls: ['./treino-editor.page.scss'],
 })
-export class TreinoEditorPage implements OnInit, CanComponentDeactivate {
-    loading: boolean = false;
-    isWorkoutValid$: Observable<boolean> = this.workoutState.isValid$;
-    private isSaved = false;
+export class TreinoEditorPage implements OnInit, OnDestroy {
+    loading = false;
+    user: any;
+
+    get isWorkoutValid$() {
+        return this.workoutState.isValid$;
+    }
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private workoutState: WorkoutTemplateStateService,
+        public workoutState: WorkoutTemplateStateService,
         private treinoService: TreinoService,
-        private toastr: ToastrService,
-        private auth: AuthService
+        private auth: AuthService,
+        private navCtrl: NavController,
+        private loadingCtrl: LoadingController,
+        private route: ActivatedRoute,
+        private toastr: ToastrService
     ) { }
 
     ngOnInit() {
+        this.user = this.auth.getUser;
         const id = this.route.snapshot.paramMap.get('id');
-        if (id && id !== 'new') {
-            this.loadTreino(parseInt(id));
+
+        if (id && id !== '0') {
+            this.loadTreino(Number(id));
         } else {
-            // If we already have a workout in state (e.g. from import), don't reset it
-            const current = this.workoutState.getWorkoutValue();
-            if (current && (current as any).isImporting) {
-                // Keep the imported data
-            } else {
-                this.initNewTreino();
-            }
+            this.initNewTreino();
         }
     }
 
@@ -50,9 +48,8 @@ export class TreinoEditorPage implements OnInit, CanComponentDeactivate {
                 this.loading = false;
             },
             error: () => {
-                this.loading = false;
                 this.toastr.error('Erro ao carregar treino');
-                this.router.navigate(['/admin/treinos']);
+                this.loading = false;
             }
         });
     }
@@ -64,47 +61,60 @@ export class TreinoEditorPage implements OnInit, CanComponentDeactivate {
             nome: '',
             descricao: '',
             exercicios: [],
-            sessoes: [],
-            nivel_dificuldade: 1,
-            empresa_id: user.empresa_id || '',
+            sessoes: [
+                { nome: 'A', ordem: 1, exercicios: [] }
+            ],
             fl_ativo: true,
-            fl_publico: true
+            fl_publico: true,
+            empresa_id: user.empresa_id as string,
+            nivel_dificuldade: 1
         };
         this.workoutState.setWorkout(newWorkout);
     }
 
-    submitForm() {
+    async submitForm() {
+        // 1. Centralized Orphan Handling (Check, Confirm, Create, Update Local IDs)
+        try {
+            const canProceed = await this.workoutState.confirmAndCreateOrphans();
+            if (!canProceed) return;
+        } catch (error) {
+            console.error('Error handling orphan exercises:', error);
+            this.toastr.error('Erro ao cadastrar novos exercícios. Tente novamente.');
+            return;
+        }
+
+        // 2. Persist with updated workout data
         const workout = this.workoutState.getWorkoutValue();
-        if (!workout) return;
+        if (workout) {
+            this.persistWorkout(workout);
+        }
+    }
 
-        const req = (!workout.id || workout.id === 0)
-            ? this.treinoService.create(workout)
-            : this.treinoService.update(workout);
-
+    persistWorkout(workout: Treino) {
         this.loading = true;
+        const req = workout.id && workout.id !== 0
+            ? this.treinoService.update(workout)
+            : this.treinoService.create(workout);
+
         req.subscribe({
             next: () => {
-                this.isSaved = true;
-                this.loading = false;
                 this.toastr.success('Treino salvo com sucesso!');
                 this.goBack();
-            },
-            error: () => {
                 this.loading = false;
+            },
+            error: (err) => {
+                console.error('Error saving workout:', err);
                 this.toastr.error('Erro ao salvar treino');
+                this.loading = false;
             }
         });
     }
 
     goBack() {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/treinos';
-        this.router.navigate([returnUrl]);
+        this.navCtrl.back();
     }
 
-    canDeactivate(): boolean {
-        if (!this.isSaved) {
-            return confirm('Você tem alterações não salvas. Deseja realmente sair?');
-        }
-        return true;
+    ngOnDestroy() {
+        this.workoutState.setWorkout(null);
     }
 }

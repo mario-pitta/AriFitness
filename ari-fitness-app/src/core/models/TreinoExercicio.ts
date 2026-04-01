@@ -4,7 +4,7 @@ export interface TreinoExercicio {
     id?: number;
     created_at?: string | Date;
     sessao_id?: number;
-    exercicio_id: number;
+    exercicio_id: number | null;
     exercicio?: Exercicio;
     series: number;
     repeticoes: string;

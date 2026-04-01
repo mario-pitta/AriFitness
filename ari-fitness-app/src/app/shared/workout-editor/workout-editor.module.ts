@@ -13,6 +13,7 @@ import { WorkoutPreviewModalComponent } from './components/workout-preview-modal
 import { StudentSessionViewComponent } from './components/student-session-view.component';
 import { TemplateSelectorModalComponent } from './components/template-selector-modal.component';
 import { StudentSelectorModalComponent } from '../student-selector/student-selector-modal.component';
+import { OrphanExercisesModalComponent } from './components/orphan-exercises-modal.component';
 
 @NgModule({
     imports: [
@@ -30,7 +31,8 @@ import { StudentSelectorModalComponent } from '../student-selector/student-selec
         WorkoutPreviewModalComponent,
         StudentSessionViewComponent,
         TemplateSelectorModalComponent,
-        StudentSelectorModalComponent
+        StudentSelectorModalComponent,
+        OrphanExercisesModalComponent
     ],
 
     exports: [
@@ -41,7 +43,8 @@ import { StudentSelectorModalComponent } from '../student-selector/student-selec
         WorkoutPreviewModalComponent,
         StudentSessionViewComponent,
         TemplateSelectorModalComponent,
-        StudentSelectorModalComponent
+        StudentSelectorModalComponent,
+        OrphanExercisesModalComponent
     ]
 
 })

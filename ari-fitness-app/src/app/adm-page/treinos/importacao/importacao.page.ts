@@ -175,8 +175,8 @@ export class ImportacaoPage implements OnInit, CanComponentDeactivate {
                 nome: sName,
                 ordem: sIdx + 1,
                 exercicios: sectionRows.map((r: any) => ({
-                    exercicio_id: r.match?.id || 0,
-                    exercicio: r.match || { nome: r.exerciseName, id: 0, },
+                    exercicio_id: r.match?.id || null,
+                    exercicio: r.match || { nome: r.exerciseName, id: null, },
                     series: r.sets || 0,
                     repeticoes: r.reps || '0',
                     intervalo: r.rest || 0,
@@ -194,6 +194,31 @@ export class ImportacaoPage implements OnInit, CanComponentDeactivate {
     }
 
     async saveImportedTreino() {
+        if (!this.isWorkoutValid) {
+            const toast = await this.toastCtrl.create({
+                message: 'Verifique se há erros ou nomes faltando nas seções.',
+                duration: 3000,
+                color: 'warning'
+            });
+            toast.present();
+            return;
+        }
+
+        // 1. Intercept Orphans and Create them if confirmed
+        try {
+            const canProceed = await this.workoutState.confirmAndCreateOrphans();
+            if (!canProceed) return;
+        } catch (err) {
+            const alert = await this.alertCtrl.create({
+                header: 'Erro ao Criar Exercícios',
+                message: 'Ocorreu um erro ao tentar cadastrar novos exercícios citados na planilha.',
+                buttons: ['OK']
+            });
+            await alert.present();
+            return;
+        }
+
+        // 2. Now get the UPDATED workout (with new IDs) and save
         const workout = this.workoutState.getWorkoutValue();
         if (!workout) return;
 

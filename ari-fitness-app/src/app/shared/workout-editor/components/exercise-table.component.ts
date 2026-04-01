@@ -144,13 +144,37 @@ export class ExerciseTableComponent implements OnInit {
         }, 200);
     }
 
-    onSearchChange(event: any, index: number) {
-        this.activeSearchRow = index;
-        this.searchTerm = event.target.value;
-        this.filterExercises();
+    onSearchChange(event: any, rowIndex: number) {
+        const val = event.target.value?.toUpperCase();
+        this.searchTerm = val;
 
-        if (event && event.target) {
-            this.updateDropdownPosition(event.target);
+        if (this.exercicios && this.exercicios[rowIndex]) {
+            const currentEx = this.exercicios[rowIndex];
+
+            // Se o usuário digitou algo, atualizamos o objeto de exercício no estado
+            if (val) {
+                if (!currentEx.exercicio) {
+                    currentEx.exercicio = { nome: val, fl_ativo: true } as any;
+                } else {
+                    currentEx.exercicio.nome = val;
+                }
+
+                // Reseta o ID para indicar que é um item NOVO (a menos que ele selecione algo depois)
+                currentEx.exercicio_id = null;
+            } else {
+                currentEx.exercicio_id = null;
+                if (currentEx.exercicio) currentEx.exercicio.nome = '';
+            }
+
+            this.updateExercise(rowIndex, currentEx);
+        }
+
+        if (val?.length > 1) {
+            this.filterExercises();
+
+            if (event && event.target) {
+                this.updateDropdownPosition(event.target);
+            }
         }
     }
 
@@ -168,7 +192,7 @@ export class ExerciseTableComponent implements OnInit {
     }
 
     selectExercise(index: number, ex: TreinoExercicio, selectedExercise: Exercicio) {
-        ex.exercicio_id = selectedExercise.id || 0;
+        ex.exercicio_id = selectedExercise.id || null;
         ex.exercicio = selectedExercise;
         this.isDropdownVisible = false;
         this.activeSearchRow = null;

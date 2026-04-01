@@ -31,6 +31,6 @@ export class ExercicioDetailComponent implements OnInit {
         if (this.exercicio.midias_url && this.exercicio.midias_url.length > 0) {
             return this.exercicio.midias_url[this.currentImageIndex];
         }
-        return this.exercicio.midia_url || 'assets/img/equipment-placeholder-small.png';
+        return this.exercicio.midia_url || 'assets/images/placeholder-exercise.png';
     }
 }

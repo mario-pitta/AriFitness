@@ -5,9 +5,10 @@ import { Musculo } from './Musculo';
 
 export interface Exercicio {
   id?: number;
-  created_at: string | Date;
+  created_at?: string | Date;
   nome: string;
   fl_ativo: boolean;
+  empresa_id?: string | null;  // null = exercício global/oficial; string = customizado pela academia
   grupo_muscular_id?: number;
   grupo_muscular?: GrupoMuscular
   musculo_id?: number;
@@ -21,6 +22,7 @@ export interface Exercicio {
   nivel_id?: number;
   nivel?: any;
   instrucoes?: string[];
+  usuario_id?: string | number;
 }
 
 export interface ExercicioMusculo {

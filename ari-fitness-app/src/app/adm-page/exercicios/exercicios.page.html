@@ -128,9 +128,18 @@
 
                     <!-- Card Body -->
                     <div class="card-body p-3 d-flex flex-column">
-                        <h5 class=" text-capitalize mb-2 text-truncate fw-bold">{{ ex.nome }}</h5>
+                        <div class="d-flex align-items-start justify-content-between mb-1">
+                            <h5 class="text-capitalize mb-0 text-truncate fw-bold">{{ ex.nome }}</h5>
+                            <!-- Source Badge -->
+                            <span *ngIf="isOficial(ex)" class="source-badge source-badge--oficial ms-2 flex-shrink-0">
+                                <ion-icon name="shield-checkmark-outline"></ion-icon> Oficial
+                            </span>
+                            <span *ngIf="!isOficial(ex)" class="source-badge source-badge--custom ms-2 flex-shrink-0">
+                                <ion-icon name="business-outline"></ion-icon> Academia
+                            </span>
+                        </div>
 
-                        <!-- Muscle Groups with horizontal scroll if many -->
+                        <!-- Muscle Groups -->
                         <div class="muscle-tags d-flex flex-wrap gap-1 mb-3">
                             <ng-container *ngIf="ex.musculos && ex.musculos.length > 0; else legacyMuscle">
                                 <ng-container *ngFor="let m of ex.musculos; let i = index">
@@ -149,15 +158,29 @@
                             </ng-template>
                         </div>
 
-                        <!-- Equipment / Secondary Info -->
+                        <!-- Equipment / Footer -->
                         <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
                             <div class="d-flex align-items-center text-muted" style="font-size: 0.8rem;">
                                 <ion-icon name="fitness-outline" class="me-1"></ion-icon>
                                 <span>{{ ex.equipamento?.nome || 'Peso Livre' }}</span>
                             </div>
-                            <div class="detail-link   d-flex align-items-center"
-                                style="font-size: 0.75rem; font-weight: 500;">
-                                Ver detalhes <ion-icon name="chevron-forward" class="ms-1"></ion-icon>
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Only show Edit for own academy exercises -->
+                                <span *ngIf="canEdit(ex)" class="detail-link d-flex align-items-center"
+                                    style="font-size: 0.75rem; font-weight: 500; color: var(--ion-color-warning);"
+                                    title="Editar exercício da sua academia">
+                                    <ion-icon name="create-outline" class="me-1"></ion-icon> Editar
+                                </span>
+                                <!-- Lock icon for official exercises -->
+                                <span *ngIf="isOficial(ex)" class="detail-link d-flex align-items-center text-muted"
+                                    style="font-size: 0.75rem;"
+                                    title="Exercícios oficiais não podem ser editados pela academia">
+                                    <ion-icon name="lock-closed-outline" class="me-1"></ion-icon>
+                                </span>
+                                <span class="detail-link d-flex align-items-center"
+                                    style="font-size: 0.75rem; font-weight: 500;">
+                                    Ver detalhes <ion-icon name="chevron-forward" class="ms-1"></ion-icon>
+                                </span>
                             </div>
                         </div>
                     </div>

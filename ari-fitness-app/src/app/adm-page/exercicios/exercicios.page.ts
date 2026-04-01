@@ -8,6 +8,7 @@ import { Subscription, forkJoin } from 'rxjs';
 import { GrupoMuscularService } from 'src/core/services/grupo-muscular/grupo-muscular.service';
 import { MusculoService } from 'src/core/services/musculo/musculo.service';
 import { ParteDoCorpoService } from 'src/core/services/parte-do-corpo/parte-do-corpo.service';
+import { AuthService } from 'src/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-exercicios',
@@ -47,8 +48,19 @@ export class ExerciciosPage implements OnInit, OnDestroy {
     private musculoService: MusculoService,
     private parteDoCorpoService: ParteDoCorpoService,
     private modalCtrl: ModalController,
-    private aRoute: ActivatedRoute
+    private aRoute: ActivatedRoute,
+    private authService: AuthService
   ) { }
+
+  /** Exercícios podem ser editados pelo usuário logado se pertencerem à sua academia */
+  canEdit(ex: Exercicio): boolean {
+    const empresaId = this.authService.getUser?.empresa_id;
+    return !!ex.empresa_id && ex.empresa_id === empresaId;
+  }
+
+  isOficial(ex: Exercicio): boolean {
+    return !ex.empresa_id;
+  }
 
   ngOnInit() {
     this.exerciseSub = this.exercicioService.exercicios$.subscribe((ex) => {

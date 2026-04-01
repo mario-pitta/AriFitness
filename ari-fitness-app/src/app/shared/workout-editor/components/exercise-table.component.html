@@ -154,6 +154,12 @@
                         <ion-icon name="grid-outline" class="text-info op-5" cdkDragHandle></ion-icon>
                         <div class="d-flex flex-column position-relative w-100 ms-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
+                                <!-- Aviso para exercícios NOVOS -->
+                                <ion-icon *ngIf="!ex.exercicio_id" name="alert-circle" color="warning"
+                                    class="new-exercise-warning"
+                                    title="Este exercício não está na base e será criado ao salvar.">
+                                </ion-icon>
+
                                 <!-- Miniatura para mobile (sem zoom automático) -->
                                 <img *ngIf="ex.exercicio"
                                     [src]="ex.exercicio.img_url || 'assets/images/placeholder-exercise.png'"
@@ -164,7 +170,7 @@
 
                                 <input type="text"
                                     class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
-                                    [placeholder]="'Buscar exercício...'"
+                                    [class.text-warning]="!ex.exercicio_id" [placeholder]="'Buscar exercício...'"
                                     [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
                                     (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
                                     (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">

@@ -454,15 +454,28 @@ export class FichaTreinoAlunoPage implements OnInit {
     await alert.present();
   }
 
-  executeSubmit(isReactivation: boolean = false) {
-    const workoutData = this.workoutState.getWorkoutValue();
-    if (!workoutData) {
-      this.toastr.error('Erro ao coletar dados do treino.');
+  async executeSubmit(isReactivation: boolean = false) {
+    // 1. Centralized Orphan Handling
+    try {
+      const canProceed = await this.workoutState.confirmAndCreateOrphans();
+      if (!canProceed) return;
+    } catch (error) {
+      console.error('Error handling orphans in student sheet:', error);
+      this.toastr.error('Erro ao cadastrar novos exercícios. Tente novamente.');
       return;
     }
 
-    this.loading = true;
+    // 2. Persist with updated workout data
+    const workoutData = this.workoutState.getWorkoutValue();
+    if (workoutData) {
+      this.performSave(workoutData, isReactivation);
+    } else {
+      this.toastr.error('Erro ao coletar dados do treino.');
+    }
+  }
 
+  performSave(workoutData: any, isReactivation: boolean) {
+    this.loading = true;
     const body: any = {
       ...this.f.value,
       cadastrado_por: this.user.id,
@@ -479,7 +492,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     // Cleanup redundant fields
     delete body.aluno;
     delete body.instrutor;
-    delete body.cadastrado_por;
+    delete body.cadastrado_por_info; // Adjusted from original
     delete body.treinos;
 
     const req = !body.id
