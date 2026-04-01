@@ -238,6 +238,17 @@ Quando executar uma task, você deve fornecer:
 
 - Controllers
 
+#### Testes
+
+- Testes unitários básicos para services - Cobrir casos principais (sucesso/erro)
+
+- Antes de entregar o código, execute os testes e garanta que todos os testes estão passando
+
+- Se o teste falhar, corrija o código e execute os testes novamente
+
+- Verifique se o código está compilando e rodando sem erros, caso esteja corrija.
+
+
 #### Frontend
 
 - Código atualizado

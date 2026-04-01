@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { Exercicio } from './exercicio.interface';
 import { ExercicioService } from './exercicio.service';
-import { Body, Controller, Get, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -14,7 +14,7 @@ const controller = 'exercicios'
 @Controller(controller)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ExercicioController {
-  constructor(private musculoService: ExercicioService) { }
+  constructor(private exercicioService: ExercicioService) { }
 
   /**
    * The function `findAll` retrieves all users and sends the data or an error response using the
@@ -31,12 +31,12 @@ export class ExercicioController {
   @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(
     @Res() res: Response,
+    @Req() req: Request,
     @Query() filter: Partial<Exercicio> | Exercicio,
   ) {
-    console.log('getting all ...', controller);
-    console.log('filter = ', filter)
+    const empresaId = (req as any).user?.empresa_id;
 
-    return this.musculoService.findAll(filter).then((_res) => {
+    return this.exercicioService.findAll(filter, empresaId).then((_res) => {
       if (_res.error) {
         console.error('erro no Exercicio/findAll', _res.error);
         res.status(500).send({
@@ -60,15 +60,18 @@ export class ExercicioController {
    */
   @Post()
   @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
-  create(@Body() body: Exercicio, @Res() res: Response) {
-    return this.musculoService.create({
-      ...body,
-      nome: body.nome.toLocaleLowerCase()
-    }).then((_res) => {
+  create(@Body() body: Exercicio, @Res() res: Response, @Req() req: Request) {
+    const empresaId = (req as any).user?.empresa_id;
+    const usuarioId = (req as any).user?.id;
 
-      console.log('criando ...', _res)
+    return this.exercicioService.create({
+      ...body,
+      nome: body.nome.toLocaleLowerCase(),
+      empresa_id: empresaId,
+      usuario_id: usuarioId, // Sempre vincula ao tenant do usuário
+    }).then((_res) => {
       if (_res.error) {
-        console.error('erro no Exercicio/findAll', _res.error);
+        console.error('erro no Exercicio/create', _res.error);
         res.status(500).send({
           status: 500,
           ..._res.error,
@@ -90,14 +93,20 @@ export class ExercicioController {
    */
   @Put()
   @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
-  update(@Body() body: Partial<Exercicio>) {
-    return this.musculoService.update(body);
+  update(@Body() body: Partial<Exercicio>, @Req() req: Request, @Res() res: Response) {
+    const empresaId = (req as any).user?.empresa_id;
+    return this.exercicioService.update(body, empresaId).then((_res) => {
+      if (_res.error) {
+        return res.status(_res.error.code === 'FORBIDDEN' ? 403 : 500).send(_res.error);
+      }
+      return res.send(_res.data);
+    });
   }
 
   @Get('niveis')
   @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getNiveis(@Res() res: Response) {
-    return this.musculoService.findNiveis().then((_res) => {
+    return this.exercicioService.findNiveis().then((_res) => {
       if (_res.error) {
         return res.status(500).send(_res.error);
       }

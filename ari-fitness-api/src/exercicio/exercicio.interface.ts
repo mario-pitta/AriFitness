@@ -62,6 +62,9 @@ export interface Exercicio {
   instrucoes?: string[];
   midias_url?: string[];
 
+  // Auditoria
+  usuario_id?: string;
+
   // Junction table (requer script 07)
   musculos?: ExercicioMusculo[];
 }

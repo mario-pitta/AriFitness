@@ -14,13 +14,14 @@ export class ExercicioService {
    * @returns An array of all records from the specified table in the database with all columns
    * selected.
    */
-  async findAll(filter: Partial<Exercicio> | Exercicio | any) {
+  async findAll(filter: Partial<Exercicio> | Exercicio | any, empresaId?: string) {
     const { limit, offset, ...otherFilters } = filter;
 
     let query = this.database.supabase.from(tableName).select(`
         id, 
         nome, 
         fl_ativo,
+        empresa_id,
         midias_url,
         midia_url,
         nivel: exercicio_nivel (
@@ -57,18 +58,23 @@ export class ExercicioService {
         instrucoes
       `);
 
+    // Tenant isolation: show global (empresa_id IS NULL) + tenant's own
+    if (empresaId) {
+      query = query.or(`empresa_id.is.null,empresa_id.eq.${empresaId}`);
+    } else {
+      query = query.is('empresa_id', null);
+    }
+
     if (otherFilters.nivel_id) query = query.eq('nivel_id', otherFilters.nivel_id);
     if (otherFilters.equipamento_id) query = query.eq('equipamento_id', otherFilters.equipamento_id);
     if (otherFilters.grupo_muscular_id) query = query.eq('grupo_muscular_id', otherFilters.grupo_muscular_id);
     if (otherFilters.musculo_id) query = query.eq('musculo_id', otherFilters.musculo_id);
     if (otherFilters.parte_do_corpo_id) {
-      // Filtering through the legacy musculo -> grupo_muscular relationship
       query = query.eq('musculo.grupo_muscular.parte_do_corpo_id', otherFilters.parte_do_corpo_id);
     }
     if (otherFilters.nome) query = query.ilike('nome', `%${otherFilters.nome}%`);
     if (otherFilters.fl_ativo !== undefined) query = query.eq('fl_ativo', otherFilters.fl_ativo);
 
-    // If other filters are generic, use match (caution: may conflict with specific ones above)
     const remainingFilters = { ...otherFilters };
     delete remainingFilters.nivel_id;
     delete remainingFilters.equipamento_id;
@@ -108,8 +114,7 @@ export class ExercicioService {
   async create(body: Exercicio) {
 
 
-    return await this.database.supabase.from(tableName).insert(body, {});
-    ;
+    return await this.database.supabase.from(tableName).insert(body, {}).select('*').single();
   }
 
   /**
@@ -120,13 +125,31 @@ export class ExercicioService {
    * @returns The `update` method is returning a promise that represents the result of updating the
    * record in the database table specified by `tableName` with the data provided in the `body` object.
    */
-  async update(body: Partial<Exercicio>) {
+  async update(body: Partial<Exercicio>, empresaId?: string) {
+    // Security: fetch the exercise first to verify tenant ownership
+    const existing = await this.database.supabase
+      .from(tableName)
+      .select('empresa_id')
+      .eq('id', body.id)
+      .single();
 
+    if (existing.error) return existing;
+
+    const exEmpresaId = existing.data?.empresa_id;
+
+    // Block modification of global exercises (empresa_id IS NULL) or those of other tenants
+    if (!exEmpresaId || exEmpresaId !== empresaId) {
+      return {
+        data: null,
+        error: { code: 'FORBIDDEN', message: 'Você não tem permissão para editar este exercício.' }
+      };
+    }
 
     return await this.database.supabase
       .from(tableName)
       .update(body)
-      .eq('id', body.id);
+      .eq('id', body.id)
+      .eq('empresa_id', empresaId).select('*').single(); // Double safety: only update if same tenant
   }
 
   async findNiveis() {
