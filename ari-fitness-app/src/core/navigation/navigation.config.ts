@@ -25,6 +25,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         showInSidebar: true,
         showInMobile: true,
         group: 'Principal',
+        adminOnly: true
     },
     {
         label: 'Alunos',
@@ -43,8 +44,9 @@ export const NAV_ITEMS: NavigationItem[] = [
         route: '/admin/equipe',
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
-        showInMobile: false,
+        showInMobile: true,
         group: 'Gestão',
+        adminOnly: true
     },
     {
         label: 'Finanças',
@@ -62,20 +64,9 @@ export const NAV_ITEMS: NavigationItem[] = [
         sidebarIcon: 'clipboard-outline',
         route: '/admin/treinos',
         roles: [Constants.GERENCIA_ID],
-        functionIds: [Constants.INSTRUTOR_ID],
+        functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
         showInMobile: false,
-        group: 'Gestão',
-    },
-    {
-        label: 'Planejador',
-        sidebarIcon: 'time',
-        tabIcon: 'time',
-        route: '/admin/planejador',
-        roles: [Constants.GERENCIA_ID],
-        functionIds: [Constants.INSTRUTOR_ID],
-        showInSidebar: false,
-        showInMobile: true,
         group: 'Gestão',
     },
     {
@@ -83,9 +74,9 @@ export const NAV_ITEMS: NavigationItem[] = [
         sidebarIcon: 'qr-code-outline',
         route: '/admin/qrcode',
         roles: [Constants.GERENCIA_ID],
-        functionIds: [Constants.INSTRUTOR_ID],
+        functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
-        showInMobile: false,
+        showInMobile: true,
         group: 'Operacional',
     },
     {
@@ -93,9 +84,9 @@ export const NAV_ITEMS: NavigationItem[] = [
         sidebarIcon: 'list-outline',
         route: '/admin/tarefas',
         roles: [Constants.GERENCIA_ID],
-        functionIds: [Constants.INSTRUTOR_ID],
+        functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
-        showInMobile: false,
+        showInMobile: true,
         group: 'Operacional',
     },
     {
@@ -104,7 +95,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         tabIcon: 'calendar',
         route: '/admin/calendario',
         roles: [Constants.GERENCIA_ID],
-        functionIds: [Constants.INSTRUTOR_ID],
+        functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
         showInMobile: true,
         group: 'Operacional',
@@ -115,7 +106,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         route: '/admin/contatos',
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
-        showInMobile: false,
+        showInMobile: true,
         group: 'Operacional',
     },
     {
@@ -144,7 +135,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         roles: [Constants.GERENCIA_ID],
         functionIds: [Constants.INSTRUTOR_ID],
         showInSidebar: true,
-        showInMobile: true,
+        showInMobile: false,
         group: 'Sistema',
     },
 
@@ -195,12 +186,12 @@ export function canSeeItem(user: any, item: NavigationItem): boolean {
     if (!user) return false;
 
     // Admin bypass
-    if (item.adminOnly && user.tipo_usuario !== Constants.GERENCIA_ID) {
+    if (item.adminOnly && user.tipo_usuario !== Constants.GERENCIA_ID && user.function_id !== Constants.GERENCIA_ID && user.funcao?.id !== Constants.GERENCIA_ID) {
         return false;
     }
 
-    const roleMatch = item.roles ? item.roles.includes(user.tipo_usuario) : true;
-    const functionMatch = item.functionIds ? item.functionIds.includes(user.function_id) : false;
+    const roleMatch = item.roles ? item.roles.includes(user.tipo_usuario || user.function_id || user.funcao?.id) : true;
+    const functionMatch = item.functionIds ? item.functionIds.includes(user.tipo_usuario || user.function_id || user.funcao?.id) : false;
 
     return roleMatch || functionMatch;
 }

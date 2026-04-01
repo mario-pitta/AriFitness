@@ -16,13 +16,17 @@
 
 <ion-content class="bg-light">
     <div class="container py-2">
-        <div class="list-group list-group-flush rounded-4 shadow-sm overflow-hidden bg-white mt-3">
+        <div class="list-group list-group-flush rounded-4 shadow-sm bg-white mt-3 position-relative">
             <div *ngFor="let ex of filteredExercises" (click)="selectExercise(ex)"
                 class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3 border-light-subtle cursor-pointer">
 
-                <div class="exercise-icon-bg bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center"
-                    style="width: 48px; height: 48px;">
-                    <ion-icon name="fitness-outline" class="text-primary fs-4"></ion-icon>
+                <div class="thumb-trigger border rounded-3 overflow-visible"
+                    style="width: 48px; height: 48px; position: relative; z-index: 5;"
+                    (mouseenter)="startSlideshow($event, ex)" (mouseleave)="stopSlideshow(ex)"
+                    (touchstart)="handleTouchStart($event, ex)" (touchend)="handleTouchEnd()"
+                    (touchmove)="handleTouchEnd()">
+                    <img [src]="ex.img_url || 'assets/images/placeholder-exercise.png'" class="exercise-thumb rounded-3"
+                        alt="exercício" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
 
                 <div class="flex-grow-1">
@@ -45,6 +49,12 @@
     </div>
 </ion-content>
 
+<!-- Ghost Zoom Overlay -->
+<div *ngIf="hoveredEx" [ngStyle]="hoveredStyles" class="zoom-ghost-overlay">
+    <img [src]="hoveredEx.img_url || 'assets/images/placeholder-exercise.png'"
+        style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid white; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+</div>
+
 <style>
     .custom-searchbar-modal {
         --background: #ffffff;
@@ -54,17 +64,21 @@
         padding: 0 8px;
     }
 
-    .exercise-icon-bg {
-        transition: transform 0.2s;
+    .thumb-trigger {
+        background-color: var(--ion-color-step-100);
+        flex-shrink: 0;
     }
 
-    .list-group-item:hover .exercise-icon-bg {
-        transform: scale(1.1);
-        background-color: var(--ion-color-primary) !important;
+    .exercise-thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .list-group-item:hover .exercise-icon-bg ion-icon {
-        color: white !important;
+    .zoom-ghost-overlay {
+        pointer-events: none;
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: scale(8);
     }
 
     .cursor-pointer {

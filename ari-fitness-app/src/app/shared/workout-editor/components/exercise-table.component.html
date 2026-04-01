@@ -37,40 +37,61 @@
                             <ion-icon name="reorder-two-outline" class="text-info op-5"></ion-icon>
                         </td>
                         <td>
-                            <div class="d-flex flex-column position-relative">
-                                <input type="text"
-                                    class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
-                                    [class.text-danger]="!ex.exercicio_id || ex.exercicio_id === 0"
-                                    [placeholder]="'Buscar exercício...'"
-                                    [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
-                                    (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
-                                    (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
-
-                                <span class="pill-meta mt-1"
-                                    *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() ||
-                                    'Livre'}}</span>
-                                <span class="pill-meta text-warning mt-1"
-                                    *ngIf="!ex.exercicio_id || ex.exercicio_id === 0">
-                                    <ion-icon name="alert-circle-outline"></ion-icon> Não encontrado na base
-                                </span>
-
-                                <!-- IMMEDIATE SUGGESTIONS DESKTOP -->
-                                <div class="suggestion-tray mt-2 d-flex flex-wrap gap-1"
-                                    *ngIf="(!ex.exercicio_id || ex.exercicio_id === 0) && ex.sugestoes?.length">
-                                    <small class="w-100 text-info fw-bold mb-1"
-                                        style="font-size: 0.65rem;">SUGESTÕES:</small>
-                                    <div class="suggestion-chip d-flex align-items-center gap-2 p-1 pe-2 rounded-pill cursor-pointer border"
-                                        *ngFor="let sug of ex.sugestoes" (click)="selectExercise(i, ex, sug)">
-                                        <img [src]="sug.img_url || 'assets/images/placeholder.png'"
-                                            class="rounded-circle suggestion-thumb" width="20" height="20">
-                                        <span class="small-text">{{sug.nome}}</span>
-                                    </div>
+                            <div class="d-flex align-items-center gap-2 position-relative">
+                                <!-- Thumbnail para exercício já escolhido -->
+                                <div *ngIf="ex.exercicio" class="thumb-trigger border rounded-3 overflow-visible"
+                                    style="width: 32px; height: 32px; position: relative; flex-shrink: 0;"
+                                    (mouseenter)="startSlideshow($event, ex.exercicio)"
+                                    (mouseleave)="stopSlideshow(ex.exercicio)"
+                                    (touchstart)="handleTouchStart($event, ex.exercicio)"
+                                    (touchend)="handleTouchEnd(ex.exercicio)"
+                                    (touchmove)="handleTouchEnd(ex.exercicio)">
+                                    <img [src]="ex.exercicio.img_url || 'assets/images/placeholder-exercise.png'"
+                                        class="exercise-thumb rounded-3" alt="exercício"
+                                        style="width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;">
                                 </div>
 
-                                <!-- DROPDOWN DESKTOP -->
-                                <div *ngIf="activeSearchRow === i && isDropdownVisible" class="autocomplete-dropdown"
-                                    [class.dropdown-above]="isAbove">
-                                    <ng-container *ngTemplateOutlet="dropdownTemplate"></ng-container>
+                                <div class="d-flex flex-column flex-grow-1">
+                                    <input type="text"
+                                        class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
+                                        [class.text-danger]="!ex.exercicio_id || ex.exercicio_id === 0"
+                                        [placeholder]="'Buscar exercício...'"
+                                        [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
+                                        (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
+                                        (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+
+                                    <span class="pill-meta mt-1"
+                                        *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() ||
+                                        'Livre'}}</span>
+                                    <span class="pill-meta text-warning mt-1"
+                                        *ngIf="!ex.exercicio_id || ex.exercicio_id === 0">
+                                        <ion-icon name="alert-circle-outline"></ion-icon> Não encontrado na base
+                                    </span>
+
+                                    <!-- IMMEDIATE SUGGESTIONS DESKTOP -->
+                                    <div class="suggestion-tray mt-2 d-flex flex-wrap gap-1"
+                                        *ngIf="(!ex.exercicio_id || ex.exercicio_id === 0) && ex.sugestoes?.length">
+                                        <small class="w-100 text-info fw-bold mb-1"
+                                            style="font-size: 0.65rem;">SUGESTÕES:</small>
+                                        <div class="suggestion-chip d-flex align-items-center gap-2 p-1 pe-2 rounded-pill cursor-pointer border"
+                                            *ngFor="let sug of ex.sugestoes" (click)="selectExercise(i, ex, sug)">
+                                            <img [src]="sug.midia_url || (sug.midias_url && sug.midias_url.length > 0 ? sug.midias_url[0] : null) || sug.img_url || 'assets/images/placeholder-exercise.png'"
+                                                class="rounded-circle suggestion-trigger" width="20" height="20"
+                                                style="object-fit:cover; cursor: pointer;"
+                                                (mouseenter)="startSlideshow($event, sug)"
+                                                (mouseleave)="stopSlideshow(sug)"
+                                                (touchstart)="handleTouchStart($event, sug)"
+                                                (touchend)="handleTouchEnd(ex.exercicio)"
+                                                (touchmove)="handleTouchEnd(ex.exercicio)">
+                                            <span class="small-text">{{sug.nome}}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- DROPDOWN DESKTOP -->
+                                    <div *ngIf="activeSearchRow === i && isDropdownVisible"
+                                        class="autocomplete-dropdown" [class.dropdown-above]="isAbove">
+                                        <ng-container *ngTemplateOutlet="dropdownTemplate"></ng-container>
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -132,12 +153,22 @@
                     <div class="d-flex align-items-center gap-2 w-100 pe-3">
                         <ion-icon name="grid-outline" class="text-info op-5" cdkDragHandle></ion-icon>
                         <div class="d-flex flex-column position-relative w-100 ms-1">
-                            <input type="text"
-                                class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
-                                [placeholder]="'Buscar exercício...'"
-                                [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
-                                (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
-                                (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <!-- Miniatura para mobile (sem zoom automático) -->
+                                <img *ngIf="ex.exercicio"
+                                    [src]="ex.exercicio.img_url || 'assets/images/placeholder-exercise.png'"
+                                    class="rounded-2" width="28" height="28" style="object-fit: cover;"
+                                    (touchstart)="handleTouchStart($event, ex.exercicio)"
+                                    (touchend)="handleTouchEnd(ex.exercicio)"
+                                    (touchmove)="handleTouchEnd(ex.exercicio)">
+
+                                <input type="text"
+                                    class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
+                                    [placeholder]="'Buscar exercício...'"
+                                    [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
+                                    (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
+                                    (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+                            </div>
 
                             <span class="pill-meta mt-1"
                                 *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() || 'Livre'}}</span>
@@ -152,8 +183,12 @@
                                     style="font-size: 0.65rem;">SUGESTÕES:</small>
                                 <div class="suggestion-chip d-flex align-items-center gap-2 p-1 pe-2 rounded-pill cursor-pointer border bg-white"
                                     *ngFor="let sug of ex.sugestoes" (click)="selectExercise(i, ex, sug)">
-                                    <img [src]="sug.img_url || 'assets/images/placeholder.png'"
-                                        class="rounded-circle suggestion-thumb" width="20" height="20">
+                                    <img [src]="sug.midia_url || (sug.midias_url && sug.midias_url.length > 0 ? sug.midias_url[0] : null) || sug.img_url || 'assets/images/placeholder-exercise.png'"
+                                        class="rounded-circle suggestion-trigger" width="20" height="20"
+                                        style="object-fit:cover; cursor: pointer;"
+                                        (mouseenter)="startSlideshow($event, sug)" (mouseleave)="stopSlideshow(sug)"
+                                        (touchstart)="handleTouchStart($event, sug)" (touchend)="handleTouchEnd(sug)"
+                                        (touchmove)="handleTouchEnd(sug)">
                                     <span class="small-text">{{sug.nome}}</span>
                                 </div>
                             </div>
@@ -216,14 +251,24 @@
     </div>
 </div>
 
+<!-- Ghost Zoom Overlay -->
+<div *ngIf="hoveredEx" [ngStyle]="hoveredStyles"
+    style="pointer-events: none; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); transform: scale(8); z-index: 10000000;">
+    <img [src]="hoveredEx.img_url || 'assets/images/placeholder-exercise.png'"
+        style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid white; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+</div>
+
 <!-- AUTOCOMPLETE GLOBAL DROPDOWN TEMPLATE -->
 <ng-template #dropdownTemplate>
     <div class="autocomplete-dropdown-container">
         <div class="dropdown-item py-2 px-3 cursor-pointer d-flex align-items-center gap-3 dropdown-hover"
             *ngFor="let result of filteredExercises"
             (click)="selectExercise(activeSearchRow!, exercicios[activeSearchRow!], result)">
-            <img [src]="result.img_url || 'assets/images/placeholder.png'" class="rounded-3 border border-light"
-                width="40" height="40" style="object-fit: cover;">
+            <img [src]="result.midia_url || (result.midias_url && result.midias_url.length > 0 ? result.midias_url[0] : null) || result.img_url || 'assets/images/placeholder-exercise.png'"
+                class="rounded-3 border border-light exercise-dropdown-trigger" width="40" height="40"
+                style="object-fit: cover; cursor: pointer;" (mouseenter)="startSlideshow($event, result)"
+                (mouseleave)="stopSlideshow(result)" (touchstart)="handleTouchStart($event, result)"
+                (touchend)="handleTouchEnd(result)" (touchmove)="handleTouchEnd(result)">
             <div class="d-flex flex-column">
                 <span class="fw-bold fs-6">{{result.nome}}</span>
                 <span class="pill-meta mt-1" style="font-size: 0.65rem;">{{result.equipamento?.nome || 'Livre'}}</span>
