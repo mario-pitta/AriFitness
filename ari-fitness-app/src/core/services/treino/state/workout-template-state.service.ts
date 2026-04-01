@@ -79,7 +79,10 @@ export class WorkoutTemplateStateService {
                 orphans,
                 academiaNome: user.empresa?.nome || 'sua academia'
             },
-            cssClass: 'glass-modal'
+            cssClass: 'floating-modal-custom',
+            backdropDismiss: false,
+            keyboardClose: true,
+            mode: 'ios' // iOS mode usually has better centered default feel for cards
         });
         await modal.present();
 

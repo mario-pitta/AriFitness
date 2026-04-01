@@ -288,3 +288,18 @@ ion-card {
     }
   }
 }
+
+/* Floating Card Modal Customization */
+.floating-modal-custom {
+  --width: 90%;
+  --max-width: 500px;
+  --height: auto;
+  --border-radius: 28px;
+  --background: transparent;
+
+  &::part(content) {
+    border-radius: 28px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    background: transparent;
+  }
+}
