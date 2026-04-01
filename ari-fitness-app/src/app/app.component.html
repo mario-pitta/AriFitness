@@ -1,17 +1,30 @@
 <ion-app>
-  <!-- Custom Glassmorphism Update Card -->
-  <div *ngIf="showUpdateNotify" class="update-notification-container animate__animated animate__slideInDown">
-    <div class="update-card glass-card">
-      <div class="update-icon">
-        <ion-icon name="rocket-outline"></ion-icon>
-      </div>
-      <div class="update-content">
-        <h3>🚀 Nova Versão!</h3>
-        <p>A versão <strong>{{newVersion}}</strong> está disponível com novidades e mais performance.</p>
-      </div>
-      <div class="update-actions">
-        <button class="btn-update" (click)="reloadApp()">Atualizar</button>
-        <button class="btn-close" (click)="showUpdateNotify = false">Depois</button>
+  <!-- Custom Premium Update Modal (High-Fidelity) -->
+  <div *ngIf="showUpdateNotify" class="update-overlay animate__animated animate__fadeIn">
+    <div class="update-notification-container animate__animated animate__zoomIn">
+      <div class="update-card glass-modal">
+        <div class="close-btn" (click)="showUpdateNotify = false">
+          <ion-icon name="close-outline"></ion-icon>
+        </div>
+
+        <div class="card-header-section">
+          <div class="rocket-glow-container">
+            <ion-icon name="rocket" class="rocket-icon"></ion-icon>
+            <div class="glow-effect"></div>
+          </div>
+          <div class="title-container">
+            <h2>Nova Versão<br>Disponível</h2>
+          </div>
+        </div>
+
+        <div class="card-body-section">
+          <p>Melhorias de performance e novos recursos preparados para você.</p>
+        </div>
+
+        <div class="card-footer-section">
+          <span class="version-tag">v{{newVersion}}</span>
+          <button class="btn-update-pill" (click)="reloadApp()">Atualizar</button>
+        </div>
       </div>
     </div>
   </div>
