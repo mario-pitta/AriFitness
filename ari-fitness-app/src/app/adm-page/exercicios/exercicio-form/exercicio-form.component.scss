@@ -1,0 +1,157 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    --background: var(--ion-background-color, #fff);
+}
+
+.premium-form {
+    padding-top: 5px;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Robust Row/Field Flex System */
+.form-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    align-items: flex-end;
+    /* This aligns labels and inputs across columns */
+
+    &.split .form-field {
+        width: 50%;
+    }
+
+    &.hybrid .form-field.main {
+        width: 62%;
+    }
+
+    &.hybrid .form-field.status {
+        width: 38%;
+    }
+
+    &.full .form-field {
+        width: 100%;
+    }
+}
+
+.form-field.full {
+    width: 100%;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.custom-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ion-color-step-500);
+    margin-left: 2px;
+    display: block;
+}
+
+/* Standard Input Box */
+.custom-input-item {
+    --background: var(--ion-color-step-50);
+    --border-radius: 12px;
+    --padding-start: 14px;
+    --border-width: 0;
+    --inner-padding-end: 0;
+    height: 48px;
+    /* Fixed height for all containers */
+    border: 1px solid rgba(var(--ion-color-step-200-rgb), 0.5);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    width: 100%;
+
+    &.item-has-focus {
+        border-color: var(--ion-color-primary);
+        box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.05);
+    }
+
+    ion-input,
+    ion-select {
+        --padding-top: 0;
+        --padding-bottom: 0;
+        height: 100%;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--ion-text-color);
+    }
+}
+
+/* Specific Toggle Alignment */
+.custom-toggle-container {
+    background: var(--ion-color-step-50);
+    border: 1px solid rgba(var(--ion-color-step-200-rgb), 0.5);
+    border-radius: 12px;
+    height: 48px;
+    /* Same as inputs */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    width: 100%;
+
+    .status-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--ion-color-step-700);
+    }
+
+    ion-toggle {
+        padding: 0;
+        margin: 0;
+        transform: scale(0.9);
+    }
+}
+
+/* Footer Layout */
+.footer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 2rem;
+}
+
+.save-btn {
+    --border-radius: 16px;
+    font-weight: 800;
+    height: 52px;
+    margin: 0;
+    --box-shadow: 0 5px 15px rgba(var(--ion-color-warning-rgb), 0.2);
+}
+
+.cancel-btn {
+    --color: var(--ion-color-step-450);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0;
+}
+
+/* Responsive for small screens */
+@media screen and (max-width: 480px) {
+
+    .form-row.split,
+    .form-row.hybrid {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+
+        .form-field {
+            width: 100% !important;
+        }
+    }
+}

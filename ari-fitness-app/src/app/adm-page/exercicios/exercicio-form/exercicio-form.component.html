@@ -1,7 +1,88 @@
-<div>
-  <br><br>
-  <ion-grid class="ion-margin-top"></ion-grid>
-  <ion-card class="ion-padding">
-    ...
-  </ion-card>
-</div>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>{{ exId ? 'Editar Exercício' : 'Novo Exercício' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="save()" class="premium-form">
+    <div class="form-container">
+
+      <!-- Linha 1: Nome (Full width) -->
+      <div class="form-row">
+        <div class="form-field full">
+          <label class="custom-label">Nome do Exercício *</label>
+          <ion-item lines="none" class="custom-input-item">
+            <ion-input formControlName="nome" placeholder="Ex: Supino Reto"></ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Linha 2: Grupo e Músculo (50/50 split) -->
+      <div class="form-row split">
+        <div class="form-field">
+          <label class="custom-label">Grupo Muscular</label>
+          <ion-item lines="none" class="custom-input-item">
+            <ion-select formControlName="grupo_muscular_id" placeholder="Selecione" (ionChange)="filterMusculos()"
+              interface="popover">
+              <ion-select-option [value]="null">SEM ESPECIFICAÇÃO</ion-select-option>
+              <ion-select-option *ngFor="let g of gruposMusculares$ | async" [value]="g.id">
+                {{ g.nome }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+        <div class="form-field">
+          <label class="custom-label">Músculo Alvo</label>
+          <ion-item lines="none" class="custom-input-item">
+            <ion-select formControlName="musculo_id" placeholder="Selecione" interface="popover">
+              <ion-select-option [value]="null">SEM ESPECIFICAÇÃO</ion-select-option>
+              <ion-select-option *ngFor="let m of musculos$ | async" [value]="m.id">
+                {{ m.nome }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Linha 3: Equipamento e Status (60/40 split) -->
+      <div class="form-row hybrid">
+        <div class="form-field main">
+          <label class="custom-label">Equipamento</label>
+          <ion-item lines="none" class="custom-input-item">
+            <ion-select formControlName="equipamento_id" placeholder="Selecione" interface="popover">
+              <ion-select-option [value]="null">Peso Livre / Sem Equipamento</ion-select-option>
+              <ion-select-option *ngFor="let eq of equipamentos$ | async" [value]="eq.id">
+                {{ eq.nome }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+        <div class="form-field status">
+          <label class="custom-label">Status</label>
+          <div class="custom-toggle-container">
+            <ion-label class="status-label">{{ form.get('fl_ativo')?.value ? 'Ativo' : 'Inativo' }}</ion-label>
+            <ion-toggle formControlName="fl_ativo" color="warning"></ion-toggle>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="footer-actions mt-4">
+      <ion-button type="submit" expand="block" color="warning" class="save-btn" [disabled]="loading || form.invalid">
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span *ngIf="!loading">SALVAR ALTERAÇÕES</span>
+      </ion-button>
+      <ion-button fill="clear" expand="block" (click)="dismiss()" class="cancel-btn">
+        FECHAR E SAIR
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

@@ -58,8 +58,15 @@ export class ExercicioService {
         instrucoes
       `);
 
-    // Tenant isolation: show global (empresa_id IS NULL) + tenant's own
-    if (empresaId) {
+    // Tenant isolation & Specific Filters
+    if (otherFilters.empresa_id === 'null' || otherFilters.empresa_id === 'oficial') {
+      query = query.is('empresa_id', null);
+      delete otherFilters.empresa_id;
+    } else if (otherFilters.empresa_id) {
+      query = query.eq('empresa_id', otherFilters.empresa_id);
+      delete otherFilters.empresa_id;
+    } else if (empresaId) {
+      // Default: show global (empresa_id IS NULL) + tenant's own
       query = query.or(`empresa_id.is.null,empresa_id.eq.${empresaId}`);
     } else {
       query = query.is('empresa_id', null);

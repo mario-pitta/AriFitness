@@ -38,7 +38,6 @@
     border: none;
     background: var(--ion-card-background);
     border-radius: 16px;
-    /* Explicitly set for box-shadow consistency */
 
     &:active {
         transform: scale(0.98);
@@ -48,6 +47,8 @@
         aspect-ratio: 16 / 9;
         overflow: hidden;
         position: relative;
+        background: #f0f0f2;
+        /* Fallback ground */
 
         img {
             width: 100%;
@@ -89,7 +90,6 @@
 
     .card-body {
         background: transparent;
-        /* Use parent card background */
     }
 
     .card-title {
@@ -111,10 +111,45 @@
     }
 }
 
-// Global Theme Adjustments (using class since toggle is manual)
+// Exercise source badges (Premium Upgrade)
+.source-badge {
+    font-size: 0.58rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    ion-icon {
+        font-size: 0.75rem;
+    }
+
+    &--oficial {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        /* Teal/Green Gradient */
+        color: white;
+    }
+
+    &--custom {
+        background: linear-gradient(135deg, #fdcb6e, #e17055);
+        /* Amber/Orange Gradient */
+        color: white;
+    }
+}
+
+// Global Theme Adjustments
 body.dark {
     .premium-card {
         background-color: var(--ion-item-background);
+
+        .card-media-wrapper {
+            background: #1e1e20;
+        }
 
         .card-body {
             background-color: var(--ion-item-background);
@@ -161,32 +196,5 @@ body.dark {
     ion-icon {
         font-size: 4rem;
         margin-bottom: 10px;
-    }
-}
-
-// Exercise source badges
-.source-badge {
-    font-size: 0.58rem;
-    padding: 2px 7px;
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    font-weight: 600;
-    white-space: nowrap;
-    letter-spacing: 0.3px;
-
-    ion-icon {
-        font-size: 0.7rem;
-    }
-
-    &--oficial {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-    }
-
-    &--custom {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
     }
 }

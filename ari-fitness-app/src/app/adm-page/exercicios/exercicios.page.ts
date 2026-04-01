@@ -1,14 +1,16 @@
 import { ExercicioService } from 'src/core/services/exercicio/exercicio.service';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Exercicio } from 'src/core/models/Exercicio';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, IonInfiniteScroll } from '@ionic/angular';
 import { ExercicioDetailComponent } from './components/exercicio-detail/exercicio-detail.component';
+import { ExercicioFormComponent } from './exercicio-form/exercicio-form.component';
 import { Subscription, forkJoin } from 'rxjs';
 import { GrupoMuscularService } from 'src/core/services/grupo-muscular/grupo-muscular.service';
 import { MusculoService } from 'src/core/services/musculo/musculo.service';
 import { ParteDoCorpoService } from 'src/core/services/parte-do-corpo/parte-do-corpo.service';
 import { AuthService } from 'src/core/services/auth/auth.service';
+import { ITeamMember, IUsuario } from 'src/core/models/Usuario';
 
 @Component({
   selector: 'app-exercicios',
@@ -37,10 +39,14 @@ export class ExerciciosPage implements OnInit, OnDestroy {
     nivel_id: null,
     grupo_muscular_id: null,
     musculo_id: null,
-    parte_do_corpo_id: null
+    parte_do_corpo_id: null,
+    origem: 'todos' // 'todos' | 'meus' | 'globais'
   };
 
+  user!: IUsuario | ITeamMember;
+
   private exerciseSub!: Subscription;
+  public placeholderUrl = 'https://ionicframework.com/docs/img/demos/card-media.png'; // Fallback base
 
   constructor(
     private exercicioService: ExercicioService,
@@ -49,7 +55,8 @@ export class ExerciciosPage implements OnInit, OnDestroy {
     private parteDoCorpoService: ParteDoCorpoService,
     private modalCtrl: ModalController,
     private aRoute: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   /** Exercícios podem ser editados pelo usuário logado se pertencerem à sua academia */
@@ -63,10 +70,15 @@ export class ExerciciosPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.user = this.authService.getUser;
     this.exerciseSub = this.exercicioService.exercicios$.subscribe((ex) => {
       this.exercicios = ex;
     });
 
+
+  }
+
+  ngAfterViewInit() {
     this.loadFilterOptions();
 
     const queryParams = this.aRoute.snapshot.queryParams;
@@ -107,7 +119,8 @@ export class ExerciciosPage implements OnInit, OnDestroy {
       nivel_id: null,
       grupo_muscular_id: null,
       musculo_id: null,
-      parte_do_corpo_id: null
+      parte_do_corpo_id: null,
+      origem: 'todos'
     };
     this.searchText = '';
     this.applyFilters();
@@ -121,12 +134,25 @@ export class ExerciciosPage implements OnInit, OnDestroy {
       this.exercicioService.clearCache();
     }
 
-    const searchFilters = {
+    if (filters) {
+      delete filters.origem;
+    }
+
+    const searchFilters: any = {
       ...filters,
       fl_ativo: true,
       limit: this.limit,
       offset: this.offset,
     };
+
+    // Apply origin logic
+    if (this.selectedFilters.origem === 'meus') {
+      searchFilters.empresa_id = this.user.empresa_id;
+    } else if (this.selectedFilters.origem === 'globais') {
+      searchFilters.empresa_id = 'oficial'; // ou 'null', pois o backend agora trata ambos
+    } else {
+      delete searchFilters.empresa_id;
+    }
 
     this.exercicioService.find(searchFilters).subscribe({
       next: (ex: Exercicio[]) => {
@@ -159,13 +185,38 @@ export class ExerciciosPage implements OnInit, OnDestroy {
     }
   }
 
-  async openDetail(exercicio: Exercicio) {
+  async openDetail(exercicio: Exercicio, editMode: boolean = false) {
     const modal = await this.modalCtrl.create({
       component: ExercicioDetailComponent,
-      componentProps: { exercicio },
+      componentProps: {
+        exercicio,
+        editMode // Pass edit mode preference
+      },
       cssClass: 'exercise-detail-modal'
     });
     return await modal.present();
+  }
+
+  async openEdit(event: Event, exercicio: Exercicio) {
+    event.stopPropagation();
+    const modal = await this.modalCtrl.create({
+      component: ExercicioFormComponent,
+      componentProps: { exId: exercicio.id },
+      cssClass: 'exercise-form-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data) {
+      console.log('this.selectedFilters = ', this.selectedFilters)
+
+      this.getExercicios(this.selectedFilters, true);
+    }
+  }
+
+  onImgError(event: any) {
+    event.target.src = this.placeholderUrl;
   }
 
   toggleMedia(event: Event, exercicio: any) {
@@ -180,7 +231,7 @@ export class ExerciciosPage implements OnInit, OnDestroy {
     if (ex.midias_url && ex.midias_url.length > 0) {
       return ex.midias_url[ex._currentIdx || 0];
     }
-    return ex.midia_url || 'assets/img/equipment-placeholder-small.png';
+    return ex.midia_url || this.placeholderUrl;
   }
 
   ngOnDestroy(): void {

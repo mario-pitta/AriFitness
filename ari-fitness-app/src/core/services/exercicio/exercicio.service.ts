@@ -39,15 +39,29 @@ export class ExercicioService {
       .pipe(
         take(1),
         tap((ex) => {
+          // Only update global state if NOT doing a specific single lookup
+          if (filters?.id) return;
+
           if (!filters?.offset || filters.offset === 0) {
             this._exercicios$.next(ex);
           } else {
             const current = this._exercicios$.value;
-            // Evitar duplicados se necessário, mas para paginação simples o spread resolve
             this._exercicios$.next([...current, ...ex]);
           }
         })
       );
+  }
+
+  findById(id: number): Observable<Exercicio> {
+    return this.http.get<Exercicio[]>(environment.apiUrl + '/exercicios', {
+      params: new HttpParams().set('id', id.toString())
+    }).pipe(
+      take(1),
+      tap((ex: any) => {
+        // Return first item but DON'T update global Subject
+        return ex[0];
+      }) as any
+    );
   }
 
   clearCache() {

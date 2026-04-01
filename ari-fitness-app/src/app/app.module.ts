@@ -20,7 +20,6 @@ import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { AuthInterceptor } from 'src/core/interceptors/http.interceptor';
 import { ErrorInterceptor } from 'src/core/interceptors/error.interceptor';
 
-import { ExercicioFormModule } from './adm-page/exercicios/exercicio-form/exercicio-form.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { register } from 'swiper/element/bundle';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
@@ -46,7 +45,6 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
     AppRoutingModule,
     RouterModule,
     MaskitoDirective,
-    ExercicioFormModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode() && window.location.protocol !== 'file:',
       // Register the ServiceWorker as soon as the application is stable

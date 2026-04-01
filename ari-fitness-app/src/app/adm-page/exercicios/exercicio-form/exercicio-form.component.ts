@@ -1,23 +1,16 @@
-import {
-  AfterContentChecked,
-  AfterViewChecked,
-  Component,
-  inject,
-  OnInit,
-  AfterViewInit,
-  OnChanges,
-  SimpleChanges,
-  OnDestroy,
-} from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { forkJoin, Observable, Subscription } from 'rxjs';
-import { Equipamento } from 'src/core/models/Equipamento';
+import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, Observable, of, Subscription } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+
 import { Exercicio } from 'src/core/models/Exercicio';
+import { Equipamento } from 'src/core/models/Equipamento';
 import { GrupoMuscular } from 'src/core/models/GrupoMuscular';
 import { Musculo } from 'src/core/models/Musculo';
-import { EquipamentoService } from 'src/core/services/equipamento/equipamento.service';
+
 import { ExercicioService } from 'src/core/services/exercicio/exercicio.service';
+import { EquipamentoService } from 'src/core/services/equipamento/equipamento.service';
 import { GrupoMuscularService } from 'src/core/services/grupo-muscular/grupo-muscular.service';
 import { MusculoService } from 'src/core/services/musculo/musculo.service';
 import { PagetitleService } from 'src/core/services/pagetitle.service';
@@ -29,9 +22,17 @@ import { ToastrService } from 'src/core/services/toastr/toastr.service';
   styleUrls: ['./exercicio-form.component.scss'],
 })
 export class ExercicioFormComponent implements OnInit, OnDestroy {
+  @Input() exId: number | null = null; // ID for modal usage
+
   form!: FormGroup;
   loading: any = false;
-  aRoute = inject(ActivatedRoute);
+  private aRoute = inject(ActivatedRoute);
+  private subs$ = new Subscription();
+
+  musculos$!: Observable<Musculo[]>;
+  gruposMusculares$!: Observable<GrupoMuscular[]>;
+  equipamentos$!: Observable<Equipamento[]>;
+
   constructor(
     private fb: FormBuilder,
     private musculoService: MusculoService,
@@ -40,69 +41,77 @@ export class ExercicioFormComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private equipamentoService: EquipamentoService,
     private page: PagetitleService,
-    private router: Router
-  ) {}
-  subs$ = new Subscription();
+    private router: Router,
+    private modalCtrl: ModalController
+  ) { }
+
   ngOnInit() {
-    console.log(' ExercicioFormComponent ngOnInit: ');
     this.createForm();
     this.loadData();
-    if (this.aRoute.snapshot.queryParams['exId']) {
-      this.getById(this.aRoute.snapshot.queryParams['exId']);
+
+    // Check for ID from Input (Modal) or ActiveRoute (Page)
+    const id = this.exId || this.aRoute.snapshot.queryParams['exId'];
+    if (id) {
+      this.getById(Number(id));
     }
-    this.subs$.add(
-      this.router.events.subscribe({
-        next: (ev) => {
-          if (ev instanceof NavigationEnd
-            && ev.url.indexOf("/admin/exercicios/form") > -1
-          ) {
-            console.log('NavigationEnd: ', ev);
-            this.page.setTitle(('Form. Exercício').toLocaleUpperCase());
-          }
-        },
-      })
-    );
   }
 
   ngOnDestroy() {
-    console.log('ngOnDestroy: ');
-
     this.subs$.unsubscribe();
   }
 
   loadData() {
-    forkJoin([
-      this.getMusculos(),
-      this.getGruposMusculares(),
-      this.getEquipamentos(),
-    ]);
+    this.getMusculos();
+    this.getGruposMusculares();
+    this.getEquipamentos();
   }
 
   createForm() {
     this.form = this.fb.group({
-      id: [null, [Validators.nullValidator]],
+      id: [null],
       nome: [null, [Validators.required]],
       fl_ativo: [true, [Validators.required]],
-      midia_url: [null, [Validators.nullValidator]],
-      grupo_muscular_id: [null, [Validators.required]],
-      musculo_id: [null, [Validators.required]],
-      equipamento_id: [null, [Validators.nullValidator]],
+      midia_url: [null],
+      grupo_muscular_id: [null],
+      musculo_id: [null],
+      equipamento_id: [null],
     });
   }
 
-  filterMusculos() {
-    const params: Partial<Musculo> = {
-      fl_ativo: true,
-      grupo_muscular_id: this.form.value.grupo_muscular_id,
-    };
-
-    this.musculos$ = this.musculoService.find(params);
+  getMusculos() {
+    this.musculos$ = this.musculoService.find({ fl_ativo: true });
   }
+
+  getGruposMusculares() {
+    this.gruposMusculares$ = this.gpMuscularService.findAll({ fl_ativo: true });
+  }
+
+  getEquipamentos() {
+    this.equipamentos$ = this.equipamentoService.find({ fl_ativo: true });
+  }
+
+
+  filterMusculos() {
+    const grupoId = this.form.get('grupo_muscular_id')?.value;
+    if (!grupoId) {
+      this.musculos$ = of([]);
+      return;
+    }
+    this.musculos$ = this.musculoService.find({ grupo_muscular_id: grupoId, fl_ativo: true });
+  }
+
   getById(id: number) {
     this.form.disable();
     this.loading = true;
-    this.exerService.find({ id: id }).subscribe({
-      next: (eq) => this.form.patchValue(eq[0]),
+    this.exerService.findById(id).subscribe({
+      next: (ex: any) => {
+        // FindById should return an array if coming from generic find with ID filter
+        // Or a single object if updated to be more specific. Let's handle both.
+        const data = Array.isArray(ex) ? ex[0] : ex;
+        if (data) {
+          this.form.patchValue(data);
+        }
+      },
       complete: () => {
         this.form.enable();
         this.loading = false;
@@ -110,25 +119,26 @@ export class ExercicioFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  musculos$!: Observable<Musculo[]>;
-  getMusculos() {
-    this.musculos$ = this.musculoService.find({ fl_ativo: true });
-  }
-
-  gruposMusculares$!: Observable<GrupoMuscular[]>;
-  getGruposMusculares() {
-    this.gruposMusculares$ = this.gpMuscularService.findAll({ fl_ativo: true });
-  }
-  equipamentos$!: Observable<Equipamento[]>;
-  getEquipamentos() {
-    this.equipamentos$ = this.equipamentoService.find({ fl_ativo: true });
+  dismiss() {
+    this.modalCtrl.dismiss();
   }
 
   save() {
+    if (this.form.invalid) {
+      this.toastr.warning('Preencha os campos obrigatórios');
+      return;
+    }
+
     this.loading = true;
     this.exerService.save(this.form.value).subscribe({
-      next: (r: any) => this.toastr.success('Salvo com sucesso'),
-      error: (er: any) => console.error(er),
+      next: (r: any) => {
+        this.toastr.success('Salvo com sucesso');
+        this.modalCtrl.dismiss(r);
+      },
+      error: (er: any) => {
+        this.toastr.error('Erro ao salvar');
+        console.error(er);
+      },
       complete: () => (this.loading = false),
     });
   }
