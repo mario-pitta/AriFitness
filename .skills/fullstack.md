@@ -265,6 +265,32 @@ Quando executar uma task, você deve fornecer:
 
 ### 🔥 DIRETRIZ FINAL
 
+#### Commits
+
+- Sempre que for fazer um commit, siga o padrão abaixo:
+
+```
+tipo: :[emoji]: [descrição]
+```
+
+- Tipos:
+
+  - feat: :sparkles: nova funcionalidade
+  - fix: :bug: correção de bug
+  - docs: :memo: documentação
+  - style: :art: formatação
+  - refactor: :recycle: refatoração
+  - test: :white_check_mark: testes
+  - chore: :wrench: tarefas de manutenção
+
+- Exemplo:
+
+```
+feat: :sparkles: Adiciona nova funcionalidade de login
+```
+
+#### Regra de Ouro
+
 Se houver mais de uma forma de implementar:
 
 👉 Escolha sempre a mais simples, estável e consistente com o projeto atual.
