@@ -1,6 +1,6 @@
 {
     "name": "mvk-gym-manager",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "author": "Mario Pitta",
     "homepage": "https://mvk-gym.vercel.app",
     "ionic_sass": "./sass.config.js",

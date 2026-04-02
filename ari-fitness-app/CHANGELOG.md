@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/mario-pitta/AriFitness/compare/v1.10.0...v1.13.0) (2026-04-02)
+
+
+### Features
+
+* :art: interface premium de notificação de atualização (Glassmorphism) ([06a7761](https://github.com/mario-pitta/AriFitness/commit/06a77618f6d27f66b8f3772dd51dcaa6ca0651a6))
+* :art: refinamento visual final da notificação PWA (Glassmorphism Modal) ([9e52703](https://github.com/mario-pitta/AriFitness/commit/9e527033abecb90b9f60bc3a1ec97990db54decf))
+* :excel: novo design do template e motor de busca por keywords no import ([b739ffb](https://github.com/mario-pitta/AriFitness/commit/b739ffbe1f7299a52c3aa77afc90e1000ff4151f))
+* :globe_with_meridians: ajustes de infraestrutura vercel e configuração do firebase via environment ([d2af78c](https://github.com/mario-pitta/AriFitness/commit/d2af78cc3c99cdd74bdf27363181f4cc8d2e08b2))
+* :memo: campo de repetições alterado para texto para maior flexibilidade ([66092b6](https://github.com/mario-pitta/AriFitness/commit/66092b6aee1dcded18b0131cfbebd05632d12b3e))
+* :sparkles: expansão da imagem do exercicio para facilitar escolha na montagem de treinos ([a17644c](https://github.com/mario-pitta/AriFitness/commit/a17644c22db668671dba2dbfd23c10db51e1019b))
+* :sparkles: Modernização total da gestão de exercícios e treinos com foco em UX premium, novos manuais de instrução e integração de FAQ ([7a005d9](https://github.com/mario-pitta/AriFitness/commit/7a005d9faae73d23c407415663fc1f2a7bf170b5))
+* :sparkles: sugestões instantâneas e zoom de identificação visual nas imagens ([0c2015f](https://github.com/mario-pitta/AriFitness/commit/0c2015f49bb06a93c7dcdbd1a982e9a7a784afa0))
+* :tada: persisting custom exercises at workout edit/create ([95e9fc4](https://github.com/mario-pitta/AriFitness/commit/95e9fc47cf11d7a19446003fe32937b4c7cd2907))
+* :workout: complete exercise management with premium UX, modal editing and origin filters ([23cffa1](https://github.com/mario-pitta/AriFitness/commit/23cffa19000439a235dd887ec6fe794a3fe04eb4))
+* **workout:** centralize orphan exercises logic and improve responsible warning modal ([629ae84](https://github.com/mario-pitta/AriFitness/commit/629ae841d2dfa47db53ea4003e0c8be713fb503f))
+
+
+### Bug Fixes
+
+* :chart_with_upwards_trend: responsividade e tema dark nos gráficos de evolução ([9721c47](https://github.com/mario-pitta/AriFitness/commit/9721c47b542aedfb9a24e8a1942b14762c219bce))
+* :lipstick: correção do tema e cores na página de importação ([1280eac](https://github.com/mario-pitta/AriFitness/commit/1280eac2fe772bfe3c1a804ab106f0ea690f79c8))
+
 ## [1.10.0](https://github.com/mario-pitta/AriFitness/compare/v1.9.2...v1.10.0) (2026-03-30)
 
 
