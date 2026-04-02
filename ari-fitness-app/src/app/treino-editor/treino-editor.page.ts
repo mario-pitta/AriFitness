@@ -32,8 +32,9 @@ export class TreinoEditorPage implements OnInit, OnDestroy {
     ngOnInit() {
         this.user = this.auth.getUser;
         const id = this.route.snapshot.paramMap.get('id');
+        console.log('id = ', id)
 
-        if (id && id !== '0') {
+        if (id && id !== '0' && id !== 'new') {
             this.loadTreino(Number(id));
         } else {
             this.initNewTreino();

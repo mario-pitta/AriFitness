@@ -52,20 +52,33 @@
                                 </div>
 
                                 <div class="d-flex flex-column flex-grow-1">
-                                    <input type="text"
-                                        class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input"
-                                        [class.text-danger]="!ex.exercicio_id || ex.exercicio_id === 0"
-                                        [placeholder]="'Buscar exercício...'"
-                                        [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
-                                        (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
-                                        (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="text"
+                                            class="form-control border-0 p-0 fw-bold text-main fs-6 bg-transparent custom-search-input w-100"
+                                            [class.text-danger]="(ex.exercicio?.nome || '').length === 0"
+                                            [class.text-warning]="((ex.exercicio?.nome || '').length > 0) && (!ex.exercicio_id || ex.exercicio_id === 0)"
+                                            [placeholder]="'Buscar exercício...'"
+                                            [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
+                                            (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
+                                            (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
+                                    </div>
 
                                     <span class="pill-meta mt-1"
                                         *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() ||
                                         'Livre'}}</span>
-                                    <span class="pill-meta text-warning mt-1"
-                                        *ngIf="!ex.exercicio_id || ex.exercicio_id === 0">
-                                        <ion-icon name="alert-circle-outline"></ion-icon> Não encontrado na base
+
+                                    <!-- ERRO: NOME VAZIO (DESKTOP) -->
+                                    <span class="pill-meta text-danger d-flex align-items-center gap-1 mt-1"
+                                        *ngIf="(ex.exercicio?.nome || '').length === 0">
+                                        <ion-icon name="close-circle-outline" style="font-size: 1rem;"></ion-icon>
+                                        <span>EXERCÍCIO NÃO INFORMADO</span>
+                                    </span>
+
+                                    <!-- AVISO: NÃO ENCONTRADO (DESKTOP) -->
+                                    <span class="pill-meta text-warning d-flex align-items-center gap-1 mt-1"
+                                        *ngIf="(ex.exercicio?.nome || '').length > 0 && (!ex.exercicio_id || ex.exercicio_id === 0)">
+                                        <ion-icon name="alert-circle-outline" style="font-size: 1rem;"></ion-icon>
+                                        <span>NÃO ENCONTRADO NA BASE</span>
                                     </span>
 
                                     <!-- IMMEDIATE SUGGESTIONS DESKTOP -->
@@ -113,7 +126,7 @@
                         </td>
                         <td>
                             <ion-select interface="popover" [(ngModel)]="ex.tipo_execucao"
-                                (change)="updateExercise(i, ex)">
+                                (change)="updateExercise(i, ex)" class="table-select-ion">
                                 <ion-select-option [value]="1">Normal</ion-select-option>
                                 <ion-select-option [value]="2">Bi-set</ion-select-option>
                                 <ion-select-option [value]="3">Tri-set</ion-select-option>
@@ -131,7 +144,20 @@
                             </button>
                         </td>
                     </tr>
-                    <tr *ngIf="exercicios.length === 0">
+
+                    <!-- ADD BUTTON BOTTOM DESKTOP -->
+                    <tr *ngIf="exercicios.length > 0">
+                        <td colspan="8" class="border-0 py-3">
+                            <div class="d-flex justify-content-center">
+                                <button class="btn add-exercise-btn-bottom d-flex align-items-center gap-2 px-4 py-2"
+                                    (click)="addExercise()">
+                                    <ion-icon name="add-circle-outline" class="fs-5"></ion-icon>
+                                    <span class="fw-bold small">ADICIONAR MAIS UM EXERCÍCIO</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- <tr *ngIf="exercicios.length === 0">
                         <td colspan="8" class="text-center py-5 text-muted">
                             <div class="d-flex flex-column align-items-center">
                                 <ion-icon name="barbell-outline" class="fs-1 mb-3 text-light"></ion-icon>
@@ -139,7 +165,7 @@
                                 <p class="small">Adicione exercícios para montar seu treino</p>
                             </div>
                         </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
         </div>
@@ -154,12 +180,6 @@
                         <ion-icon name="grid-outline" class="text-info op-5" cdkDragHandle></ion-icon>
                         <div class="d-flex flex-column position-relative w-100 ms-1">
                             <div class="d-flex align-items-center gap-2 mb-1">
-                                <!-- Aviso para exercícios NOVOS -->
-                                <ion-icon *ngIf="!ex.exercicio_id" name="alert-circle" color="warning"
-                                    class="new-exercise-warning"
-                                    title="Este exercício não está na base e será criado ao salvar.">
-                                </ion-icon>
-
                                 <!-- Miniatura para mobile (sem zoom automático) -->
                                 <img *ngIf="ex.exercicio"
                                     [src]="ex.exercicio.img_url || 'assets/images/placeholder-exercise.png'"
@@ -170,7 +190,9 @@
 
                                 <input type="text"
                                     class="form-control border-0 p-0 fw-bold text-main fs-5 bg-transparent custom-search-input"
-                                    [class.text-warning]="!ex.exercicio_id" [placeholder]="'Buscar exercício...'"
+                                    [class.text-danger]="(ex.exercicio?.nome || '').length === 0"
+                                    [class.text-warning]="((ex.exercicio?.nome || '').length > 0) && (!ex.exercicio_id || ex.exercicio_id === 0)"
+                                    [placeholder]="'Buscar exercício...'"
                                     [value]="activeSearchRow === i ? searchTerm : (ex.exercicio?.nome || '')"
                                     (focus)="onSearchFocus(i, ex.exercicio?.nome?.toUpperCase() || '', $event)"
                                     (blur)="onSearchBlur()" (input)="onSearchChange($event, i)">
@@ -178,8 +200,19 @@
 
                             <span class="pill-meta mt-1"
                                 *ngIf="ex.exercicio">{{ex.exercicio.equipamento?.nome?.toUpperCase() || 'Livre'}}</span>
-                            <span class="pill-meta text-warning mt-1" *ngIf="!ex.exercicio_id || ex.exercicio_id === 0">
-                                <ion-icon name="alert-circle-outline"></ion-icon> Não encontrado na base
+
+                            <!-- ERRO: NOME VAZIO (MOBILE) -->
+                            <span class="pill-meta text-danger d-flex align-items-center gap-1 mt-1"
+                                *ngIf="(ex.exercicio?.nome || '').length === 0">
+                                <ion-icon name="close-circle-outline" style="font-size: 0.9rem;"></ion-icon>
+                                <span>EXERCÍCIO NÃO INFORMADO</span>
+                            </span>
+
+                            <!-- AVISO: NÃO ENCONTRADO (MOBILE) -->
+                            <span class="pill-meta text-warning d-flex align-items-center gap-1 mt-1"
+                                *ngIf="(ex.exercicio?.nome || '').length > 0 && (!ex.exercicio_id || ex.exercicio_id === 0)">
+                                <ion-icon name="alert-circle-outline" style="font-size: 0.9rem;"></ion-icon>
+                                <span>NÃO ENCONTRADO NA BASE</span>
                             </span>
 
                             <!-- IMMEDIATE SUGGESTIONS MOBILE -->
@@ -244,6 +277,15 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ADD BUTTON BOTTOM MOBILE -->
+            <div class="mt-2 mb-4 d-grid px-2" *ngIf="exercicios.length > 0">
+                <button class="btn add-exercise-btn-bottom d-flex align-items-center justify-content-center gap-2 py-3"
+                    (click)="addExercise()">
+                    <ion-icon name="add-circle-outline" class="fs-4"></ion-icon>
+                    <span class="fw-bold">ADICIONAR EXERCÍCIO</span>
+                </button>
+            </div>
         </div>
 
         <!-- EMPTY STATE -->
@@ -251,7 +293,12 @@
             <div class="p-4">
                 <ion-icon name="fitness-outline" class="fs-1 text-primary op-2 mb-3"></ion-icon>
                 <h6 class="fw-bold text-soft-muted">Sessão Vazia</h6>
-                <p class="small text-soft-muted op-7">Adicione exercícios para montar este treino.</p>
+                <p class="small text-soft-muted op-7 mb-4">Adicione exercícios para montar este treino.</p>
+                <button class="btn add-exercise-btn d-inline-flex align-items-center gap-2 rounded-pill px-4"
+                    (click)="addExercise()">
+                    <ion-icon name="add-circle-outline" class="fs-5"></ion-icon>
+                    ADICIONAR PRIMEIRO
+                </button>
             </div>
         </div>
     </div>
