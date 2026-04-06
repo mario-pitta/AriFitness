@@ -33,6 +33,9 @@ export class ErrorInterceptor implements HttpInterceptor {
               // location.reload();
               throwError(() => err.message);
               break;
+            case 423:
+              this.router.navigate(['locked'])
+              break;
             default:
               throwError(() => err.message);
               break;

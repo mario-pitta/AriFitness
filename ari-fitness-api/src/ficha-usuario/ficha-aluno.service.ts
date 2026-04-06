@@ -80,7 +80,7 @@ export class FichaAlunoService {
         `
             *,
              cadastrado_por: usuario!ficha_aluno_cadastrado_por_fkey(id, nome),
-            instrutor: usuario!ficha_aluno_instrutor_id_fkey(id, nome),
+           instrutor: team_member(id, nome),
              aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome)
            
         `,
@@ -100,7 +100,7 @@ export class FichaAlunoService {
         `
             *,
              cadastrado_por: usuario!ficha_aluno_cadastrado_por_fkey(id, nome),
-            instrutor: usuario!ficha_aluno_instrutor_id_fkey(id, nome),
+            instrutor: team_member(id, nome),
              aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome),
             treinos_cadastrados: ficha_aluno_treino(
                 treino(
@@ -148,7 +148,7 @@ export class FichaAlunoService {
         `
             *, 
             cadastrado_por: usuario!ficha_aluno_cadastrado_por_fkey(id, nome),
-            instrutor: usuario!ficha_aluno_instrutor_id_fkey(id, nome),
+           instrutor: team_member(id, nome),
             aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome),
             treinos_cadastrados: ficha_aluno_treino(
                 treino(
@@ -196,6 +196,9 @@ export class FichaAlunoService {
     delete body.updated_at;
     delete body.treinos;
     delete body.treinos_cadastrados;
+
+
+    console.log('body = ', body)
 
     try {
       // 1. Deactivate old records

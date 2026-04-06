@@ -3,7 +3,7 @@ import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/tran
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import Constants from 'src/core/Constants';
-import { IUsuario, Usuario } from 'src/core/models/Usuario';
+import { ITeamMember, ITipoUsuario, IUsuario, Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { DashboardMembersService } from 'src/core/services/dashboard/members/members.service';
@@ -149,8 +149,13 @@ export class DashboardPage implements OnInit {
         this.picoCheckinsData = res.picos.picos.map((p: any) => ({ name: p.hora, value: p.total }));
 
         // Process Instrutores
-        this.teachers$ = new Observable(subscriber => {
-          subscriber.next(res.instrutores.slice(0, 4));
+        this.members$ = new Observable(subscriber => {
+          subscriber.next(res.instrutores.slice(0, 4).map((i: any) => {
+            return {
+              ...i,
+              tipo_usuario: i.tipo_usuario as ITipoUsuario
+            }
+          }));
           subscriber.complete();
         });
 
@@ -212,7 +217,7 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  teachers$: Observable<IUsuario[]> | undefined;
+  members$: Observable<IUsuario[] | any[]> | undefined;
 
   getGreeting(): string {
     const hour = new Date().getHours();

@@ -170,11 +170,12 @@ export class FichaTreinoAlunoPage implements OnInit {
             genero: instrutor.genero,
             foto_url: instrutor.foto_url,
             tipo_usuario: instrutor.tipo_usuario.id,
+            function_id: instrutor.function_id,
             specialties: instrutor.specialties,
             services: instrutor.services,
             status: instrutor.status,
           };
-        }).filter((instrutor) => instrutor.status === 'ACTIVE' && instrutor.tipo_usuario.id === Constants.INSTRUTOR_ID);
+        }).filter((instrutor) => instrutor.status === 'ACTIVE' && (instrutor.tipo_usuario.id === Constants.INSTRUTOR_ID || instrutor.function_id === Constants.INSTRUTOR_ID));
 
         console.log('this.instrutores = ', this.instrutores)
 
@@ -240,10 +241,13 @@ export class FichaTreinoAlunoPage implements OnInit {
 
 
   completeForm(ficha: FichaAluno) {
+    console.log('ficha = ', ficha)
+
     this.aluno?.patchValue({
       id: ficha.aluno.id,
       nome: ficha.aluno.nome,
     });
+    this.f.get('team_member_id')?.patchValue((ficha.instrutor as IUsuario)?.id);
 
     this.instrutor?.patchValue({
       id: (ficha.instrutor as Partial<IUsuario>)?.id,
@@ -261,7 +265,6 @@ export class FichaTreinoAlunoPage implements OnInit {
       ficha_data_inicio: ficha.ficha_data_inicio,
       ficha_data_fim: ficha.ficha_data_fim,
       objetivo: ficha.objetivo,
-      instrutor_id: ficha.instrutor_id || (ficha.instrutor as any)?.id,
       peso_inicial: ficha.peso_inicial,
       peso_meta: ficha.peso_meta,
     });
@@ -467,6 +470,8 @@ export class FichaTreinoAlunoPage implements OnInit {
 
     // 2. Persist with updated workout data
     const workoutData = this.workoutState.getWorkoutValue();
+    console.log('workoutData = ', workoutData)
+
     if (workoutData) {
       this.performSave(workoutData, isReactivation);
     } else {
@@ -479,7 +484,7 @@ export class FichaTreinoAlunoPage implements OnInit {
     const body: any = {
       ...this.f.value,
       cadastrado_por: this.user.id,
-      instrutor_id: this.f.get('instrutor_id')?.value || this.user.id,
+      team_member_id: this.f.get('team_member_id')?.value,
       usuario_id: this.aluno?.value.id,
       sessoes: workoutData.sessoes,
       fl_ativo: true
@@ -494,6 +499,9 @@ export class FichaTreinoAlunoPage implements OnInit {
     delete body.instrutor;
     delete body.cadastrado_por_info; // Adjusted from original
     delete body.treinos;
+
+
+    console.log('body = ', body)
 
     const req = !body.id
       ? this.fichaService.create(body)

@@ -2,6 +2,7 @@ import { IEmpresa, Plano } from './Empresa';
 import { FichaAluno } from './FichaAluno';
 import { Historico } from './Historico';
 import { Horario } from './Horario';
+import { TipoUsuario } from './TipoUsuario';
 
 import { Treino } from './Treino';
 
@@ -39,7 +40,7 @@ export interface IUsuario {
   *
   */
 
-  tipo_usuario: string | number;
+  tipo_usuario: ITipoUsuario | string | number;
   relato_dor: boolean;
   medicacao_em_uso: string;
   profissao: string;
@@ -90,7 +91,7 @@ export class Usuario implements IUsuario {
   genero!: string;
   fumante!: boolean;
   tipo_alimentacao!: string;
-  tipo_usuario!: string | number;
+  tipo_usuario!: ITipoUsuario | string | number;
   relato_dor!: boolean;
   medicacao_em_uso!: string;
   profissao!: string;

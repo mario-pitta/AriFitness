@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from 'src/core/Constants/UserRole';
+import { Empresa } from 'src/empresa/empresa.interface';
 
 @Controller('team-member') // Keeping the route as 'instructor' for now to avoid breaking the frontend immediately, or I can change to 'team-member'
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -12,8 +13,15 @@ export class TeamMemberController {
 
     @Get()
     @Roles(UserRole.ADMIN)
-    findAll(@Query('empresa_id') empresa_id: string) {
-        return this.teamMemberService.findAll(empresa_id);
+    findAll(@Query('empresa_id') empresa_id: string, @Query('filters') filters: string) {
+        let filtersParsed = {};
+        if (filters) {
+            filtersParsed = JSON.parse(filters);
+        }
+        console.log('findAll filters = ', filtersParsed)
+        console.log('empresaId = ', empresa_id)
+
+        return this.teamMemberService.findAll(empresa_id, filtersParsed);
     }
 
     @Get('user/:userId')

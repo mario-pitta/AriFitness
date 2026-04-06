@@ -97,6 +97,9 @@
                             <ion-select label="Instrutor Responsável *" labelPlacement="floating"
                                 [disabled]="!isManagerOrInstructor" formControlName="team_member_id" interface="popover"
                                 placeholder="Selecione o instrutor">
+                                <ion-select-option [value]="null">
+                                    Nenhum
+                                </ion-select-option>
                                 <ion-select-option *ngFor="let inst of instrutores" [value]="inst.id">
                                     {{ inst.nome }}
                                 </ion-select-option>

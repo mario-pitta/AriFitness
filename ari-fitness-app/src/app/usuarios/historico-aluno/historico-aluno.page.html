@@ -172,17 +172,21 @@
                         <span class="date">{{ficha.created_at | date: 'dd/MM/yyyy'}}</span>
                     </div>
                     <h4 class="ficha-name">{{ficha.descricao}}</h4>
-                    <p class="ficha-objective"><strong>Objetivo:</strong> {{ficha.objetivo}}</p>
-                    <div class="ficha-footer">
-                        <span class="dates">
-                            {{ficha.ficha_data_inicio | date: 'dd/MM/yy'}} ➔ {{ficha.ficha_data_fim | date: 'dd/MM/yy'}}
+                    <p class="ficha-objective"><strong>Objetivo:</strong> {{ficha.objetivo || 'Não informado'}}</p>
+                    <small class="ficha-footer text-sm">
+                        <span class="dates" [class.text-warning]="!ficha.fl_ativo">
+                            {{ficha.ficha_data_inicio ? (ficha.ficha_data_inicio | date: 'dd/MM/yy') : 'Não informado'}}
+                            <span class="text-success">
+                                ➔
+                            </span>
+                            {{ficha.ficha_data_fim ? (ficha.ficha_data_fim | date: 'dd/MM/yy') : 'Não informado'}}
                         </span>
                         <div class="d-flex gap-2">
                             <ion-button fill="clear" size="small" (click)="onViewFicha.emit(ficha.id)">
                                 VER FICHA
                             </ion-button>
                         </div>
-                    </div>
+                    </small>
                 </div>
             </div>
         </div>

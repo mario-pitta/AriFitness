@@ -4,7 +4,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { LOCALE_ID, NgModule, isDevMode } from '@angular/core';
+import { ErrorHandler, LOCALE_ID, NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import here
 
@@ -28,6 +28,7 @@ import { provideMarkdown } from 'ngx-markdown';
 
 import ptBr from '@angular/common/locales/pt';
 import { registerLocaleData } from '@angular/common';
+import { GlobalErrorHandler } from 'src/core/interceptors/global.error.interceptor';
 
 registerLocaleData(ptBr);
 
@@ -65,6 +66,7 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
     // ************************************
     { provide: LOCALE_ID, useValue: 'pt' },
     // ************************************
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     PageSizeService,
   ],
   bootstrap: [AppComponent],

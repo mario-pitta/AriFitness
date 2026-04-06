@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataBaseService } from '../datasource/database.service';
 import md5 = require('md5');
+import { Empresa } from 'src/empresa/empresa.interface';
 
 @Injectable()
 export class TeamMemberService {
@@ -11,7 +12,7 @@ export class TeamMemberService {
             .from('team_member')
             .select(`*, instructor_specialties(specialty(*)), instructor_services(service(*)), tipo_usuario:function_id(*)`)
             .eq('empresa_id', empresaId)
-            .or(filters)
+            .match({ filters })
             .order('nome', { ascending: true });
 
         if (error) throw error;
@@ -28,11 +29,14 @@ export class TeamMemberService {
         };
     }
 
-    async findAll(empresa_id: string): Promise<any[]> {
+    async findAll(empresa_id: string, filters: Partial<Empresa>): Promise<any[]> {
+
+        console.log('TeamMemberService findAll empresa_id = ', empresa_id)
         const { data, error } = await this.database.supabase
             .from('team_member')
             .select(`*, instructor_specialties(specialty(*)), instructor_services(service(*)), tipo_usuario:function_id(*)`)
             .eq('empresa_id', empresa_id)
+            .match(filters)
             .order('nome', { ascending: true });
 
         if (error) throw error;

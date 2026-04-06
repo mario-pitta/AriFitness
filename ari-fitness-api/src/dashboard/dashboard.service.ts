@@ -252,7 +252,8 @@ export class DashboardService {
       .from('usuario')
       .select('id', { count: 'exact' })
       .eq('empresa_id', empresaId)
-      .eq('tipo_usuario', 5); //tipo_usuario 5 = aluno/membro
+      .eq('tipo_usuario', 5) //tipo_usuario 5 = aluno/membro
+      .eq('fl_ativo', true);
     if (totalMembros.error) {
       throw new Error(
         `Erro ao obter total de membros: ${JSON.stringify(totalMembros.error)}`,
@@ -357,6 +358,7 @@ export class DashboardService {
       .select('plano_id, planos(nome), count:id')
       .eq('empresa_id', empresaId)
       .eq('tipo_usuario', 5)
+      .eq('fl_ativo', true);
 
 
     if (error) {
