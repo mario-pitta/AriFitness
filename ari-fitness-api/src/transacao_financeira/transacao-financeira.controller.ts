@@ -82,6 +82,22 @@ export class TransacaoFinanceiraController {
     });
   }
 
+  @Get('export/pdf')
+  async exportPdf(
+    @Res() res: Response,
+    @Query() filter: any
+  ) {
+    if (!filter.empresa_id) {
+      return res.status(HttpStatus.BAD_REQUEST).send(new HttpException('Empresa não informada', HttpStatus.BAD_REQUEST));
+    }
+
+    // Configura os filtros ordenando por data
+    filter.orderBy = filter.orderBy || 'data_lancamento';
+    filter.asc = filter.asc !== undefined ? filter.asc : false;
+
+    return this.TransacaoFinanceiraService.generatePdfReport(filter, res);
+  }
+
   @Get('/tipos')
   getTiposTransacaoFinanceira(
     @Res() res: Response,

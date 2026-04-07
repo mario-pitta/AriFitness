@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AlertController, ModalController } from '@ionic/angular';
+import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, Subject, switchMap, takeUntil } from 'rxjs';
 import { TransacaoFinanceira } from 'src/core/models/TransacaoFInanceira';
 import { IUsuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
@@ -11,6 +12,8 @@ import { ToastrService } from 'src/core/services/toastr/toastr.service';
 import { TransacaoFinanceiraService } from 'src/core/services/transacao-financeira/transacao-financeira.service';
 import { AnaliseIaModalComponent } from './analise-ia-modal/analise-ia-modal/analise-ia-modal.component';
 import { FormTransacaoFinaceiraComponent } from 'src/app/shared/form-transacao-finaceira/form-transacao-finaceira.component';
+import { ExportFinanceiroService } from 'src/core/services/export-financeiro/export-financeiro.service';
+import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
 
 declare interface CategoryChart {
   tr_categoria_id: number;
@@ -37,7 +40,7 @@ export class FinancasComponent implements OnInit {
   data_inicio: string = new Date(
     this.today.getFullYear(),
     this.today.getMonth(),
-    0
+    -1
   )
     .toISOString()
     .split('T')[0];
@@ -63,13 +66,25 @@ export class FinancasComponent implements OnInit {
   transacoes: TransacaoFinanceira[] = [];
   openOptions: boolean = false;
   confetti = inject(ConfettiService);
+
+  categoriasControl = new FormControl<number[]>([]);
+  statusExportControl = new FormControl<'pago' | 'pendente' | 'cancelado' | 'todos'>('pago');
+  listaCategorias: any[] = [];
+  isExportingPDF: boolean = false;
+  isExportingExcel: boolean = false;
+
+  pendenciasAReceber: number = 0;
+  pendenciasAPagar: number = 0;
+
   constructor(
     private alertController: AlertController,
     private transFinService: TransacaoFinanceiraService,
     private auth: AuthService,
     private toastr: ToastrService,
     private pageSize: PageSizeService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private exportService: ExportFinanceiroService,
+    private dashService: TransacaoFinanceiraDashService
   ) {
     this.pageSize.screenSizeChange$.asObservable().subscribe({
       next: (e) => {
@@ -80,14 +95,94 @@ export class FinancasComponent implements OnInit {
     });
   }
 
+  private destroy$ = new Subject<void>();
+  private refreshTransactions$ = new Subject<void>();
+
   ngOnInit() {
     this.user = this.auth.getUser;
+    this.setupFiltersPipeline();
     // this.getReceitas();
     // this.getDespesas();
-    this.getTransacoes();
+    this.refreshTransactions$.next();
     this.buildDashboard();
     this.listenPeriodoControlChanges();
+    this.listenCategoriasChanges();
     this.buildChartViewSize(this.pageSize.getSize());
+    this.loadCategorias();
+    this.resetFilters();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Unifica a lógica de busca com cancelamento automático de requisições anteriores
+   */
+  private setupFiltersPipeline() {
+    this.refreshTransactions$
+      .pipe(
+        debounceTime(100),
+        switchMap(() => {
+          this.loading = true;
+          return this.transFinService.getTrasacoes({
+            fl_ativo: true,
+            empresa_id: this.user?.empresa_id,
+            data_inicio: this.data_inicio,
+            data_fim: this.data_fim,
+            categorias: this.categoriasControl.value,
+            status: this.statusExportControl.value
+          });
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (res) => {
+          console.log('res: ', res);
+          this.transacoes = res.filter(
+            (t: TransacaoFinanceira) => (t.valor_final as number) > 0
+          ).sort((a: TransacaoFinanceira, b: TransacaoFinanceira) => {
+            return new Date(b.data_lancamento as string).getTime() - new Date(a.data_lancamento as string).getTime();
+          });
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.loading = false;
+        }
+      });
+  }
+
+  resetFilters() {
+    this.periodo.setValue(0);
+    this.categoriasControl.setValue([]);
+    this.statusExportControl.setValue('pago');
+    this.refreshTransactions$.next();
+    this.buildDashboard();
+  }
+
+  getSelectedCategoriesText(): string {
+    const selectedIds = this.categoriasControl.value || [];
+    if (selectedIds.length === 0) return 'Todas Categorias';
+    if (selectedIds.length === this.listaCategorias.length) return 'Todas Categorias';
+    if (selectedIds.length === 1) {
+      const cat = this.listaCategorias.find(c => c.id === selectedIds[0]);
+      return cat ? (cat.descricao.charAt(0).toUpperCase() + cat.descricao.slice(1).toLowerCase()) : '1 Categoria';
+    }
+    return `${selectedIds.length} Categorias`;
+  }
+
+  listenCategoriasChanges() {
+    combineLatest([
+      this.categoriasControl.valueChanges,
+      this.statusExportControl.valueChanges
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.refreshTransactions$.next();
+        this.buildDashboard();
+      });
   }
 
   buildChartViewSize(e: { screenSize: number; isMobile: boolean }) {
@@ -111,7 +206,7 @@ export class FinancasComponent implements OnInit {
       this.data_inicio = new Date(
         this.today.getFullYear(),
         this.today.getMonth() - qtd,
-        0
+        1
       )
         .toISOString()
         .split('T')[0];
@@ -154,7 +249,7 @@ export class FinancasComponent implements OnInit {
     }
 
     this.buildDashboard();
-    this.getTransacoes();
+    this.refreshTransactions$.next();
   }
 
   buildDashboard() {
@@ -163,7 +258,7 @@ export class FinancasComponent implements OnInit {
     this.saldo = 0;
     this.totalReceitasPorCategoria = [];
     this.totalDespesasPorCategoria = [];
-    this.loading = true;
+    // this.loading = true; // Removido pois o setupFiltersPipeline já gerencia o loading da lista
     this.transFinService
       .getDashboard(
         this.data_inicio,
@@ -205,9 +300,19 @@ export class FinancasComponent implements OnInit {
             );
         },
         complete: () => {
-          this.loading = false;
+          // this.loading = false;
         },
       });
+
+    const empresaId = this.user?.empresa_id;
+    if (empresaId) {
+      this.dashService.getReceitasPendentes(empresaId).subscribe((res: any) => {
+        this.pendenciasAReceber = res.totalValor || 0;
+      });
+      this.dashService.getDespesasPendentes(empresaId).subscribe((res: any) => {
+        this.pendenciasAPagar = res.totalValor || 0;
+      });
+    }
   }
 
   getReceitas() {
@@ -298,6 +403,7 @@ export class FinancasComponent implements OnInit {
         empresa_id: this.user?.empresa_id,
         data_inicio: this.data_inicio,
         data_fim: this.data_fim,
+        categorias: this.categoriasControl.value
       })
       .subscribe({
         next: (res) => {
@@ -392,5 +498,71 @@ export class FinancasComponent implements OnInit {
           console.log(res);
         });
       });
+  }
+
+  loadCategorias() {
+    forkJoin({
+      receitas: this.transFinService.getCategoriasByTipoId(1),
+      despesas: this.transFinService.getCategoriasByTipoId(2)
+    }).subscribe(res => {
+      this.listaCategorias = [...res.receitas, ...res.despesas].sort((a, b) => a.descricao.localeCompare(b.descricao));
+    });
+  }
+
+  exportar(formato: 'pdf' | 'excel') {
+    if (formato === 'pdf') this.isExportingPDF = true;
+    else this.isExportingExcel = true;
+
+    const filters = {
+      data_inicio: this.data_inicio,
+      data_fim: this.data_fim,
+      empresa_id: this.user?.empresa_id,
+      empresa_nome: this.user?.empresa?.nome,
+      categorias: this.categoriasControl.value,
+      status: this.statusExportControl.value
+    };
+
+    if (formato === 'pdf') {
+      this.transFinService.exportPDFBackend(filters).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Financeiro_${this.user?.empresa?.nome}_${new Date().toISOString().split('T')[0]}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.isExportingPDF = false;
+          this.toastr.success('Relatório gerado com sucesso!');
+        },
+        error: err => {
+          console.error(err);
+          this.toastr.error('Erro ao gerar relatório PDF no servidor.');
+          this.isExportingPDF = false;
+        }
+      });
+    } else {
+      this.transFinService.getTrasacoes({ ...filters, endpoint: 'export' }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: async (data: any) => {
+          try {
+            await this.exportService.generateExcel({
+              transacoes: data,
+              empresaNome: this.user?.empresa?.nome as string,
+              periodo: { inicio: this.data_inicio, fim: this.data_fim }
+            });
+            this.toastr.success('Relatório gerado com sucesso!');
+          } catch (exportError) {
+            console.error(exportError);
+            this.toastr.error('Erro ao gerar a planilha.');
+          } finally {
+            this.isExportingExcel = false;
+          }
+        },
+        error: err => {
+          console.error(err);
+          this.toastr.error('Erro ao buscar dados para exportação.');
+          this.isExportingExcel = false;
+        }
+      });
+    }
   }
 }
