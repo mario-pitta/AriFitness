@@ -3,76 +3,127 @@
 
 
 
-    <ion-row class="ion-justify-content-between ion-align-items-center">
-      <!-- filtro por mes e ano -->
-      <ion-col size="12" sizeMd="4">
-        <ion-item>
-          <ion-select interface="popover" [formControl]="periodo">
-            <ion-select-option [value]="0" selected>Esse mês</ion-select-option>
-            <ion-select-option [value]="3">Nos últimos 3 mês</ion-select-option>
-            <ion-select-option [value]="6">Nos últimos 6 mês</ion-select-option>
+    <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-bottom filter-toolbar">
+      <!-- Período (Mobile: 12, Desktop: 3) -->
+      <ion-col size="12" sizeLg="3" sizeMd="4">
+        <ion-item lines="none" class="filter-item">
+          <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+          <ion-select interface="popover" [formControl]="periodo" placeholder="Período">
+            <ion-select-option [value]="0">Esse mês</ion-select-option>
+            <ion-select-option [value]="3">Último trimestre</ion-select-option>
+            <ion-select-option [value]="6">Último semestre</ion-select-option>
             <ion-select-option [value]="12">No último ano</ion-select-option>
             <ion-select-option [value]="null">Personalizado</ion-select-option>
           </ion-select>
         </ion-item>
+
+        <ion-row *ngIf="periodo.value === null" class="custom-dates-row">
+          <ion-col size="6">
+            <ion-item lines="none" class="date-picker-item">
+              <ion-label>De:</ion-label>
+              <ion-datetime-button datetime="startDate"></ion-datetime-button>
+            </ion-item>
+          </ion-col>
+          <ion-col size="6">
+            <ion-item lines="none" class="date-picker-item">
+              <ion-label>Até:</ion-label>
+              <ion-datetime-button datetime="finalDate"></ion-datetime-button>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <!-- Modais de Data (Permanecem iguais) -->
+        <ion-modal #startDateModal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime (ionChange)="onChangeDates()" presentation="date" #startDate id="startDate"
+              [(ngModel)]="data_inicio">
+              <ion-buttons slot="buttons">
+                <ion-button color="primary" (click)="startDate.cancel(); startDateModal.dismiss()">Cancelar</ion-button>
+                <ion-button color="primary" (click)="startDate.confirm(); startDateModal.dismiss()">OK</ion-button>
+              </ion-buttons>
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <ion-modal #finalDateModal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime (ionChange)="onChangeDates()" presentation="date" #finalDate id="finalDate"
+              [(ngModel)]="data_fim">
+              <ion-buttons slot="buttons">
+                <ion-button color="primary" (click)="finalDate.cancel(); finalDateModal.dismiss()">Cancelar</ion-button>
+                <ion-button color="primary" (click)="finalDate.confirm(); finalDateModal.dismiss()">OK</ion-button>
+              </ion-buttons>
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
       </ion-col>
-      <div class="ion-text-end">
+
+      <!-- Filtros e Ações (Mobile: 12, Desktop: 6) -->
+      <ion-col size="12" sizeLg="6" sizeMd="8">
+        <div class="actions-wrapper">
+          <div class="unified-filters-group">
+            <ion-item class="unified-filter" lines="none">
+              <ion-icon name="funnel-outline" slot="start" size="small" color="medium"></ion-icon>
+              <ion-select [formControl]="categoriasControl" multiple="true" placeholder="Categorias" interface="popover"
+                [selectedText]="getSelectedCategoriesText()">
+                <ion-select-option *ngFor="let cat of listaCategorias" [value]="cat.id">
+                  {{cat.descricao | titlecase}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item class="unified-filter status-filter" lines="none">
+              <ion-select [formControl]="statusExportControl" interface="popover" placeholder="Status">
+                <ion-select-option value="todos">Todas as Transações</ion-select-option>
+                <ion-select-option value="pago">Somente Pagos</ion-select-option>
+                <ion-select-option value="pendente">Pendentes</ion-select-option>
+                <ion-select-option value="cancelado">Cancelados</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <div class="buttons-group">
+            <!-- Reset Button -->
+            <ion-button fill="clear" color="medium" (click)="resetFilters()" class="action-btn-circle"
+              title="Limpar Filtros">
+              <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+
+            <!-- Grupo de Exportação -->
+            <ion-button fill="clear" color="medium" id="exportMenuTrigger" class="action-btn-circle">
+              <ion-icon name="download-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <ion-popover trigger="exportMenuTrigger" triggerAction="click">
+          <ng-template>
+            <ion-list lines="none">
+              <ion-item button (click)="exportar('pdf')" [disabled]="isExportingPDF">
+                <ion-icon name="document-text-outline" slot="start" color="danger"></ion-icon>
+                <ion-label>Exportar PDF</ion-label>
+                <ion-spinner *ngIf="isExportingPDF" name="crescent" slot="end"></ion-spinner>
+              </ion-item>
+              <ion-item button (click)="exportar('excel')" [disabled]="isExportingExcel">
+                <ion-icon name="stats-chart-outline" slot="start" color="success"></ion-icon>
+                <ion-label>Exportar Planilha</ion-label>
+                <ion-spinner *ngIf="isExportingExcel" name="crescent" slot="end"></ion-spinner>
+              </ion-item>
+            </ion-list>
+          </ng-template>
+        </ion-popover>
+      </ion-col>
+
+      <!-- IA Button (Mobile: 12, Desktop: 3) -->
+      <ion-col size="12" sizeLg="3" class="ion-text-end ia-col">
         <ion-button class="ai-analysis-btn" id="analysisIAButton" (click)="newAnaliseAI()">
           <div class="btn-content">
             <ion-icon name="logo-ionitron" class="ai-icon"></ion-icon>
             <ion-text>Análise de IA</ion-text>
           </div>
         </ion-button>
-      </div>
-      <!-- <ion-popover trigger="analysisIAButton" triggerAction="hover">
-        <ng-template>
-          <ion-content class="ion-padding">Em breve</ion-content>
-        </ng-template>
-      </ion-popover> -->
-    </ion-row>
-    <ion-row *ngIf="periodo.value === null">
-      <ion-col size="12" size-md="6">
-        <ion-row>
-          <ion-col size="12" size-md="6">
-            <ion-item>
-              <ion-label>Início:</ion-label>
-              <ion-datetime-button datetime="startDate"></ion-datetime-button>
-
-            </ion-item>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <ion-item>
-              <ion-label>Fim:</ion-label>
-              <ion-datetime-button datetime="finalDate"></ion-datetime-button>
-            </ion-item>
-          </ion-col>
-        </ion-row>
       </ion-col>
-
-
-      <ion-modal #startDateModal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime (ionChange)="onChangeDates()" presentation="date" #startDate id="startDate"
-            [(ngModel)]="data_inicio">
-            <ion-buttons slot="buttons">
-              <ion-button color="primary" (click)="startDate.cancel(); startDateModal.dismiss()">Cancelar</ion-button>
-              <ion-button color="primary" (click)="startDate.confirm(); startDateModal.dismiss()">OK</ion-button>
-            </ion-buttons>
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
-      <ion-modal #finalDateModal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime (ionChange)="onChangeDates()" presentation="date" #finalDate id="finalDate"
-            [(ngModel)]="data_fim">
-            <ion-buttons slot="buttons">
-              <ion-button color="primary" (click)="finalDate.cancel(); finalDateModal.dismiss()">Cancelar</ion-button>
-              <ion-button color="primary" (click)="finalDate.confirm(); finalDateModal.dismiss()">OK</ion-button>
-            </ion-buttons>
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
     </ion-row>
+
 
     <ng-template #chartSkeleton>
       <ion-grid class="dashboard-grid">
@@ -195,6 +246,40 @@
         </ion-col>
       </ion-row>
 
+      <ion-row class="anim-fade-in">
+        <ion-col size="12" size-md="6">
+          <ion-card class="insight-card-mini" style="border-left: 4px solid var(--ion-color-warning);">
+            <ion-card-content>
+              <div class="insight-content">
+                <div class="insight-icon" style="background: rgba(var(--ion-color-warning-rgb), 0.1);">
+                  <ion-icon name="time-outline" color="warning"></ion-icon>
+                </div>
+                <div class="insight-details">
+                  <span class="insight-label">A Receber (Pendentes)</span>
+                  <span class="insight-value color-warning">R$ {{pendenciasAReceber | number:'1.2-2'}}</span>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="6">
+          <ion-card class="insight-card-mini" style="border-left: 4px solid var(--ion-color-danger);">
+            <ion-card-content>
+              <div class="insight-content">
+                <div class="insight-icon bg-danger-light">
+                  <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+                </div>
+                <div class="insight-details">
+                  <span class="insight-label">A Pagar (Despesas Pendentes)</span>
+                  <span class="insight-value color-danger">R$ {{pendenciasAPagar | number:'1.2-2'}}</span>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
       <!-- CHARTS -->
       <ion-row class="charts-row">
         <ion-col size="12" size-md="6">
@@ -265,14 +350,6 @@
 <ion-modal #modal [isOpen]="openModalTransacao"
   (didDismiss)="openModalTransacao = false; action = ''; tipo = ''; selectedItem = undefined">
   <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{action | uppercase}} {{tipo| uppercase}} </ion-title>
-        <ion-buttons slot="end">
-          <ion-icon name="close" size="large" (click)="openModalTransacao = false; action = ''; tipo = ''"></ion-icon>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
 
     <ion-content>
 
@@ -298,10 +375,17 @@
       <h3>{{ item.categoria.descricao | titlecase }}</h3>
       <p class="tx-desc">{{ item.descricao }}</p>
       <p class="tx-desc">{{ item.membro?.nome }}</p>
-      <span class="tx-date">{{ item.data_lancamento | date: 'dd/MM/yyyy' }}</span>
+      <div class="d-flex align-items-center mt-1">
+        <span class="tx-date">{{ item.data_lancamento | date: 'dd/MM/yyyy' }}</span>
+        <ion-badge *ngIf="!item.fl_ativo" color="medium" class="ms-2">CANCELADO</ion-badge>
+        <ion-badge *ngIf="item.fl_ativo && item.fl_pago" color="success" class="ms-2">{{ item.tr_tipo_id === 1 ?
+          'RECEBIDO' : 'PAGO' }}</ion-badge>
+        <ion-badge *ngIf="item.fl_ativo && !item.fl_pago" color="warning" class="ms-2">PENDENTE</ion-badge>
+      </div>
     </div>
 
-    <div class="tx-amount" [ngClass]="item.tr_tipo_id === 1 ? 'color-success' : 'color-danger'">
+    <div class="tx-amount" [ngClass]="item.tr_tipo_id === 1 ? 'color-success' : 'color-danger'"
+      [class.text-decoration-line-through]="!item.fl_ativo">
       {{ item.tr_tipo_id === 1 ? '+' : '-' }} R$ {{ item.valor_final }}
     </div>
 

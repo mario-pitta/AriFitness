@@ -32,9 +32,9 @@
         <ion-row class="ion-no-padding" *ngIf="!loading">
             <ion-col size="12" size-md="6" size-lg="3" class="ion-padding-bottom ion-padding-end">
                 <div class="dash-kpi-card dash-kpi-card--receita">
-                    <div class="dash-kpi-label mb-0">Receita Total</div>
+                    <div class="dash-kpi-label mb-0">Lucro Total</div>
                     <small class="dash-kpi-sub mt-0">12 meses</small>
-                    <div class="dash-kpi-value">{{ totals.totalReceitas | currency:'BRL' }}</div>
+                    <div class="dash-kpi-value">{{ totals.totalReceitas - totals.totalDespesas | currency:'BRL' }}</div>
                     <div class="dash-trend dash-trend--up">
                         <ion-icon name="arrow-up-outline"></ion-icon> 12%
                     </div>
@@ -47,7 +47,8 @@
                     <div class="dash-kpi-label mb-0">Despesa Total</div>
                     <small class="dash-kpi-sub mt-0">12 meses</small>
                     <div class="dash-kpi-value">{{ totals.totalDespesas | currency:'BRL' }}</div>
-                    <div class="dash-kpi-sub">Dentro do esperado</div>
+                    <div class="dash-kpi-sub">{{ despesasPendentes.total }} a
+                        pagar</div>
                     <ion-icon name="trending-down-outline" class="dash-kpi-icon"></ion-icon>
                 </div>
             </ion-col>
@@ -75,7 +76,7 @@
 
         <!-- 4. KPI Cards — Fila 2 (Operacional/Alertas) -->
         <ion-row class="ion-no-padding ion-margin-top" *ngIf="!loading">
-            <ion-col size="6" size-md="3" class="ion-padding-end">
+            <ion-col size="6" size-md="4" size-xl="4" class="ion-padding-end ion-margin-bottom">
                 <div class="dash-kpi-card dash-kpi-card--checkins">
                     <div class="dash-kpi-label">Check-ins Hoje</div>
                     <div class="dash-kpi-value">{{ checkinsHoje.total }}</div>
@@ -83,17 +84,7 @@
                 </div>
             </ion-col>
 
-            <ion-col size="6" size-md="3" class="ion-padding-end">
-                <div class="dash-kpi-card dash-kpi-card--pendente">
-                    <div class="dash-kpi-label">Receitas Pendentes</div>
-                    <div class="dash-kpi-value" style="font-size: 1.4rem;">{{ receitasPendentes.totalValor |
-                        currency:'BRL' }}</div>
-                    <div class="dash-kpi-sub">{{ receitasPendentes.total }} transações</div>
-                    <ion-icon name="alert-circle-outline" class="dash-kpi-icon"></ion-icon>
-                </div>
-            </ion-col>
-
-            <ion-col size="6" size-md="3" class="ion-padding-end">
+            <ion-col size="6" size-md="4" size-xl="4" class="ion-padding-end ion-margin-bottom">
                 <div class="dash-kpi-card dash-kpi-card--churn">
                     <div class="dash-kpi-label">Ausentes (14d+)</div>
                     <div class="dash-kpi-value">{{ alunosChurn.total }}</div>
@@ -101,7 +92,7 @@
                 </div>
             </ion-col>
 
-            <ion-col size="6" size-md="3" class="ion-padding-end">
+            <ion-col size="6" size-md="4" size-xl="4" class="ion-padding-end ion-margin-bottom">
                 <div class="dash-kpi-card dash-kpi-card--vencimento">
                     <div class="dash-kpi-label">Vencendo (7d)</div>
                     <div class="dash-kpi-value">{{ alertasVencimento.total }}</div>
@@ -134,43 +125,24 @@
 
             <ion-row>
                 <ion-col size="12" size-lg="8" class="ion-padding-end">
-                    <ion-card class="dash-chart-card">
+                    <ion-card class="dash-chart-card h-100">
                         <ion-card-header>
                             <ion-card-title>Financeiro (12 meses)</ion-card-title>
                             <ion-card-subtitle>Comparativo de Receitas e Despesas</ion-card-subtitle>
                         </ion-card-header>
                         <ion-card-content class="ion-no-padding">
-                            <div style="height: 300px; padding: 10px;">
-                                <ngx-charts-area-chart [view]="[view[0] * 1.5, 280]" [scheme]="colorSchemeArea"
-                                    [results]="revenueVsExpenseData" [gradient]="true" [xAxis]="true" [yAxis]="true"
-                                    [legend]="true" [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true"
-                                    [curve]="curveBasis">
-                                </ngx-charts-area-chart>
+                            <div style="height: 300px; padding: 10px; ">
+                                <ngx-charts-bar-vertical-2d [view]="[view[0] * 1.5, 280]" [scheme]="colorSchemeArea"
+                                    [results]="revenueVsExpenseData" [gradient]="false" [xAxis]="true" [yAxis]="true"
+                                    [legend]="true" [showXAxisLabel]="false" [showYAxisLabel]="false"
+                                    [noBarWhenZero]="false" [barPadding]="2" [groupPadding]="12">
+                                </ngx-charts-bar-vertical-2d>
                             </div>
                         </ion-card-content>
                     </ion-card>
                 </ion-col>
-
-                <ion-col size="12" size-lg="4">
-                    <ion-card class="dash-chart-card">
-                        <ion-card-header>
-                            <ion-card-title>Status dos Alunos</ion-card-title>
-                        </ion-card-header>
-                        <ion-card-content class="ion-no-padding">
-                            <div style="height: 300px;">
-                                <ngx-charts-pie-chart [view]="[view[0] * 0.8, 280]" [scheme]="colorSchemeStatus"
-                                    [results]="membrosStatusData" [doughnut]="true" [legend]="true" [labels]="true">
-                                </ngx-charts-pie-chart>
-                            </div>
-                        </ion-card-content>
-                    </ion-card>
-                </ion-col>
-            </ion-row>
-
-            <!-- 6. Operacional e Pico de Uso -->
-            <ion-row class="ion-margin-top">
-                <ion-col size="12" size-lg="4" class="ion-padding-end">
-                    <ion-card class="dash-chart-card">
+                <ion-col size="12" size-lg="4" class="ion-padding-end ">
+                    <ion-card class="dash-chart-card h-100">
                         <ion-card-header>
                             <ion-card-title>Horários de Pico</ion-card-title>
                             <ion-card-subtitle>Check-ins nos últimos 30 dias</ion-card-subtitle>
@@ -185,39 +157,107 @@
                     </ion-card>
                 </ion-col>
 
-                <ion-col size="12" size-lg="4" class="ion-padding-end">
+            </ion-row>
+
+            <!-- 6. Operacional e Pico de Uso -->
+            <ion-row class="ion-margin-top">
+
+
+                <ion-col size="12" class="ion-padding-end">
                     <ion-card class="dash-chart-card" style="height: 100%;">
                         <ion-card-header>
-                            <ion-card-title>Fim de Ciclo Próximo</ion-card-title>
-                            <ion-card-subtitle>Alunos com plano vencendo</ion-card-subtitle>
+                            <ion-card-title>Pontos de Atenção</ion-card-title>
                         </ion-card-header>
                         <ion-card-content>
-                            <div *ngIf="alertasVencimento.alertas.length === 0" class="ion-text-center ion-padding">
-                                <p>Nenhum vencimento próximo.</p>
-                            </div>
-                            <div class="dash-alert-item" *ngFor="let alerta of alertasVencimento.alertas | slice:0:5">
-                                <div class="dash-alert-badge"
-                                    [class.dash-alert-badge--urgent]="alerta.dias_para_vencer <= 2"
-                                    [class.dash-alert-badge--warning]="alerta.dias_para_vencer > 2">
-                                    {{ alerta.dias_para_vencer }}d
-                                </div>
-                                <div class="dash-alert-name">
-                                    {{ alerta.nome }}
-                                    <div class="dash-alert-sub">{{ alerta.plano?.descricao }}</div>
-                                </div>
-                                <ion-button *ngIf="alerta.whatsapp" fill="clear" color="primary"
-                                    [href]="'https://wa.me/55' + alerta.whatsapp" target="_blank">
-                                    <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
-                                </ion-button>
-                                <ion-button *ngIf="!alerta.whatsapp" fill="clear" color="primary">
-                                    <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
-                                </ion-button>
-                            </div>
+                            <ion-row>
+                                <ion-col size="12" size-md="4">
+                                    <div class="ion-container" style="border-right: 1px solid var(--ion-color-light);">
+                                        <ion-card-subtitle class="d-flex ion-justify-content-between ion-padding-end">
+                                            ⚠️ Vencimento próximo
+                                            <span>Total: {{ alertasVencimento.total }}</span></ion-card-subtitle>
+                                        <div class="dash-alert-item"
+                                            *ngFor="let alerta of alertasVencimento.alertas | slice:0:5">
+                                            <div class="dash-alert-badge" data-toggle="tooltip" data-placement="top"
+                                                title="Dias para vencer"
+                                                [class.dash-alert-badge--urgent]="alerta.dias_para_vencer <= 2"
+                                                [class.dash-alert-badge--warning]="alerta.dias_para_vencer > 2">
+                                                {{ alerta.dias_para_vencer }}d
+                                            </div>
+                                            <div class="dash-alert-name">
+                                                {{ alerta.nome }}
+                                                <div class="dash-alert-sub">{{ alerta.plano?.descricao }}</div>
+                                            </div>
+                                            <ion-button *ngIf="alerta.whatsapp" fill="clear" color="primary"
+                                                (click)="sendWhatsAppMessage(alerta)">
+                                                <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+                                            </ion-button>
+                                        </div>
+                                        <div *ngIf="alertasVencimento.alertas.length === 0"
+                                            class="ion-text-center ion-padding">
+                                            <p>Nenhum vencimento próximo.</p>
+                                        </div>
+                                    </div>
+                                </ion-col>
+
+                                <ion-col size="12" size-md="4">
+                                    <div class="ion-container" style="border-right: 1px solid var(--ion-color-light);">
+                                        <ion-card-subtitle class="d-flex ion-justify-content-between ion-padding-end"> ❌
+                                            Plano vencido
+                                            <span>Total: {{ planosVencidos.total }}</span></ion-card-subtitle>
+                                        <div class="dash-alert-item"
+                                            *ngFor="let inad of planosVencidos.vencidos | slice:0:5">
+                                            <div class="dash-alert-badge dash-alert-badge--urgent" data-toggle="tooltip"
+                                                data-placement="top" title="Dias de Atraso">
+                                                {{ (inad.dias_para_vencer * -1) }}d
+                                            </div>
+                                            <div class="dash-alert-name">
+                                                {{ inad.nome }}
+                                                <div class="dash-alert-sub">{{ inad.plano?.descricao }}</div>
+                                            </div>
+                                            <ion-button *ngIf="inad.whatsapp" fill="clear" color="primary"
+                                                (click)="sendWhatsAppMessage(inad)">
+                                                <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+                                            </ion-button>
+                                        </div>
+                                        <div *ngIf="planosVencidos.vencidos.length === 0"
+                                            class="ion-text-center ion-padding">
+                                            <p>Nenhum plano vencido.</p>
+                                        </div>
+                                    </div>
+                                </ion-col>
+
+                                <ion-col size="12" size-md="4">
+                                    <div class="ion-container">
+                                        <ion-card-subtitle class="d-flex ion-justify-content-between"> ⚡ Sem treinar a
+                                            mais de 7 dias
+                                            <span>Total: {{ alunosChurn.total }}</span></ion-card-subtitle>
+                                        <div class="dash-alert-item"
+                                            *ngFor="let churn of alunosChurn.alunos | slice:0:5">
+                                            <div class="dash-alert-badge dash-alert-badge--warning"
+                                                data-toggle="tooltip" data-placement="top" title="Dias sem treinar">
+                                                {{ churn.dias_sem_checkin >= 90 ? '+90' : churn.dias_sem_checkin }}d
+                                            </div>
+                                            <div class="dash-alert-name">
+                                                {{ churn.nome }}
+                                                <div class="dash-alert-sub">Risco de evasão</div>
+                                            </div>
+                                            <ion-button *ngIf="churn.whatsapp" fill="clear" color="primary"
+                                                (click)="sendWhatsAppMessage(churn)">
+                                                <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+                                            </ion-button>
+                                        </div>
+                                        <div *ngIf="alunosChurn.alunos.length === 0"
+                                            class="ion-text-center ion-padding">
+                                            <p>Nenhum aluno ausente.</p>
+                                        </div>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
                         </ion-card-content>
                     </ion-card>
                 </ion-col>
 
-                <ion-col size="12" size-lg="4">
+                <!-- <ion-col size="12" size-lg="4">
                     <div class="dash-section-title" style="margin-top: 5px;">Equipe</div>
 
                     <div *ngFor="let member of members$ | async " class="dash-instructor-card ion-margin-bottom"
@@ -235,7 +275,7 @@
                             <div style="font-size: 0.65rem; opacity: 0.6;">Destaque</div>
                         </div>
                     </div>
-                </ion-col>
+                </ion-col> -->
             </ion-row>
         </ng-container>
 

@@ -1,6 +1,6 @@
 import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
 
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import Constants from 'src/core/Constants';
 import { ITeamMember, ITipoUsuario, IUsuario, Usuario } from 'src/core/models/Usuario';
@@ -23,6 +23,9 @@ export class DashboardPage implements OnInit {
   view: [number, number] = [520, 230];
   chartSizes: number[] = [];
   searchControl: FormControl = new FormControl();
+  members$: Observable<IUsuario[] | any[]> | undefined;
+  getGreeting: WritableSignal<string> = this._getGreeting();
+
 
   totals = {
     totalMembros: 0,
@@ -44,8 +47,10 @@ export class DashboardPage implements OnInit {
   // ── Novos Dados ───────────────────────────────────────────────────────────
   checkinsHoje: { total: number; checkins: any[] } = { total: 0, checkins: [] };
   alertasVencimento: { total: number; alertas: any[] } = { total: 0, alertas: [] };
+  planosVencidos: { total: number; vencidos: any[] } = { total: 0, vencidos: [] };
   alunosChurn: { total: number; alunos: any[] } = { total: 0, alunos: [] };
   receitasPendentes: { total: number; totalValor: number; transacoes: any[] } = { total: 0, totalValor: 0, transacoes: [] };
+  despesasPendentes: { total: number; totalValor: number; transacoes: any[] } = { total: 0, totalValor: 0, transacoes: [] };
 
   // ── Gráficos ────────────────────────────────────────────────────────────────
   revenueVsExpenseData: any[] = [];
@@ -125,8 +130,9 @@ export class DashboardPage implements OnInit {
       totals: this.transFinServ.getTotalsByEmpresaId(empresaId),
       checkins: this.transFinServ.getCheckinsHoje(empresaId),
       alertas: this.transFinServ.getAlertasVencimento(empresaId),
-      churn: this.transFinServ.getAlunosSemCheckin(empresaId),
+      churn: this.transFinServ.getAlunosSemCheckin(empresaId, 7),
       pendentes: this.transFinServ.getReceitasPendentes(empresaId),
+      despesasP: this.transFinServ.getDespesasPendentes(empresaId),
       picos: this.transFinServ.getPicoCheckins(empresaId),
       instrutores: this.teamMemberService.findAll(empresaId)
     }).subscribe({
@@ -144,8 +150,16 @@ export class DashboardPage implements OnInit {
             whatsapp: a.whatsapp?.replace(/[^0-9]/g, '')
           }))
         };
+        this.planosVencidos = {
+          total: res.alertas.totalVencidos || 0,
+          vencidos: (res.alertas.vencidos || []).map((a: any) => ({
+            ...a,
+            whatsapp: a.whatsapp?.replace(/[^0-9]/g, '')
+          }))
+        };
         this.alunosChurn = res.churn;
         this.receitasPendentes = res.pendentes;
+        this.despesasPendentes = res.despesasP;
         this.picoCheckinsData = res.picos.picos.map((p: any) => ({ name: p.hora, value: p.total }));
 
         // Process Instrutores
@@ -172,23 +186,46 @@ export class DashboardPage implements OnInit {
   }
 
   processTotalsChart(totals: any) {
-    // Receitas vs Despesas (Gráfico de Área)
-    this.revenueVsExpenseData = [
-      {
-        name: 'Receitas',
-        series: totals.receita_por_mes.map((r: any) => ({
-          name: (this.meses.find(m => m.value === (r.mes + 1))?.label || '') + '/' + r.ano,
-          value: r.valor
-        }))
-      },
-      {
-        name: 'Despesas',
-        series: (totals.despesa_por_mes || []).map((d: any) => ({
-          name: (this.meses.find(m => m.value === (d.mes + 1))?.label || '') + '/' + d.ano,
-          value: d.valor
-        }))
+    // Receitas vs Despesas (Gráfico de Barras Agrupado por Mês)
+    const groupedData = new Map<string, any>();
+
+    // Obter os últimos 12 meses em ordem
+    const today = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const mes = d.getMonth();
+      const ano = d.getFullYear();
+      const mesNome = this.meses.find(m => m.value === (mes + 1))?.label || '';
+      const key = `${mesNome}/${ano}`;
+      groupedData.set(`${mes}-${ano}`, {
+        name: key,
+        series: [
+          { name: 'Receitas', value: 0 },
+          { name: 'Despesas', value: 0 }
+        ],
+        mes, // para fins de ordenação extra, se necessário
+        ano
+      });
+    }
+
+    totals.receita_por_mes.forEach((r: any) => {
+      const key = `${r.mes}-${r.ano}`;
+      if (groupedData.has(key)) {
+        groupedData.get(key).series[0].value = r.valor;
       }
-    ];
+    });
+
+    (totals.despesa_por_mes || []).forEach((d: any) => {
+      const key = `${d.mes}-${d.ano}`;
+      if (groupedData.has(key)) {
+        groupedData.get(key).series[1].value = d.valor;
+      }
+    });
+
+    this.revenueVsExpenseData = Array.from(groupedData.values()).map(item => ({
+      name: item.name,
+      series: item.series
+    }));
 
     // Alunos Status (Pizza)
     this.membrosStatusData = [
@@ -217,13 +254,31 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  members$: Observable<IUsuario[] | any[]> | undefined;
+  sendWhatsAppMessage(alerta: any) {
+    console.log('alerta = ', alerta)
+  }
 
-  getGreeting(): string {
+
+  _getGreeting() {
+    let greeting = '';
+    const greetingSingnal = signal<string>('');
     const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return 'Bom dia';
-    if (hour >= 12 && hour < 18) return 'Boa tarde';
-    return 'Boa noite';
+    console.log('hour = ', hour)
+
+    switch (true) {
+      case hour >= 5 && hour < 12:
+        greeting = 'Bom dia';
+        break;
+      case hour >= 12 && hour < 18:
+        greeting = 'Boa tarde';
+        break;
+      default:
+        greeting = 'Boa noite';
+        break;
+    }
+
+    greetingSingnal.set(greeting);
+    return greetingSingnal;
   }
 }
 

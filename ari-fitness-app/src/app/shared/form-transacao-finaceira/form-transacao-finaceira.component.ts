@@ -171,6 +171,7 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
       comprovante_url: transacao?.comprovante_url || null,
       membro: transacao?.membro || null,
       auth_code: transacao?.auth_code || null,
+      fl_pago: transacao?.fl_pago ?? true,
     });
 
     if (transacao?.pago_por) {

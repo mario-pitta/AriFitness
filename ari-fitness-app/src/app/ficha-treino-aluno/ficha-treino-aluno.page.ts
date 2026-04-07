@@ -80,12 +80,16 @@ export class FichaTreinoAlunoPage implements OnInit {
 
   checkUserParams() {
     const userId = this.aRoute.snapshot.queryParams['userId'];
+    const userCPF = this.aRoute.snapshot.queryParams['userCPF'];
     const fichaId = this.aRoute.snapshot.queryParams['fichaId'];
 
     console.log('checkUserParams', { userId, fichaId });
     if (userId) {
       this.loading = true;
       this.loadFichaData(Number(userId), fichaId ? Number(fichaId) : undefined);
+    } else if (userCPF) {
+      this.loading = true;
+      this.getAlunoByCPF(userCPF);
     }
   }
 
@@ -108,6 +112,26 @@ export class FichaTreinoAlunoPage implements OnInit {
         userId: this.user.id,
         treinoId: this.selectedTreino.id,
       },
+    });
+  }
+
+
+  getAlunoByCPF(cpf: string) {
+    this.usuarioService.findByFilters({ cpf }).subscribe({
+      next: (usuarios) => {
+        if (usuarios && usuarios.length > 0) {
+          this.aluno?.patchValue({
+            id: usuarios[0].id,
+            nome: usuarios[0].nome,
+          });
+
+          this.loadFichaData(this.aluno?.value.id);
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao buscar aluno:', err);
+        this.toastr.error('Erro ao buscar aluno');
+      }
     });
   }
 

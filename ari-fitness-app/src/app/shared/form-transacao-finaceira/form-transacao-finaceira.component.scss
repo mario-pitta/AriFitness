@@ -39,26 +39,43 @@
 
   .text-muted {
     font-size: 0.85rem;
-    color: var(--ion-color-medium);
+    color: var(--ion-color-step-600);
   }
 
   .file-input {
     font-size: 0.9rem;
     color: var(--ion-text-color);
+  }
+}
 
-    &::file-selector-button {
-      background: var(--ion-color-primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      margin-right: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s;
+.text-muted {
+  color: var(--ion-color-step-600) !important;
+  font-size: 0.85rem;
+}
 
-      &:hover {
-        background: var(--ion-color-primary-shade);
+.pago-checkbox-item {
+  --background: transparent;
+  --padding-start: 4px;
+  margin: 8px 0;
+
+  ion-checkbox {
+    --size: 24px;
+    --border-radius: 6px;
+    --checkbox-background-checked: var(--ion-color-success);
+    --border-color-checked: var(--ion-color-success);
+    font-size: 0.95rem;
+
+    .checkbox-label {
+      display: flex;
+      flex-direction: column;
+      margin-left: 12px;
+
+      strong {
+        color: var(--ion-text-color);
+      }
+
+      p {
+        margin: 2px 0 0;
       }
     }
   }

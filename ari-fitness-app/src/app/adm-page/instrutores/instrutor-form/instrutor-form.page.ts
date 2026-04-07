@@ -59,6 +59,20 @@ export class InstrutorFormPage implements OnInit {
         if (this.instructorId) {
           this.loadInstructorData(this.instructorId);
         }
+      } else if (params['userCPF']) {
+        this.teamMemberService.findByCPF(params['userCPF'], this.user.empresa_id as string).subscribe({
+          next: (res) => {
+            this.form.get('cpf')?.setValue(res.cpf);
+            this.form.get('nome')?.setValue(res.nome);
+            this.form.get('email')?.setValue(res.email);
+            this.form.get('whatsapp')?.setValue(res.telefone);
+            this.form.get('genero')?.setValue(res.genero);
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Erro ao buscar dados do usuário.');
+          }
+        });
       }
     });
   }

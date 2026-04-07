@@ -18,10 +18,9 @@ import { UsuariosPageModule } from 'src/app/usuarios/usuarios.module';
     DashboardPageRoutingModule,
     NgxChartsModule,
     ReactiveFormsModule,
-    UsuariosPageModule
-
+    UsuariosPageModule,
   ],
   declarations: [DashboardPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class DashboardPageModule {}
+export class DashboardPageModule { }

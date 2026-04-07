@@ -77,5 +77,11 @@ export class DashboardController {
     console.log(`[DashboardController] GET receitas-pendentes | empresaId=${empresaId}`);
     return await this.dashboardService.getReceitasPendentes(empresaId);
   }
+
+  @Get('despesas-pendentes/:empresaId')
+  async getDespesasPendentes(@Param('empresaId') empresaId: string) {
+    console.log(`[DashboardController] GET despesas-pendentes | empresaId=${empresaId}`);
+    return await this.dashboardService.getDespesasPendentes(empresaId);
+  }
 }
 

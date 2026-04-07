@@ -136,12 +136,16 @@
             </ion-input>
           </ion-col>
 
-          <!-- Comprovante -->
+          <!-- Status de Pagamento -->
           <ion-col size="12">
-            <div class="file-upload-wrapper modern-input">
-              <ion-label class="text-muted">Anexar Comprovante (Opcional)</ion-label>
-              <input type="file" class="file-input" />
-            </div>
+            <ion-item lines="none" class="pago-checkbox-item">
+              <ion-checkbox formControlName="fl_pago" labelPlacement="end" justify="start">
+                <div class="checkbox-label">
+                  <strong>Esta transação já foi paga/recebida?</strong>
+                  <p class="text-muted">Desmarque se for uma pendência futura</p>
+                </div>
+              </ion-checkbox>
+            </ion-item>
           </ion-col>
         </ion-row>
       </ion-grid>

@@ -55,4 +55,8 @@ export class TransacaoFinanceiraDashService {
   getReceitasPendentes(empresaId: string) {
     return this.http.get<any>(`${environment.apiUrl}/dashboard/receitas-pendentes/${empresaId}`);
   }
+
+  getDespesasPendentes(empresaId: string) {
+    return this.http.get<any>(`${environment.apiUrl}/dashboard/despesas-pendentes/${empresaId}`);
+  }
 }

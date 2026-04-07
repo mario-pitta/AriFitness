@@ -88,6 +88,13 @@ export class PessoaFormPage implements OnInit {
       this.getUserInfo(this.aRoute.snapshot.queryParams['userId']);
     }
 
+    if (this.aRoute.snapshot.queryParams['cpf']) {
+      this.form.patchValue({
+        cpf: this.aRoute.snapshot.queryParams['cpf'],
+        nome: this.aRoute.snapshot.queryParams['nome']
+      });
+    }
+
 
   }
 

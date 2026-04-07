@@ -144,6 +144,68 @@ export class TransacaoFinanceiraDashService {
             throw new Error('Erro ao buscar análise de receitas.');
         }
 
-        return meses
+        return meses;
+    }
+
+    async getExportData(query: {
+        data_inicio: string,
+        data_fim: string,
+        empresa_id: string,
+        categorias?: number[],
+        status?: 'pago' | 'pendente' | 'cancelado'
+    }) {
+        let supabaseQuery = this.database.supabase
+            .from('transacao_financeira')
+            .select(`
+                *,
+                tipo:tipo_transacao_financeira(descricao),
+                categoria:categoria_transacao_financeira(descricao),
+                membro:usuario!pago_por(nome)
+            `)
+            .eq('empresa_id', query.empresa_id)
+            .gte('data_lancamento', query.data_inicio)
+            .lte('data_lancamento', query.data_fim)
+            .order('data_lancamento', { ascending: true });
+
+        if (query.categorias && query.categorias.length > 0) {
+            supabaseQuery = supabaseQuery.in('tr_categoria_id', [query.categorias]);
+        }
+
+        if (query.status) {
+            if (query.status === 'pago') {
+                supabaseQuery = supabaseQuery.eq('fl_pago', true).eq('fl_ativo', true);
+            } else if (query.status === 'pendente') {
+                supabaseQuery = supabaseQuery.eq('fl_pago', false).eq('fl_ativo', true);
+            } else if (query.status === 'cancelado') {
+                supabaseQuery = supabaseQuery.eq('fl_ativo', false);
+            }
+        }
+
+        const { data: transacoes, error: txError } = await supabaseQuery;
+
+        if (txError) {
+            console.error('Error fetching transactions for export:', txError);
+            throw txError;
+        }
+
+        const { data: empresa, error: empError } = await this.database.supabase
+            .from('empresa')
+            .select('nome')
+            .eq('id', query.empresa_id)
+            .single();
+
+        if (empError) {
+            console.error('Error fetching empresa name:', empError);
+        }
+
+        return {
+            transacoes,
+            empresaNome: empresa?.nome || 'AriFitness',
+            periodo: {
+                inicio: query.data_inicio,
+                fim: query.data_fim
+            },
+            dataGeracao: new Date().toISOString()
+        };
     }
 }

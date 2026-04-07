@@ -265,6 +265,23 @@ Quando executar uma task, você deve fornecer:
 
 ### 🔥 DIRETRIZ FINAL
 
+#### Especialização e Integração entre IA e Humanos
+
+- Sempre que for fazer uma tarefa, siga o padrão abaixo:
+
+
+  1. Entender o contexto
+  2. Implementar backend (simples)
+  3. Adaptar frontend (sem quebrar layout)
+  4. Integrar
+  5. Validar consistência visual
+
+- Considere sempre as orientações do agent kit presentes nos arquivos da pasta ../agent e subpastas garantindo o melhor uso das ferramentas disponíveis por tarefa solicitada, adpatando a melhor ferramenta para cada situação e ao contexto e stack do projeto atual (Angular/Ionic/NestJS/Supabase):
+
+  - [ARCHITECTURE.md](../.agent/ARCHITECTURE.md)
+
+
+
 #### Commits
 
 - Sempre que for fazer um commit, siga o padrão abaixo:

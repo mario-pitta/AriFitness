@@ -190,7 +190,7 @@ export class CheckInPage implements OnInit {
         text: isVisitante ? 'Cadastrar Novo Aluno' : 'Ver Perfil Completo',
         icon: isVisitante ? 'person-add-outline' : 'person-circle-outline',
         handler: () => {
-          this.navigateToProfileOrRegistration(checkin.cpf_aluno, checkin.nome_completo, isVisitante); // Função a ser criada
+          this.navigateToProfileOrRegistration(checkin.cpf_aluno, checkin.nome_completo, isVisitante, checkin.tipo_usuario_desc); // Função a ser criada
         }
       },
       {
@@ -226,13 +226,33 @@ export class CheckInPage implements OnInit {
     this.getUserFrequency(cpf);
   }
 
-  navigateToProfileOrRegistration(cpf: string, nome: string, isVisitante: boolean) {
+  navigateToProfileOrRegistration(cpf: string, nome: string, isVisitante: boolean, tipoUsuario: string) {
     if (isVisitante) {
       console.log(`Abrir formulário de cadastro para Visitante: ${nome}, CPF: ${cpf}`);
       // Redirecionar para a página de cadastro com CPF e nome pré-preenchidos.
+      this.router.navigate(['admin/membros/cadastro-usuario'], {
+        queryParams: {
+          cpf: cpf,
+          nome: nome
+        }
+      });
     } else {
-      console.log(`Navegar para o perfil do Aluno com CPF: ${cpf}`);
-      // Redirecionar para a página de detalhes/perfil do aluno.
+      console.log(`Navegar para o perfil do usuario com CPF: ${cpf}`);
+      console.log('tipoUsuario = ', tipoUsuario)
+
+      if (tipoUsuario === 'Aluno') {
+        this.router.navigate(['admin/membros/ficha-de-treino'], {
+          queryParams: {
+            userCPF: cpf
+          }
+        });
+      } else {
+        this.router.navigate(['admin/equipe/formulario'], {
+          queryParams: {
+            memberCPF: cpf
+          }
+        });
+      }
     }
   }
 

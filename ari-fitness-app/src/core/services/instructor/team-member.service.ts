@@ -7,6 +7,11 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root'
 })
 export class TeamMemberService {
+    findByCPF(cpf: string, empresaId: string): Observable<any> {
+        return this.http.get<any>(`${this.url}/findByFilters`, {
+            params: new HttpParams().set('empresa_id', empresaId).set('cpf', cpf)
+        });
+    }
     private url = `${environment.apiUrl}/team-member`;
 
     constructor(private http: HttpClient) { }

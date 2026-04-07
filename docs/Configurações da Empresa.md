@@ -1,7 +1,7 @@
 
-## Tutorial de Configuração da Empresa no MVK Gym Manager:
+## Tutorial de Configuração da Empresa no MvK Gym Manager:
 
-Este tutorial irá guiá-lo através do processo de configuração das informações da sua academia na página de "Empresa" do MVK Gym Manager.
+Este tutorial irá guiá-lo através do processo de configuração das informações da sua academia na página de "Empresa" do MvK Gym Manager.
 
 **Passo 1: Acessar a Página de Configurações da Empresa**
 
