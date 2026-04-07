@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/mario-pitta/AriFitness/compare/v1.13.1...v1.14.0) (2026-04-07)
+
+
+### Features
+
+* :sparkles: Substitui biblioteca de Excel legado por planilhas componentizadas via ExcelJS ([a631a65](https://github.com/mario-pitta/AriFitness/commit/a631a65d3b2e6846386fa4cad5b5c86e4de86b1e))
+* :sparkles: Transfere geracao de PDF financeiro para o backend com layout premium ([609b673](https://github.com/mario-pitta/AriFitness/commit/609b6730bd58fe14acb773d21ceb79d0c10bd2ad))
+* implement team member management module and global HTTP error handling interceptors ([0fd040d](https://github.com/mario-pitta/AriFitness/commit/0fd040db9a269a6f01f1cd40d50845e8a9a5558a))
+
+
+### Bug Fixes
+
+* :bug: Ajusta filtro e formatacao de perido nulo no dashboard financeiro ([f539737](https://github.com/mario-pitta/AriFitness/commit/f539737d9efe32acacb0714e0e204010f4152fb2))
+
 ### [1.13.1](https://github.com/mario-pitta/AriFitness/compare/v1.13.0...v1.13.1) (2026-04-02)
 
 ## [1.13.0](https://github.com/mario-pitta/AriFitness/compare/v1.10.0...v1.13.0) (2026-04-02)
