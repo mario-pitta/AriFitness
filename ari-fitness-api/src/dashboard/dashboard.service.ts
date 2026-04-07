@@ -278,10 +278,32 @@ export class DashboardService {
     }
     totals.totalInstrutores = totalInstrutores.count || 0;
 
+
+    const totalFichas = await this.database.supabase
+      .from('ficha_aluno')
+      .select('id', { count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .eq('fl_ativo', true);
+    if (totalFichas.error) {
+      throw new Error(
+        `Erro ao obter total de fichas: ${JSON.stringify(totalFichas.error)}`,
+      );
+    }
+    totals.totalFichas = totalFichas.count || 0;
+
+
+    //obtem os 12 ultimos meses 
+    const dataAtual = new Date();
+    const initial_date = new Date();
+    initial_date.setMonth(dataAtual.getMonth() - 11);
+
+
     const transacoes = await this.database.supabase
       .from('transacao_financeira')
       .select('id, valor_final, tr_tipo_id, data_lancamento')
       .eq('fl_ativo', true)
+      .lte('data_lancamento', dataAtual.toISOString())
+      .gte('data_lancamento', initial_date.toISOString())
       .eq('empresa_id', empresaId);
 
     if (transacoes.error) {
@@ -290,13 +312,8 @@ export class DashboardService {
       );
     }
 
-    //obtem os 12 ultimos meses 
-    const dataAtual = new Date();
-    const initial_date = new Date();
-    initial_date.setMonth(dataAtual.getMonth() - 11);
 
-
-    const processTransactionByDateAndType = (data_lancamento: string, tr_tipo_id: number, valor_final: number) => {
+    const processTransactionByDateAndType = (data_lancamento: string, tr_tipo_id: number, valor_final: number, transacao: any) => {
       const transacaoDate = new Date(data_lancamento);
       if (transacaoDate >= initial_date && transacaoDate <= dataAtual) {
         const mes = new Date(data_lancamento).getMonth();
@@ -317,22 +334,26 @@ export class DashboardService {
       }
     };
 
-    transacoes.data?.forEach((transacao) => {
-      const { valor_final, tr_tipo_id, data_lancamento } = transacao;
+    transacoes.data?.forEach((transacao: any) => {
+      const { valor_final, tr_tipo_id, data_lancamento, fl_pago } = transacao;
 
       switch (tr_tipo_id) {
         case 1:
+
           totals.totalReceitas += valor_final;
+
           break;
         case 2:
+
           totals.totalDespesas += valor_final;
+
           break;
 
         default:
           break;
       }
 
-      processTransactionByDateAndType(data_lancamento as string, tr_tipo_id, valor_final);
+      processTransactionByDateAndType(data_lancamento as string, tr_tipo_id, valor_final, transacao);
 
 
     });
@@ -419,25 +440,42 @@ export class DashboardService {
     }
 
     const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
     const alertas = (data ?? [])
-      .filter((usuario: any) => {
-        const diaVencimento = usuario.data_vencimento as number;
-        const vencimento = new Date(hoje.getFullYear(), hoje.getMonth(), diaVencimento);
-        if (vencimento < hoje) vencimento.setMonth(vencimento.getMonth() + 1);
-        const diffDias = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-        return diffDias >= 0 && diffDias <= dias;
-      })
       .map((usuario: any) => {
         const diaVencimento = usuario.data_vencimento as number;
-        const vencimento = new Date(hoje.getFullYear(), hoje.getMonth(), diaVencimento);
-        if (vencimento < hoje) vencimento.setMonth(vencimento.getMonth() + 1);
+        // Data base para o vencimento é o mês atual
+        let vencimento = new Date(hoje.getFullYear(), hoje.getMonth(), diaVencimento);
+        vencimento.setHours(0, 0, 0, 0);
+
+        const ultimoPagamento = usuario.data_ultimo_pagamento ? new Date(usuario.data_ultimo_pagamento) : null;
+
+        // Se pagou nos últimos 20 dias, consideramos que para este mês já está ok,
+        // então o próximo vencimento será só no próximo mês.
+        if (ultimoPagamento) {
+          const diasDesdePagamento = Math.floor((hoje.getTime() - ultimoPagamento.getTime()) / (1000 * 60 * 60 * 24));
+          if (diasDesdePagamento <= 20) {
+            vencimento.setMonth(vencimento.getMonth() + 1);
+          }
+        }
+
         const diffDias = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-        return { ...usuario, dias_para_vencer: diffDias, data_vencimento_calculada: vencimento.toISOString().split('T')[0] };
+
+        return {
+          ...usuario,
+          dias_para_vencer: diffDias,
+          data_vencimento_calculada: vencimento.toISOString().split('T')[0]
+        };
       })
+      .filter((usuario: any) => usuario.dias_para_vencer <= dias) // Inclui negativos (vencidos) e próximos a vencer até `dias` estipulados
       .sort((a: any, b: any) => a.dias_para_vencer - b.dias_para_vencer);
 
-    console.log(`[DashboardService] getAlertasVencimento | alertas encontrados=${alertas.length}`);
-    return { total: alertas.length, alertas };
+    const vencidos = alertas.filter((a: any) => a.dias_para_vencer < 0);
+    const proximos = alertas.filter((a: any) => a.dias_para_vencer >= 0 && a.dias_para_vencer <= dias);
+
+    console.log(`[DashboardService] getAlertasVencimento | vencidos=${vencidos.length} | proximos=${proximos.length}`);
+    return { total: proximos.length, alertas: proximos, totalVencidos: vencidos.length, vencidos };
   }
 
   /**
@@ -446,22 +484,37 @@ export class DashboardService {
   async getAlunosSemCheckin(empresaId: string, dias = 14) {
     console.log(`[DashboardService] getAlunosSemCheckin | empresaId=${empresaId} | dias=${dias}`);
 
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
     const dataLimite = new Date();
-    dataLimite.setDate(dataLimite.getDate() - dias);
+    dataLimite.setDate(hoje.getDate() - dias);
     const dataLimiteStr = dataLimite.toISOString().split('T')[0];
 
-    const { data: checkinsRecentes, error: erroCheckin } = await this.database.supabase
+    // Buscar banco de dados inteiro de checkins seria pesado, então buscaremos os últimos 90 dias
+    const dataLimiteHistorico = new Date();
+    dataLimiteHistorico.setDate(hoje.getDate() - 90);
+
+    const { data: checkins, error: erroCheckin } = await this.database.supabase
       .from('checkin_acesso')
-      .select('cpf_aluno')
+      .select('cpf_aluno, data_checkin')
       .eq('empresa_id', empresaId)
-      .gte('data_checkin', dataLimiteStr);
+      .gte('data_checkin', dataLimiteHistorico.toISOString().split('T')[0])
+      .order('data_checkin', { ascending: false });
 
     if (erroCheckin) {
       console.error(`[DashboardService] getAlunosSemCheckin ERROR (checkins):`, erroCheckin);
       throw new Error(`Erro ao buscar check-ins recentes: ${JSON.stringify(erroCheckin)}`);
     }
 
-    const cpfsAtivos = new Set((checkinsRecentes ?? []).map((c: any) => c.cpf_aluno));
+    const ultimoCheckinPorCpf = new Map<string, Date>();
+    (checkins ?? []).forEach((c: any) => {
+      if (!ultimoCheckinPorCpf.has(c.cpf_aluno)) {
+        const d = new Date(c.data_checkin);
+        d.setHours(0, 0, 0, 0);
+        ultimoCheckinPorCpf.set(c.cpf_aluno, d);
+      }
+    });
 
     const { data: alunos, error: erroAlunos } = await this.database.supabase
       .from('usuario')
@@ -475,7 +528,21 @@ export class DashboardService {
       throw new Error(`Erro ao buscar alunos: ${JSON.stringify(erroAlunos)}`);
     }
 
-    const alunosSemCheckin = (alunos ?? []).filter((a: any) => !cpfsAtivos.has(a.cpf));
+    const alunosSemCheckin = (alunos ?? []).reduce((acc: any[], a: any) => {
+      const ultimoCheckin = ultimoCheckinPorCpf.get(a.cpf);
+
+      let diasSemCheckin = 90; // Default max se não acha
+      if (ultimoCheckin) {
+        diasSemCheckin = Math.floor((hoje.getTime() - ultimoCheckin.getTime()) / (1000 * 60 * 60 * 24));
+      }
+
+      if (diasSemCheckin >= dias) {
+        // Se maior que 90 a gente formata "+90" depois no front-end
+        acc.push({ ...a, dias_sem_checkin: diasSemCheckin });
+      }
+
+      return acc;
+    }, []).sort((a: any, b: any) => b.dias_sem_checkin - a.dias_sem_checkin);
 
     console.log(`[DashboardService] getAlunosSemCheckin | em risco=${alunosSemCheckin.length}`);
     return { total: alunosSemCheckin.length, alunos: alunosSemCheckin };
@@ -504,7 +571,7 @@ export class DashboardService {
 
     const horaCount: Record<string, number> = {};
     (data ?? []).forEach((c: any) => {
-      const hora = (Number(((c.hora_checkin as string)?.slice(0, 2)) ?? 'ND') - 3) + 'h';
+      const hora = (Number(((c.hora_checkin as string)?.slice(0, 2)) ?? 'ND')) + 'h';
       horaCount[hora] = (horaCount[hora] || 0) + 1;
     });
 
@@ -524,7 +591,7 @@ export class DashboardService {
 
     const { data, error, count } = await this.database.supabase
       .from('transacao_financeira')
-      .select('id, descricao, valor_final, data_lancamento, forma_pagamento', { count: 'exact' })
+      .select('id, descricao, valor_final, data_lancamento, forma_pagamento, membro:usuario!transacao_financeira_pago_por_fkey(id, nome)', { count: 'exact' })
       .eq('empresa_id', empresaId)
       .eq('fl_pago', false)
       .eq('fl_ativo', true)
@@ -539,6 +606,32 @@ export class DashboardService {
     const totalValor = (data ?? []).reduce((acc: number, t: any) => acc + (t.valor_final ?? 0), 0);
 
     console.log(`[DashboardService] getReceitasPendentes | qtd=${count} | total=R$${totalValor.toFixed(2)}`);
+    return { total: count ?? 0, totalValor, transacoes: data ?? [] };
+  }
+
+  /**
+   * Retorna total e lista de despesas pendentes (fl_pago = false, tr_tipo_id = 2).
+   */
+  async getDespesasPendentes(empresaId: string) {
+    console.log(`[DashboardService] getDespesasPendentes | empresaId=${empresaId}`);
+
+    const { data, error, count } = await this.database.supabase
+      .from('transacao_financeira')
+      .select('id, descricao, valor_final, data_lancamento', { count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .eq('fl_pago', false)
+      .eq('fl_ativo', true)
+      .eq('tr_tipo_id', 2)
+      .order('data_lancamento', { ascending: false });
+
+    if (error) {
+      console.error(`[DashboardService] getDespesasPendentes ERROR:`, error);
+      throw new Error(`Erro ao obter despesas pendentes: ${JSON.stringify(error)}`);
+    }
+
+    const totalValor = (data ?? []).reduce((acc: number, t: any) => acc + (t.valor_final ?? 0), 0);
+
+    console.log(`[DashboardService] getDespesasPendentes | qtd=${count} | total=R$${totalValor.toFixed(2)}`);
     return { total: count ?? 0, totalValor, transacoes: data ?? [] };
   }
 }
