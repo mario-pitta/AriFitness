@@ -31,10 +31,12 @@ import { SpecialtyModule } from './specialty/specialty.module';
 import { ServiceModule } from './service/service.module';
 import { ConfigModule } from '@nestjs/config';
 import { AutomationsModule } from './automations/automations.module';
+import { EvolutionModule } from './evolution/evolution.module';
 
 
 @Module({
   imports: [
+    EvolutionModule,
     GeminiModule,
     DashboardModule,
     FichaAlunoModule,
