@@ -1,0 +1,259 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="admin/configuracoes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Meu Plano</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="plano-content">
+  <div class="loading-container" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Estado com assinatura ativa -->
+  <div class="plano-container" *ngIf="!loading && assinatura && !mostrarPlanos">
+    <!-- Card Principal do Plano -->
+    <div class="plano-card-main">
+      <div class="plano-status-badge" [ngClass]="{'badge-success': statusColor === 'success'}">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        {{ statusLabel }}
+      </div>
+      <h1 class="plano-nome">{{ assinatura.plano.nome }}</h1>
+      <p class="plano-empresa">{{ assinatura.empresa.nome }}</p>
+    </div>
+
+    <!-- Grid de Informações -->
+    <div class="info-grid">
+      <div class="info-card">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <p class="info-label">Vencimento</p>
+        <p class="info-value">{{ assinatura.assinatura.data_vencimento | date: 'dd/MM/yyyy' }}</p>
+      </div>
+      <div class="info-card">
+        <ion-icon name="cash-outline"></ion-icon>
+        <p class="info-label">Valor Mensal</p>
+        <p class="info-value">{{ assinatura.plano.preco | currency:'BRL' }}</p>
+      </div>
+      <div class="info-card">
+        <ion-icon name="repeat-outline"></ion-icon>
+        <p class="info-label">Renovação</p>
+        <p class="info-value">{{ assinatura.assinatura.auto_renovar ? 'Automática' : 'Manual' }}</p>
+      </div>
+    </div>
+
+    <!-- Métricas de Uso -->
+    <div class="plano-card">
+      <h3 class="card-title">Uso da Plataforma</h3>
+
+      <div class="metrics-grid">
+        <!-- Alunos -->
+        <div class="metric-card" [ngClass]="getMetricClass(usoAlunosPercent)">
+          <div class="metric-icon-wrapper">
+            <ion-icon name="people"></ion-icon>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Alunos</span>
+            <div class="metric-numbers">
+              <span class="metric-current">{{ assinatura.alunos_count }}</span>
+              <span class="metric-separator">/</span>
+              <span class="metric-limit">{{ assinatura.plano.limite_alunos }}</span>
+            </div>
+            <div class="metric-progress-wrapper">
+              <ion-progress-bar [value]="usoAlunosPercent / 100"
+                [color]="usoAlunosPercent > 90 ? 'danger' : (usoAlunosPercent > 70 ? 'warning' : 'tertiary')"></ion-progress-bar>
+            </div>
+            <span class="metric-percent-badge" [ngClass]="getMetricClass(usoAlunosPercent)">{{ usoAlunosPercent }}% usado</span>
+          </div>
+        </div>
+
+        <!-- Instrutores -->
+        <div class="metric-card" [ngClass]="getMetricClass(usoInstrutoresPercent)">
+          <div class="metric-icon-wrapper">
+            <ion-icon name="fitness"></ion-icon>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Instrutores</span>
+            <div class="metric-numbers">
+              <span class="metric-current">{{ assinatura.instrutores_count || 0 }}</span>
+              <span class="metric-separator">/</span>
+              <span class="metric-limit">{{ assinatura.plano.limite_instrutores }}</span>
+            </div>
+            <div class="metric-progress-wrapper">
+              <ion-progress-bar [value]="usoInstrutoresPercent / 100"
+                [color]="usoInstrutoresPercent > 90 ? 'danger' : (usoInstrutoresPercent > 70 ? 'warning' : 'tertiary')"></ion-progress-bar>
+            </div>
+            <span class="metric-percent-badge" [ngClass]="getMetricClass(usoInstrutoresPercent)">{{ usoInstrutoresPercent }}% usado</span>
+          </div>
+        </div>
+
+        <!-- Equipamentos -->
+        <div class="metric-card" [ngClass]="getMetricClass(usoEquipamentosPercent)">
+          <div class="metric-icon-wrapper">
+            <ion-icon name="barbell"></ion-icon>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Equipamentos</span>
+            <div class="metric-numbers">
+              <span class="metric-current">{{ assinatura.equipamentos_count || 0 }}</span>
+              <span class="metric-separator">/</span>
+              <span class="metric-limit">{{ assinatura.plano.limite_equipamentos }}</span>
+            </div>
+            <div class="metric-progress-wrapper">
+              <ion-progress-bar [value]="usoEquipamentosPercent / 100"
+                [color]="usoEquipamentosPercent > 90 ? 'danger' : (usoEquipamentosPercent > 70 ? 'warning' : 'tertiary')"></ion-progress-bar>
+            </div>
+            <span class="metric-percent-badge" [ngClass]="getMetricClass(usoEquipamentosPercent)">{{ usoEquipamentosPercent }}% usado</span>
+          </div>
+        </div>
+
+        <!-- Créditos de IA -->
+        <div class="metric-card" [ngClass]="getMetricClass(usoCreditosIAPercent)">
+          <div class="metric-icon-wrapper">
+            <ion-icon name="bulb"></ion-icon>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Créditos de IA</span>
+            <div class="metric-numbers">
+              <span class="metric-current">{{ assinatura.creditos_ia_usados || 0 }}</span>
+              <span class="metric-separator">/</span>
+              <span class="metric-limit">{{ assinatura.creditos_ia_limite || 0 }}</span>
+            </div>
+            <div class="metric-progress-wrapper">
+              <ion-progress-bar [value]="usoCreditosIAPercent / 100"
+                [color]="usoCreditosIAPercent > 90 ? 'danger' : (usoCreditosIAPercent > 70 ? 'warning' : 'tertiary')"></ion-progress-bar>
+            </div>
+            <span class="metric-percent-badge" [ngClass]="getMetricClass(usoCreditosIAPercent)">{{ usoCreditosIAPercent }}% usado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recursos do Plano -->
+    <div class="plano-card">
+      <h3 class="card-title">Recursos do Plano</h3>
+      <div class="features-list">
+        <div class="feature-item" *ngFor="let feature of featuresList">
+          <ng-container
+            *ngIf="['limite_alunos', 'limite_instrutores', 'limite_equipamentos'].includes(feature.key) === false">
+            <div class="feature-item" [class.feature-disabled]="!isFeatureIncluded(assinatura.plano, feature.key)">
+              <ion-icon [name]="isFeatureIncluded(assinatura.plano, feature.key) ? 'checkmark-circle' : 'close-circle'"
+                [color]="isFeatureIncluded(assinatura.plano, feature.key) ? 'success' : 'medium'"></ion-icon>
+              <span>{{ feature.label }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão de Upgrade -->
+    <div class="upgrade-section" *ngIf="!isPlanoMaisCaro()">
+      <div class="upgrade-call">
+        <ion-icon name="rocket"></ion-icon>
+        <span>EXPANDA SUA ACADEMIA</span>
+      </div>
+      <ion-button expand="block" color="warning" class="upgrade-button-highlight" (click)="toggleMostrarPlanos()">
+        <ion-icon slot="start" name="arrow-up-circle"></ion-icon>
+        FAZER UPGRADE
+      </ion-button>
+      <p class="upgrade-hint">Desbloqueie recursos ilimitados</p>
+    </div>
+
+    <!-- Botão simples se já for o mais caro -->
+    <div class="upgrade-section" *ngIf="isPlanoMaisCaro()">
+      <ion-button expand="block" fill="outline" color="primary" (click)="toggleMostrarPlanos()">
+        <ion-icon slot="start" name="eye-outline"></ion-icon>
+        Ver Planos Disponíveis
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Carrossel de Planos -->
+  <div class="plano-container" *ngIf="!loading && mostrarPlanos">
+    <div class="plano-header-small">
+      <h1 class="plano-nome">Nossos Planos</h1>
+      <p class="plano-empresa">Deslize para comparar</p>
+    </div>
+
+    <div class="carousel">
+      <div class="carousel-viewport">
+        <div class="carousel-track">
+          <div class="carousel-card" *ngFor="let plano of planosDisponiveis; let i = index">
+            <div class="plano-card" [class.plano-destaque]="plano.is_destaque"
+              [class.plano-atual]="isPlanoAtual(plano)">
+
+              <div class="plano-header-row" *ngIf="plano.is_destaque">
+                <ion-badge color="warning">Mais Popular</ion-badge>
+              </div>
+
+              <div class="plano-info-row">
+                <div class="plano-titulo">
+                  <h2 class="plano-nome-card">{{ plano.nome }}</h2>
+                  <p class="plano-descricao">{{ plano.descricao }}</p>
+                </div>
+                <div class="plano-preco-card">
+                  <span class="preco-valor" *ngIf="plano.preco === 0">Grátis</span>
+                  <span class="preco-valor" *ngIf="plano.preco > 0">{{ plano.preco | currency:'BRL' }}</span>
+                  <span class="preco-periodo" *ngIf="plano.preco > 0">/mês</span>
+                </div>
+              </div>
+
+              <div class="plano-features">
+                <div class="feature-row" *ngFor="let feature of featuresList">
+                  <div class="feature-label">
+                    <ion-icon [name]="feature.icon"></ion-icon>
+                    <span>{{ feature.label }}</span>
+                  </div>
+                  <div class="feature-value" [class.feature-ok]="isFeatureIncluded(plano, feature.key)"
+                    [class.feature-nao]="!isFeatureIncluded(plano, feature.key)">
+                    <ng-container
+                      *ngIf="['limite_alunos', 'limite_instrutores', 'limite_equipamentos'].includes(feature.key)">
+                      {{ formatFeatureValue(plano, feature.key) }}
+                    </ng-container>
+                    <ng-container
+                      *ngIf="['limite_alunos', 'limite_instrutores', 'limite_equipamentos'].includes(feature.key) === false">
+                      <ion-icon [name]="isFeatureIncluded(plano, feature.key) ? 'checkmark' : 'close'"></ion-icon>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+
+              <div class="plano-action">
+                <ion-button expand="block" *ngIf="isPlanoAtual(plano)" disabled>
+                  <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                  Plano Atual
+                </ion-button>
+                <ion-button expand="block" color="primary" *ngIf="!isPlanoAtual(plano) && !isPlanoGratuito(plano)"
+                  (click)="assinarPlano(plano)">
+                  <ion-icon slot="start" name="arrow-up-circle"></ion-icon>
+                  Assinar
+                </ion-button>
+                <ion-button expand="block" color="secondary" *ngIf="!isPlanoAtual(plano) && isPlanoGratuito(plano)"
+                  (click)="assinarPlano(plano)">
+                  <ion-icon slot="start" name="star"></ion-icon>
+                  Usar este Plano
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="upgrade-section" *ngIf="assinatura">
+      <ion-button expand="block" fill="clear" (click)="toggleMostrarPlanos()">
+        <ion-icon slot="start" name="arrow-back"></ion-icon>
+        Voltar ao Meu Plano
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Estado vazio / Erro -->
+  <div class="empty-state" *ngIf="!loading && !assinatura && !mostrarPlanos">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <p>Nenhuma assinatura ativa encontrada</p>
+    <ion-button (click)="loadAssinatura()">Tentar novamente</ion-button>
+  </div>
+</ion-content>
