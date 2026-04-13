@@ -20,7 +20,7 @@ export class EmpresaController {
 
 
     @Get(':empresaId')
-    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+    @Roles(UserRole.GERENCIA, UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
     async getEmpresa(@Param('empresaId') empresaId: string) {
         return await this.empresaService.getEmpresa(empresaId);
     }
@@ -31,13 +31,13 @@ export class EmpresaController {
     }
 
     @Post()
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA, UserRole.GERENCIA)
     async createEmpresa(@Body() empresa: Empresa) {
         return await this.empresaService.createEmpresa(empresa);
     }
 
     @Put(':empresaId')
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA, UserRole.GERENCIA)
     async updateEmpresa(@Param('empresaId') empresaId: Empresa['id'], @Body() empresa: Empresa) {
         return await this.empresaService.updateEmpresa(empresa);
     }

@@ -18,7 +18,6 @@ export class EmpresaService {
   getEmpresa(empresaId: string) {
     return this.http.get(environment.apiUrl + '/empresa/' + empresaId).pipe(
       map((res: any) => {
-        console.log('empresa', res);
         if (res.data) {
           this.empresaState.setEmpresa(res.data);
           return res.data;

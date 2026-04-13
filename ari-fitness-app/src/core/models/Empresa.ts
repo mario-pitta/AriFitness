@@ -33,6 +33,7 @@ export interface IService {
   descricao?: string;
   ativo: boolean;
   empresa_id?: string;
+  default_service_id?: string;
 }
 
 export class Empresa implements IEmpresa {
