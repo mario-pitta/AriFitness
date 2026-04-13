@@ -1,0 +1,52 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar>
+        <ion-title>{{modalTitle}}</ion-title>
+        <ion-buttons slot="end">
+            <ion-icon name="close" (click)="dismiss()"
+                style="font-size: 24px; padding: 10px; cursor: pointer;"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="ion-padding">
+        <div class="destinatario-header">
+            <div class="avatar-placeholder"
+                [ngClass]="{'female': usuario?.genero === 'F', 'male': usuario?.genero !== 'F'}">
+                <span class="initial">{{ usuario?.nome?.charAt(0) }}</span>
+            </div>
+            <div class="name-info">
+                <h3>{{usuario?.nome}}</h3>
+                <p>{{usuario?.whatsapp}}</p>
+            </div>
+        </div>
+
+        <div class="message-preview-container">
+            <div class="message-bubble received">
+                <div class="message-content">
+                    {{message}}
+                </div>
+                <div class="message-footer">
+                    <ion-icon name="checkmark-done" color="primary"></ion-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ion-content>
+<ion-footer class="ion-no-border ion-padding">
+    <ion-row>
+        <ion-col size="4">
+            <ion-button expand="block" shape="round" color="medium" fill="outline" (click)="copyMessage()">
+                <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-button>
+        </ion-col>
+        <ion-col size="8">
+            <ion-button expand="block" shape="round" [color]="buttonColor" (click)="sendMessage()" [disabled]="loading">
+                <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
+                <ion-spinner name="crescent" *ngIf="loading" slot="start"></ion-spinner>
+                {{buttonLabel}}
+            </ion-button>
+        </ion-col>
+    </ion-row>
+</ion-footer>
