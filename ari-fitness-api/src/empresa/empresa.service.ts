@@ -162,14 +162,34 @@ export class EmpresaService {
         promises.push(this.databaseService.supabase.from('planos').upsert(pToSave));
       }
 
-      // Serviços
+      // Serviços - primeiro deletar os antigos, depois inserir os novos
       if (servicos) {
-        const sToSave = servicos.map((s: any) => ({ ...s, empresa_id: empresa.id }));
-        sToSave.forEach((s: any) => { if (!s.id) delete s.id; });
-        promises.push(this.databaseService.supabase.from('service').upsert(sToSave));
+        // Deletar serviços existentes da empresa
+        const { data: deleteOldServices, error: errorDeleteOldServices } = await this.databaseService.supabase
+          .from('service')
+          .delete()
+          .eq('empresa_id', empresa.id);
+
+
+        if (errorDeleteOldServices) {
+          throw errorDeleteOldServices;
+        }
+
+        // Inserir os novos serviços
+        const sToSave = servicos.map((s: any) => ({
+          empresa_id: empresa.id,
+          default_service_id: s.default_service_id || null,
+          nome: s.nome,
+          descricao: s.descricao || null,
+          ativo: s.ativo !== false
+        }));
+        promises.push(this.databaseService.supabase.from('service').insert(sToSave));
       }
 
       const results = await Promise.all(promises);
+
+      console.log('results = ', results)
+
       results.forEach((res: any) => {
         if (res && (res.logo_url || res.banner_url)) {
           Object.assign(empresa, res);
@@ -197,6 +217,70 @@ export class EmpresaService {
         `,
       )
       .order('nome', { ascending: true });
+  }
+
+  async getPlanoInfo(empresaId: string) {
+    console.log('empresaId = ', empresaId)
+
+    const { data: empresa, error } = await this.databaseService.supabase
+      .from('empresa')
+      .select('id, nome, plano, data_vencimento, limite_alunos, features, status_licenca')
+      .eq('id', empresaId)
+      .single();
+
+    const { data: assinatura } = await this.databaseService.supabase
+      .from('assinatura')
+      .select('*')
+      .eq('empresa_id', empresaId)
+      .single();
+
+    console.log('empresa = ', empresa)
+
+    if (error || !empresa) {
+      return { error: { message: 'Empresa não encontrada', error } };
+    }
+
+    const { data: alunosCount } = await this.databaseService.supabase
+      .from('usuario')
+      .select('id', { count: 'exact', head: true })
+      .eq('empresa_id', empresaId)
+      .eq('fl_ativo', true);
+
+
+    const { data: instrutoresCount } = await this.databaseService.supabase
+      .from('usuario')
+      .select('id', { count: 'exact', head: true })
+      .eq('empresa_id', empresaId)
+      .eq('fl_ativo', true);
+
+    const { data: equipamentosCount } = await this.databaseService.supabase
+      .from('equipamento')
+      .select('id', { count: 'exact', head: true })
+      .eq('empresa_id', empresaId)
+      .eq('fl_ativo', true);
+
+    const { data: creditosIaUsados } = await this.databaseService.supabase
+      .from('creditos_ia')
+      .select('id', { count: 'exact', head: true })
+      .eq('empresa_id', empresaId)
+      .eq('fl_ativo', true);
+
+    return {
+      empresa: {
+        id: empresa.id,
+        nome: empresa.nome,
+        plano: empresa.plano || 'Gratuito',
+        data_vencimento: empresa.data_vencimento,
+        limite_alunos: assinatura.limite_alunos || 50,
+        alunos_count: alunosCount || 0,
+        features: empresa.features || {},
+        status_licenca: empresa.status_licenca || 'ativa',
+        instrutores_count: instrutoresCount || 0,
+        equipamentos_count: equipamentosCount || 0,
+        creditos_ia_usados: creditosIaUsados || 0,
+        creditos_ia_limite: assinatura.limite_creditos_ia || 0
+      }
+    };
   }
 }
 
