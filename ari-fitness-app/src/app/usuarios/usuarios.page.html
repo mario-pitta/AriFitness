@@ -214,9 +214,13 @@
           <ion-icon aria-hidden="true" size="small" name="bar-chart" slot="start"></ion-icon>
           <ion-text size="small">Histórico de Treino</ion-text>
         </ion-item> -->
-        <ion-item [button]="true" lines="full" (click)="showCobrancaModal = true">
+        <ion-item [button]="true" lines="full" (click)="openCobrancaModal(selectedUsuario)">
           <ion-icon aria-hidden="true" size="small" name="logo-whatsapp" slot="start"></ion-icon>
           <ion-text size="small">Enviar Cobrança</ion-text>
+        </ion-item>
+        <ion-item [button]="true" lines="full" (click)="openEngajamentoModal(selectedUsuario)">
+          <ion-icon aria-hidden="true" size="small" name="heart-outline" slot="start" color="danger"></ion-icon>
+          <ion-text size="small">Enviar Engajamento</ion-text>
         </ion-item>
 
         <ion-item [button]="true" lines="full" (click)="toggleAtivo(selectedUsuario)">
@@ -245,69 +249,6 @@
     }
   </ng-template>
 
-  <ion-modal [isOpen]="showCobrancaModal"
-    (didDismiss)="showCobrancaModal = false; selectedUsuario = null; cobrancaForm.reset()"
-    (ionModalWillPresent)="isOpen = false">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Enviar Cobrança</ion-title>
-          <ion-buttons slot="end">
-            <ion-icon name="close" (click)="showCobrancaModal = false; selectedUsuario = null"></ion-icon>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
-        <div class="ion-padding">
-          <form [formGroup]="cobrancaForm">
-            <ion-row>
-              <ion-col>
-                <ion-input type="text" label="Nome" labelPlacement="floating" [value]="selectedUsuario?.nome"
-                  readonly="true" />
-              </ion-col>
-              <ion-col>
-                <ion-input type="text" label="WhatsApp" labelPlacement="floating" [value]="selectedUsuario?.whatsapp"
-                  readonly="true" />
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-                <ion-item>
-                  <ng-content *ngTemplateOutlet="mesesSelector; context: {$implicit: cobrancaForm};"></ng-content>
-                </ion-item>
-
-              </ion-col>
-              <ion-col>
-                <ion-item>
-                  <ng-content *ngTemplateOutlet="anosSelector; context: {$implicit: cobrancaForm};"></ng-content>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </form>
-
-          <div class="ion-padding" id="message">
-            {{message}}
-          </div>
-        </div>
-
-        <ion-footer class="ion-no-border">
-          <ion-row class="ion-justify-content-center">
-            <ion-col size="auto">
-              <ion-button color="primary" fill="clear" shape="round" (click)="copyMessage()"
-                [disabled]="!cobrancaForm.valid">
-                <ion-icon slot="icon-only" name="copy"></ion-icon>
-              </ion-button>
-              <ion-button color="success" fill="clear" shape="round" (click)="sendMessage()"
-                [disabled]="!cobrancaForm.valid">
-                <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-footer>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
   <ion-modal [isOpen]="showHistoricoModal" (didDismiss)="showHistoricoModal = false; selectedUsuario = null"
     (ionModalWillPresent)="isOpen = false">
     <ng-template>
@@ -323,8 +264,8 @@
         <ng-container *ngIf="selectedUsuario">
           <div class="user-history-header">
             <div class="user-profile">
-              <div class="avatar-large">
-                <img [src]="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + selectedUsuario.nome" alt="Avatar">
+              <div class="avatar-large" [ngClass]="{'female': selectedUsuario?.genero === 'F', 'male': selectedUsuario?.genero !== 'F'}">
+                <span class="initial">{{ selectedUsuario?.nome?.charAt(0) }}</span>
               </div>
               <div class="user-info">
                 <h2>{{selectedUsuario.nome}}</h2>
@@ -408,20 +349,4 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-
-  <ng-template #mesesSelector let-form let-control="control">
-    <div [formGroup]="form">
-      <ion-select interface="popover" placeholder="Mês" [formControlName]="control || 'mes'">
-        <ion-select-option *ngFor="let mes of meses" [value]="mes.value">{{mes.label}}</ion-select-option>
-      </ion-select>
-    </div>
-  </ng-template>
-
-  <ng-template #anosSelector let-form>
-    <div [formGroup]="form">
-      <ion-select interface="popover" placeholder="Ano" formControlName="ano">
-        <ion-select-option *ngFor="let ano of anos" [value]="ano.value">{{ano.value}}</ion-select-option>
-      </ion-select>
-    </div>
-  </ng-template>
 </ion-content>

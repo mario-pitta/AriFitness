@@ -60,6 +60,14 @@ ion-content {
             font-size: 2rem;
             font-weight: 800;
             color: white;
+
+            &.female {
+                background: linear-gradient(135deg, #e91e63, #f48fb1);
+            }
+
+            &.male {
+                background: linear-gradient(135deg, #2196f3, #64b5f6);
+            }
         }
 
         .profile-info {

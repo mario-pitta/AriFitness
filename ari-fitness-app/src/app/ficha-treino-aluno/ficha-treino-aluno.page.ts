@@ -123,6 +123,8 @@ export class FichaTreinoAlunoPage implements OnInit {
           this.aluno?.patchValue({
             id: usuarios[0].id,
             nome: usuarios[0].nome,
+            genero: usuarios[0].genero,
+            foto_url: usuarios[0].foto_url
           });
 
           this.loadFichaData(this.aluno?.value.id);
@@ -154,6 +156,8 @@ export class FichaTreinoAlunoPage implements OnInit {
           this.aluno?.patchValue({
             id: usuarios[0].id,
             nome: usuarios[0].nome,
+            genero: usuarios[0].genero,
+            foto_url: usuarios[0].foto_url
           });
         }
 
@@ -258,6 +262,8 @@ export class FichaTreinoAlunoPage implements OnInit {
       aluno: this.fb.group({
         id: [null, [Validators.nullValidator]],
         nome: [null, [Validators.nullValidator]],
+        genero: [null, [Validators.nullValidator]],
+        foto_url: [null, [Validators.nullValidator]],
       }),
       treinos: this.fb.array([]),
     });
@@ -270,6 +276,8 @@ export class FichaTreinoAlunoPage implements OnInit {
     this.aluno?.patchValue({
       id: ficha.aluno.id,
       nome: ficha.aluno.nome,
+      genero: ficha.aluno.genero,
+      foto_url: ficha.aluno.foto_url
     });
     this.f.get('team_member_id')?.patchValue((ficha.instrutor as IUsuario)?.id);
 

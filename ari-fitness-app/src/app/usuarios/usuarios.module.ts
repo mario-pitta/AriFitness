@@ -10,6 +10,8 @@ import { UsuariosPage } from './usuarios.page';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { TransacaoFinanceiraFormModule } from "../shared/transacao-financeira-form/transacao-financeira-form.module";
 import { FormTransacaoFinanceiraModule } from '../shared/form-transacao-finaceira/form-transacao-financeira.module';
+import { WhatsAppSenderModalModule } from '../shared/whatsapp-sender-modal/whatsapp-sender-modal.module';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -18,7 +20,8 @@ import { FormTransacaoFinanceiraModule } from '../shared/form-transacao-finaceir
     UsuariosPageRoutingModule,
     NgxChartsModule,
     ReactiveFormsModule,
-    FormTransacaoFinanceiraModule
+    FormTransacaoFinanceiraModule,
+    WhatsAppSenderModalModule
   ],
   declarations: [UsuariosPage],
   exports: [UsuariosPage],

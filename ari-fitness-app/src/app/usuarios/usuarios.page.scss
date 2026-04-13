@@ -462,12 +462,30 @@
             background: rgba(255, 255, 255, 0.2);
             padding: 4px;
             border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             img {
                 width: 100%;
                 height: 100%;
                 border-radius: 20px;
                 object-fit: cover;
+            }
+
+            .initial {
+                font-size: 32px;
+                font-weight: 800;
+                color: white;
+                text-transform: uppercase;
+            }
+
+            &.female {
+                background: linear-gradient(135deg, #e91e63, #f48fb1);
+            }
+
+            &.male {
+                background: linear-gradient(135deg, #2196f3, #64b5f6);
             }
         }
 

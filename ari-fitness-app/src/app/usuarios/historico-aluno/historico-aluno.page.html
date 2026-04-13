@@ -26,7 +26,7 @@
     <div class="user-header-container" *ngIf="aluno && showHeader">
         <div class="profile-card animate__animated animate__fadeInDown">
             <div class="avatar-wrapper">
-                <span class="avatar-letter">{{aluno.nome.charAt(0)}}</span>
+                <span class="avatar-letter" [ngClass]="{'female': aluno?.genero === 'F', 'male': aluno?.genero !== 'F'}">{{aluno?.nome?.charAt(0)}}</span>
             </div>
             <div class="profile-info">
                 <h2>{{aluno.nome}}</h2>

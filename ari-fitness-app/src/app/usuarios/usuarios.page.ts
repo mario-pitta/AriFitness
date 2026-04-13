@@ -14,20 +14,9 @@ import { FormTransacaoFinaceiraComponent } from '../shared/form-transacao-finace
 import { TransacaoFinanceiraService } from 'src/core/services/transacao-financeira/transacao-financeira.service';
 import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
 import Constants from 'src/core/Constants';
+import { WhatsAppModalService } from 'src/core/services/whatsapp/whatsapp-modal.service';
 
 import { FormaDePagamento, TransacaoFinanceira } from 'src/core/models/TransacaoFInanceira';
-
-const WHATSAPP_MESSAGE_TEMPLATE = `
-    Olá, {{nome}}. Aqui é {{remetente}}, da *{{empresa}}*. Tudo bem? %0D
-  Ainda não foi identificado o pagamento da sua mensalidade do mês de *{{mes}}* de *{{ano}}*.%0D
-  Para informar o pagamento, favor enviar o comprovante de pagamento via WhatsApp. %0D%0D
-
-  Caso ainda não tenha realizado o pagamento, segue os dados de transferência: 
-  
-  *Chave Pix*: {{chave_pix}} 
-
-
-  Caso prefira utilizar o cartão de crédito, favor solicite um link de pagamento ou vá até a recepção. %0DSerá um prazer te atender!`;
 
 @Component({
   selector: 'app-usuarios',
@@ -72,7 +61,6 @@ export class UsuariosPage implements OnInit {
   tipoSelected: number | string = Constants.ALUNO_ID;
   usuarioList: Usuario[] = [];
   usuarios: Usuario[] = [];
-  showCobrancaModal: boolean = false;
   showReciboModal: boolean = false;
   showFormReciboModal: boolean = false;
   isOpen: boolean = false;
@@ -118,7 +106,8 @@ export class UsuariosPage implements OnInit {
     private authService: AuthService,
     private transacaoFinanceiraDashService: TransacaoFinanceiraDashService,
     private transacaoFinanceiraService: TransacaoFinanceiraService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private whatsappModalService: WhatsAppModalService
   ) { }
   user: IUsuario | null = null;
   ngOnInit() {
@@ -449,52 +438,25 @@ export class UsuariosPage implements OnInit {
     return this.cobrancaForm.get('ano');
   }
 
-  get message(): string {
-    return WHATSAPP_MESSAGE_TEMPLATE
-      .replace('{{nome}}', this.selectedUsuario?.nome ?? '')
-      .replace('{{remetente}}', this.user?.nome ?? '')
-      .replace('{{empresa}}', this.user?.empresa?.nome ?? '')
-      .replace('{{mes}}', this.mes?.value ?? '')
-      .replace('{{ano}}', this.ano?.value ?? '')
-      .replace('{{chave_pix}}', this.user?.empresa?.chave_pix ?? '');
-  }
-
-  sendMessage() {
-    const mdMessage = encodeURIComponent(this.message.replace(/%0D/g, '\n'));
-
-    const formatedNumber = this.selectedUsuario?.whatsapp?.replace(/\D/g, '');
-
-    const whasappUrl = `https://wa.me/55${formatedNumber}?text=${mdMessage}`;
-
-    console.log('whasappUrl = ', whasappUrl)
-
-    const a = document.createElement('a');
-    a.href = whasappUrl;
-    a.target = '_blank';
-    a.click();
-    // this.showCobrancaModal = false;
-    // this.selectedUsuario = null;
-  }
-
-  copyMessage() {
-    const message = this.message.replace(/%0D/g, '\n');
-    navigator.clipboard.writeText(message);
-    Clipboard.write({
-      string: message,
-    }).then(() => {
-      this.toastr.success(
-        'Mensagem copiada para area de  transferência!',
-        'bottom'
-      );
-    });
-  }
-
-  openCobrancaModal(member: Usuario) {
-    if (!member.fl_ativo || member.fl_adimplente) {
+  openCobrancaModal(member: Usuario | null | undefined) {
+    if (!member || !member.fl_ativo || member.fl_adimplente) {
       return;
     }
     this.selectedUsuario = member;
-    this.showCobrancaModal = true;
+
+    // Usar modal compartilhado
+    this.whatsappModalService.openModal(member, 'BILLING', {
+      mes: this.mes?.value || Constants.meses[new Date().getMonth()].label,
+      ano: this.ano?.value || new Date().getFullYear()
+    });
+  }
+
+  openEngajamentoModal(member: Usuario | null | undefined) {
+    if (!member) return;
+    this.selectedUsuario = member;
+
+    // Usar modal compartilhado
+    this.whatsappModalService.openModal(member, 'ENGAGEMENT');
   }
 
   openFormReciboModal(member: Usuario | null | undefined) {
@@ -692,6 +654,7 @@ export class UsuariosPage implements OnInit {
                     'top'
                   );
                   this.confetti.showConfetti();
+                  this.askSendReceipt(p);
                   this.getUsuarios();
                   this.getTransacoesByUser(
                     this.selectedUsuario as Usuario,
@@ -714,6 +677,37 @@ export class UsuariosPage implements OnInit {
       ],
     });
     alert.present();
+  }
+
+  async askSendReceipt(pagamento: any) {
+    if (!this.selectedUsuario) return;
+
+    const usuario = {
+      nome: this.selectedUsuario.nome,
+      whatsapp: this.selectedUsuario.whatsapp
+    };
+
+    if (!usuario.whatsapp) return;
+
+    const alert = await this.alertController.create({
+      header: 'Enviar Comprovante',
+      message: `Deseja enviar o comprovante de pagamento para ${usuario.nome} via WhatsApp?`,
+      buttons: [
+        { text: 'Não', role: 'cancel' },
+        {
+          text: 'Sim, enviar',
+          handler: () => {
+            const valor = Number(this.selectedUsuario?.planos?.preco_padrao);
+            this.whatsappModalService.openModal(usuario, 'RECEIPT', {
+              valor: valor ? `R$ ${valor.toFixed(2)}` : '',
+              data: new Date().toLocaleDateString('pt-BR'),
+              forma_pagamento: 'PIX'
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   filterMember(event: any) {

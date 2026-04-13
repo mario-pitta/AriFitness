@@ -12,12 +12,8 @@
 
         <!-- Avatar / Foto -->
         <div class="avatar-section">
-            <div class="avatar-wrapper">
-                <img *ngIf="form.value.foto_url && form.value.foto_url !== 'false'" [src]="form.value.foto_url"
-                    alt="Foto de perfil" class="avatar-img" />
-                <div *ngIf="!form.value.foto_url || form.value.foto_url === 'false'" class="avatar-placeholder">
-                    <ion-icon name="person" class="avatar-icon"></ion-icon>
-                </div>
+            <div class="avatar-wrapper" [ngClass]="{'avatar-female': user?.genero === 'F', 'avatar-male': user?.genero !== 'F'}">
+                <span class="avatar-initial">{{ user?.nome?.charAt(0) }}</span>
             </div>
             <h2 class="user-name">{{ user?.nome }}</h2>
             <p class="user-subtitle ion-text-center">

@@ -21,8 +21,8 @@
     <ion-list lines="none" *ngIf="!loading">
         <ion-item *ngFor="let student of filteredStudents" class="student-item" (click)="selectStudent(student)">
 
-            <div class="avatar-sm" slot="start">
-                <ion-icon name="person-circle-outline"></ion-icon>
+            <div class="avatar-sm" [ngClass]="{'female': student.genero === 'F', 'male': student.genero !== 'F'}" slot="start">
+                <span class="initial">{{ student.nome?.charAt(0) }}</span>
             </div>
             <ion-label>
                 <h2 class="fw-bold">{{ student.nome }}</h2>
