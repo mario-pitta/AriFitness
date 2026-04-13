@@ -1,0 +1,112 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/configuracoes" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Configuração WhatsApp</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="config-container animate__animated animate__fadeIn">
+    <div class="header-section animate__animated animate__fadeIn">
+      <ng-container *ngIf="status?.data?.LoggedIn == true; else pendingHeader">
+        <div class="connection-header-badge">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+          <span>Instância: <strong>{{ status?.data?.Name }}</strong></span>
+        </div>
+        <h2>WhatsApp Conectado</h2>
+        <p>Sua plataforma MvK Gym Manager está integrada e pronta para disparar mensagens através deste dispositivo.</p>
+      </ng-container>
+
+      <ng-template #pendingHeader>
+        <div class="icon-header">
+          <ion-icon name="logo-whatsapp" color="success"></ion-icon>
+        </div>
+        <h2>Conecte seu WhatsApp</h2>
+        <p>Gerencie disparos automáticos de cobrança e engajamento diretamente pela plataforma.</p>
+      </ng-template>
+    </div>
+
+    <!-- Status Card -->
+    <div class="status-card" [class.connected]="status?.data?.LoggedIn == true">
+      <div class="status-indicator"></div>
+      <div class="status-info">
+        <span class="label">Status da Conexão</span>
+        <h3 class="value">{{ status?.data?.LoggedIn == true ? 'Conectado' : (status ? 'Aguardando Pareamento' :
+          'Instância não criada') }}</h3>
+      </div>
+      <ion-button fill="clear" color="primary" (click)="checkStatus()" [disabled]="loading">
+        <ion-icon slot="icon-only" name="refresh-outline" [class.spinning]="loading"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Connection Section -->
+    <div class="connection-section">
+
+      <!-- No Instance State -->
+      <div *ngIf="!status && !qrCode" class="action-box">
+        <p>Ainda não foi criada uma instância para sua empresa. Clique no botão abaixo para iniciar.</p>
+        <ion-button expand="block" shape="round" color="primary" (click)='createInstance()' [disabled]="loading">
+          <ion-icon slot='start' name='add-circle-outline'></ion-icon>
+          Criar Instância
+        </ion-button>
+      </div>
+
+      <!-- QR Code State -->
+      <div *ngIf="status && status?.data?.LoggedIn == false" class="qr-box animate__animated animate__zoomIn">
+        <h3>Aponte a câmera do seu WhatsApp</h3>
+        <p>Vincule seu dispositivo como um "Aparelho Conectado"</p>
+        <div class="qr-container">
+          <ng-container *ngIf="qrCode; else qrLoading">
+            <img [src]="qrCode" alt="QR Code WhatsApp">
+          </ng-container>
+          <ng-template #qrLoading>
+            <div class="qr-placeholder">
+              <ion-skeleton-text animated style="width: 250px; height: 250px; border-radius: 12px;"></ion-skeleton-text>
+              <div class="qr-placeholder-text">Gerando QR Code...</div>
+            </div>
+          </ng-template>
+
+          <div class="qr-overlay" *ngIf="loading && qrCode">
+            <ion-spinner color="primary"></ion-spinner>
+          </div>
+        </div>
+        <p class="qr-hint">O QR Code expira em alguns minutos. Atualize se necessário.</p>
+        <ion-button fill="outline" color="medium" shape="round" (click)="getQRCode()" [disabled]="loading">
+          <ion-icon slot="start" name="sync-outline"></ion-icon>
+          Atualizar QR Code
+        </ion-button>
+      </div>
+
+      <!-- Connected State -->
+      <div *ngIf="status?.data?.LoggedIn == true" class="connected-box animate__animated animate__fadeIn">
+        <div class="success-icon">
+          <ion-icon name="checkmark-done-circle" color="success"></ion-icon>
+        </div>
+        <h3>WhatsApp Ativo!</h3>
+        <p>Sua empresa já pode realizar disparos de mensagens automáticas.</p>
+
+        <div class="info-list">
+          <div class="info-item">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>Envio de Cobranças Automáticas</span>
+          </div>
+          <div class="info-item">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>Engagement Mensal (Em breve)</span>
+          </div>
+          <div class="info-item">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <span>Engagement Mensal (Em breve)</span>
+          </div>
+        </div>
+
+        <ion-button expand="block" fill="outline" color="danger" shape="round" class="mt-20" (click)="disconnect()">
+          <ion-icon slot="start" name="trash-outline"></ion-icon>
+          Desconectar WhatsApp
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>
