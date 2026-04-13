@@ -38,6 +38,9 @@ export class PlanoPagePage implements OnInit {
     { key: 'permite_ficha', label: 'Análise e Criação de Fichas com IA', icon: 'document-text' },
     { key: 'permite_financeiro', label: 'Análise Financeira com IA', icon: 'wallet' },
     { key: 'suporta_whatsapp', label: 'WhatsApp', icon: 'logo-whatsapp' },
+    { key: 'suporta_loja', label: 'Loja da Academia', icon: 'cart' },
+    { key: 'pagamento_integrado', label: 'Pagamento Integrado', icon: 'card' },
+    { key: 'regra_cobranca', label: 'Regra de Cobrança Personalizada', icon: 'settings' },
     { key: 'suporte_prioritario', label: 'Suporte Prioritário', icon: 'headset' },
   ];
 
@@ -82,6 +85,9 @@ export class PlanoPagePage implements OnInit {
         permite_financeiro: true,
         permite_relatorios: true,
         suporta_whatsapp: false,
+        suporta_loja: true,
+        pagamento_integrado: false,
+        regra_cobranca: false,
         suporte_prioritario: false
       },
       empresa: {
@@ -156,6 +162,9 @@ export class PlanoPagePage implements OnInit {
         permite_financeiro: false,
         permite_relatorios: false,
         suporta_whatsapp: false,
+        suporta_loja: false,
+        pagamento_integrado: false,
+        regra_cobranca: false,
         suporte_prioritario: false,
         is_destaque: false
       },
@@ -174,6 +183,9 @@ export class PlanoPagePage implements OnInit {
         permite_financeiro: true,
         permite_relatorios: true,
         suporta_whatsapp: false,
+        suporta_loja: true,
+        pagamento_integrado: false,
+        regra_cobranca: false,
         suporte_prioritario: false,
         is_destaque: true
       },
@@ -192,6 +204,9 @@ export class PlanoPagePage implements OnInit {
         permite_financeiro: true,
         permite_relatorios: true,
         suporta_whatsapp: true,
+        suporta_loja: true,
+        pagamento_integrado: true,
+        regra_cobranca: true,
         suporte_prioritario: true,
         is_destaque: false
       }

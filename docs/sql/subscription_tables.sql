@@ -21,11 +21,30 @@ CREATE TABLE IF NOT EXISTS plano_assinatura_system (
     permite_financeiro boolean DEFAULT true,
     permite_relatorios boolean DEFAULT true,
     suporta_whatsapp boolean DEFAULT false,
+    suporta_loja boolean DEFAULT false,
+    pagamento_integrado boolean DEFAULT false,
+    regra_cobranca boolean DEFAULT false,
     suporte_prioritario boolean DEFAULT false,
     fl_ativo boolean DEFAULT true,
     is_destaque boolean DEFAULT false,
     ordenar integer DEFAULT 0
 );
+
+-- -----------------------------------------------------------------------------
+-- Adicionar colunas se não existirem (para migração de bases existentes)
+-- -----------------------------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'plano_assinatura_system' AND column_name = 'suporta_loja') THEN
+        ALTER TABLE plano_assinatura_system ADD COLUMN suporta_loja boolean DEFAULT false;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'plano_assinatura_system' AND column_name = 'pagamento_integrado') THEN
+        ALTER TABLE plano_assinatura_system ADD COLUMN pagamento_integrado boolean DEFAULT false;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'plano_assinatura_system' AND column_name = 'regra_cobranca') THEN
+        ALTER TABLE plano_assinatura_system ADD COLUMN regra_cobranca boolean DEFAULT false;
+    END IF;
+END $$;
 
 -- -----------------------------------------------------------------------------
 -- Tabela de Assinaturas
@@ -95,11 +114,10 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 -- -----------------------------------------------------------------------------
 -- Inserir planos iniciais (seed data)
 -- -----------------------------------------------------------------------------
-INSERT INTO plano_assinatura_system (nome, descricao, preco, intervalo_meses, limite_alunos, permite_checkin, permite_ficha, permite_financeiro, permite_relatorios, is_destaque, ordenar) VALUES
-('Gratuito', 'Plano básico para pequenas academias', 0, 1, 50, true, true, false, false, false, 0),
-('Essential', 'Plano com funcionalidades essenciais', 97, 1, 150, true, true, true, false, false, 1),
-('Professional', 'Plano completo com relatórios', 197, 1, 300, true, true, true, true, true, 2),
-('Enterprise', 'Plano ilimitado com suporte prioritário', 497, 1, 1000, true, true, true, true, true, 3)
+INSERT INTO plano_assinatura_system (nome, descricao, preco, intervalo_meses, limite_alunos, permite_checkin, permite_ficha, permite_financeiro, permite_relatorios, suporta_whatsapp, suporta_loja, pagamento_integrado, regra_cobranca, suporte_prioritario, is_destaque, ordenar) VALUES
+('Starter', 'Ideal para pequenas academias', 97, 1, 100, true, true, false, false, false, false, false, false, false, false, 0),
+('Professional', 'Plano completo com análise de IA', 197, 1, 300, true, true, true, true, false, true, false, false, false, true, 1),
+('Enterprise', 'Solução completa para grandes academias', 497, 1, 1000, true, true, true, true, true, true, true, true, true, false, 2)
 ON CONFLICT DO NOTHING;
 
 -- -----------------------------------------------------------------------------
