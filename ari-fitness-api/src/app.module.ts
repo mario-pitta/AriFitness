@@ -32,11 +32,15 @@ import { ServiceModule } from './service/service.module';
 import { ConfigModule } from '@nestjs/config';
 import { AutomationsModule } from './automations/automations.module';
 import { EvolutionModule } from './evolution/evolution.module';
+import { ProdutoModule } from './produto/produto.module';
+import { PedidoModule } from './pedido/pedido.module';
 
 
 @Module({
   imports: [
     EvolutionModule,
+    ProdutoModule,
+    PedidoModule,
     GeminiModule,
     DashboardModule,
     FichaAlunoModule,
