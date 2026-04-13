@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import('./auth/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule)
   },
   {
+    path: '*/**/unauthorized',
+    loadChildren: () => import('./shared/unauthorized-page/unauthorized-page.module').then(m => m.UnauthorizedPageModule)
+  },
+  {
     canActivate: [AuthGuard],
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule),

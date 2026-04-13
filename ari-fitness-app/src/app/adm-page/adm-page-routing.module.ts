@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AdmPagePage } from './adm-page.page';
 import Constants from 'src/core/Constants';
+import { RolesGuard } from 'src/core/guards/roles.guard';
 
 const routes: Routes = [
   {
@@ -13,19 +14,14 @@ const routes: Routes = [
   {
     path: '',
     component: AdmPagePage,
+    canActivate: [RolesGuard],
+    data: { roles: [Constants.ADMIN_ID, Constants.INSTRUTOR_ID, Constants.GERENCIA_ID] },
     children: [
       {
         path: '',
         redirectTo: 'admin/dashboard',
         pathMatch: 'full'
       },
-      // {
-      //   path: 'membros',
-      //   loadChildren: () => import('../usuarios/usuarios.module').then( m => m.UsuariosPageModule),
-      //   data: {role: 'admin'},
-
-      // },
-
       {
         path: 'membros',
         children: [
@@ -47,7 +43,7 @@ const routes: Routes = [
           {
             path: 'ficha-de-treino',
             loadChildren: () => import('../ficha-treino-aluno/ficha-treino-aluno.module').then(m => m.FichaTreinoAlunoPageModule),
-            data: { role: ['admin', 'instrutor'] }
+            data: { roles: [Constants.ADMIN_ID, Constants.INSTRUTOR_ID] }
           }
         ]
       },
@@ -97,6 +93,10 @@ const routes: Routes = [
             path: 'dados-cadastrais',
             loadChildren: () => import('../pessoa-form/pessoa-form.module').then(m => m.PessoaFormPageModule),
           },
+          {
+            path: 'whatsapp',
+            loadChildren: () => import('./whatsapp-config/whatsapp-config.module').then(m => m.WhatsappConfigPageModule),
+          },
           //minha-empresa
           //meus-planos
           //preferencias
@@ -110,6 +110,10 @@ const routes: Routes = [
       {
         path: 'qrcode',
         loadChildren: () => import('../check-in/check-in.module').then(m => m.CheckInPageModule)
+      },
+      {
+        path: 'unauthorized',
+        loadChildren: () => import('../shared/unauthorized-page/unauthorized-page.module').then(m => m.UnauthorizedPageModule)
       },
     ]
   },
