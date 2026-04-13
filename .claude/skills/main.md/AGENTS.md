@@ -1,0 +1,1 @@
+As instruções estão no arquivo [fullstack.md](../../../.skills/fullstack.md).
