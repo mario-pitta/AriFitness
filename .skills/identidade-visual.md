@@ -1,11 +1,11 @@
-# Identidade Visual - AriFitness (MvK Gym Manager)
+# Identidade Visual - MvK Gym Manager
 
-Este documento define as diretrizes visuais e de marca para o ecossistema AriFitness, garantindo consistência entre o aplicativo e a futura landing page através do conceito **Cyber-Athletic Minimal**.
+Este documento define as diretrizes visuais e de marca para o ecossistema MvK Gym Manager, garantindo consistência entre o aplicativo e a futura landing page através do conceito **Cyber-Athletic Minimal**.
 
 ---
 
 ## 1. Conceito da Marca
-**AriFitness** é sinônimo de alta performance, tecnologia e acompanhamento personalizado. A marca deve transmitir:
+**MvK Gym Manager** é sinônimo de alta performance, tecnologia e acompanhamento personalizado. A marca deve transmitir:
 - **Energia e Movimento**: Dinamismo e proatividade (Verde Marca).
 - **Precisão Geométrica**: Uso de fontes calculadas e layouts limpos.
 - **Premium Dark**: Uma experiência refinada, focada no alto contraste.
