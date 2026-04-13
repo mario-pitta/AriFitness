@@ -68,5 +68,5 @@ Integrações: Se o sistema se integra com outras plataformas (ex: sistemas de p
 **Tamanho da logo e do Banner:** Verifique as recomendações de tamanho e formato para a imagem da logo para garantir que ela seja exibida corretamente.
 **Segurança:** Mantenha as informações de acesso e configurações sensíveis em segurança.
 
-Você poderá realizar essas configurações acessando https://mvkgym.vercel.app/#/admin/configuracoes/empresa 
+Você poderá realizar essas configurações acessando https://mvkgym.vercel.app/admin/configuracoes/empresa 
 Use este guia como base e adapte-o conforme a sua experiência com o sistema real. Se tiver dúvidas sobre algum campo específico, procure por ajuda ou documentação dentro do próprio sistema MVK Gym Manager, se disponível, ou entre em contato com a equipe de desenvolvimento.

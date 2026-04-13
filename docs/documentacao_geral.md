@@ -5,7 +5,7 @@ Esta documentação fornece uma visão clara e detalhada do sistema **Mvk Gym Ma
 ---
 
 ## 1. Objetivo do Projeto
-O **AriFitness** visa digitalizar e otimizar a relação entre alunos, professores e gestores. A plataforma permite que:
+O **MvK Gym Manager** visa digitalizar e otimizar a relação entre alunos, professores e gestores. A plataforma permite que:
 - **Alunos** acompanhem sua evolução, acessem fichas de treino personalizadas e realizem check-ins.
 - **Professores** criem planos de treino inteligentes e monitorem o desempenho dos alunos.
 - **Gestores** tenham controle total sobre o financeiro, cadastro de alunos e operação da academia.
