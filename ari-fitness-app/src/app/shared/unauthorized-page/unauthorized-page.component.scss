@@ -1,0 +1,67 @@
+.unauthorized-content {
+  --background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.unauthorized-container {
+  text-align: center;
+  padding: 32px;
+  max-width: 400px;
+}
+
+.shield-container {
+  margin-bottom: 24px;
+}
+
+.shield-icon {
+  font-size: 120px;
+  color: #ff6b6b;
+  filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.4));
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.message {
+  font-size: 16px;
+  color: #a0a0b0;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.message strong {
+  color: #ff6b6b;
+}
+
+.message.secondary {
+  font-size: 14px;
+  color: #6c6c8a;
+  margin-bottom: 32px;
+}
+
+.back-button {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+  margin-top: 16px;
+}
+
+.hint {
+  font-size: 12px;
+  color: #4a4a6a;
+  margin-top: 24px;
+}

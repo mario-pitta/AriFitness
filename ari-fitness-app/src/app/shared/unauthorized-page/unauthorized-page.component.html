@@ -1,0 +1,28 @@
+<ion-content class="unauthorized-content w-100 d-flex align-items-center justify-content-center">
+  <div class="container unauthorized-container">
+    <div class="shield-container">
+      <ion-icon name="shield-lock" class="shield-icon"></ion-icon>
+    </div>
+
+    <h1 class="title">🚫 Acesso Bloqueado!</h1>
+
+    <p class="message">
+      Ops! Parece que você tentou entrar onde não deveria.
+      <br>
+      Este aqui é o <strong>lado sombrio da força</strong>... 🦹‍♂️
+    </p>
+
+    <p class="message secondary">
+      Mas não se preocupe! Você pode voltar para a área segura a qualquer momento.
+    </p>
+
+    <ion-button expand="block" (click)="goBack()" class="back-button">
+      <ion-icon slot="start" name="arrow-back"></ion-icon>
+      Voltar para o início
+    </ion-button>
+
+    <p class="hint">
+      Se você acredita que isso é um erro, fale com o administrador do sistema. 📞
+    </p>
+  </div>
+</ion-content>
