@@ -1,0 +1,108 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="admin/configuracoes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Produtos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openForm()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="produtos-content">
+  <div class="loading-container" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Lista de Produtos -->
+  <div class="produtos-list" *ngIf="!loading && !showForm">
+    <div class="produto-card" *ngFor="let produto of produtos">
+      <div class="produto-imagem">
+        <img *ngIf="produto.imagem_url" [src]="produto.imagem_url" [alt]="produto.nome">
+        <ion-icon *ngIf="!produto.imagem_url" name="cube-outline"></ion-icon>
+      </div>
+      <div class="produto-info">
+        <h3 class="produto-nome">{{ produto.nome }}</h3>
+        <p class="produto-desc" *ngIf="produto.descricao">{{ produto.descricao }}</p>
+        <div class="produto-meta">
+          <span class="produto-preco">{{ produto.preco | currency:'BRL' }}</span>
+          <ion-badge [ngClass]="getEstoqueClass(produto.estoque, produto.estoque_minimo)">
+            {{ produto.estoque }} em estoque
+          </ion-badge>
+        </div>
+        <span class="produto-categoria" *ngIf="produto.categoria">{{ produto.categoria }}</span>
+      </div>
+      <div class="produto-actions">
+        <ion-button fill="clear" (click)="openForm(produto)">
+          <ion-icon name="pencil"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="toggleAtivo(produto)" [color]="produto.ativo ? 'success' : 'medium'">
+          <ion-icon [name]="produto.ativo ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" color="danger" (click)="deleteProduto(produto)">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="produtos.length === 0">
+      <ion-icon name="cube-outline"></ion-icon>
+      <p>Nenhum produto cadastrado</p>
+      <ion-button (click)="openForm()">Adicionar Primeiro Produto</ion-button>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <div class="produto-form" *ngIf="showForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ editingProduto ? 'Editar' : 'Novo' }} Produto</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Nome *</ion-label>
+          <ion-input [(ngModel)]="formData.nome" placeholder="Nome do produto"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Descrição</ion-label>
+          <ion-textarea [(ngModel)]="formData.descricao" placeholder="Descrição opcional"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Preço *</ion-label>
+          <ion-input type="number" [(ngModel)]="formData.preco" placeholder="0.00"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Estoque</ion-label>
+          <ion-input type="number" [(ngModel)]="formData.estoque" placeholder="0"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Estoque Mínimo (alerta)</ion-label>
+          <ion-input type="number" [(ngModel)]="formData.estoque_minimo" placeholder="5"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">URL da Imagem</ion-label>
+          <ion-input [(ngModel)]="formData.imagem_url" placeholder="https://..."></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Categoria</ion-label>
+          <ion-input [(ngModel)]="formData.categoria" placeholder="Ex: Suplementos"></ion-input>
+        </ion-item>
+
+        <div class="form-actions">
+          <ion-button fill="outline" (click)="closeForm()">Cancelar</ion-button>
+          <ion-button (click)="saveProduto()">Salvar</ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

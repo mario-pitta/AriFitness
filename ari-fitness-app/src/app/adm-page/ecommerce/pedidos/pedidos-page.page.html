@@ -1,0 +1,65 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="admin/configuracoes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pedidos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pedidos-content">
+  <div class="loading-container" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Estatísticas -->
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card stat-total">
+      <ion-icon name="receipt-outline"></ion-icon>
+      <span class="stat-value">{{ stats.total }}</span>
+      <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-card stat-pendentes">
+      <ion-icon name="time-outline"></ion-icon>
+      <span class="stat-value">{{ stats.pendentes }}</span>
+      <span class="stat-label">Pendentes</span>
+    </div>
+    <div class="stat-card stat-pagos">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      <span class="stat-value">{{ stats.pagos }}</span>
+      <span class="stat-label">Pagos</span>
+    </div>
+    <div class="stat-card stat-receita">
+      <ion-icon name="cash-outline"></ion-icon>
+      <span class="stat-value">{{ stats.valorTotal | currency:'BRL' }}</span>
+      <span class="stat-label">Receita</span>
+    </div>
+  </div>
+
+  <!-- Lista de Pedidos -->
+  <div class="pedidos-list" *ngIf="!loading">
+    <div class="pedido-card" *ngFor="let pedido of pedidos" (click)="mostrarOpcoesStatus(pedido)">
+      <div class="pedido-header">
+        <span class="pedido-id">#{{ pedido.id.substring(0, 8) }}</span>
+        <ion-badge [color]="getStatusColor(pedido.status)">{{ pedido.status }}</ion-badge>
+      </div>
+      <div class="pedido-cliente">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>{{ pedido.cliente_nome || 'Cliente não identificado' }}</span>
+      </div>
+      <div class="pedido-itens" *ngIf="pedido.itens && pedido.itens.length">
+        <span>{{ pedido.itens.length }} item(s)</span>
+      </div>
+      <div class="pedido-footer">
+        <span class="pedido-valor">{{ pedido.valor_total | currency:'BRL' }}</span>
+        <span class="pedido-data">{{ formatDate(pedido.created_at) }}</span>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="pedidos.length === 0">
+      <ion-icon name="receipt-outline"></ion-icon>
+      <p>Nenhum pedido realizado</p>
+    </div>
+  </div>
+</ion-content>

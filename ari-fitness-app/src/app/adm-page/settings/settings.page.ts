@@ -31,6 +31,20 @@ export class SettingsPage implements OnInit {
       color: 'instrutores'
     },
     {
+      title: 'Produtos',
+      subtitle: 'Gerencie produtos da loja',
+      icon: 'cube-outline',
+      path: 'ecommerce/produtos',
+      color: 'instrutores'
+    },
+    {
+      title: 'Pedidos',
+      subtitle: 'Visualize vendas realizadas',
+      icon: 'receipt-outline',
+      path: 'ecommerce/pedidos',
+      color: 'alunos'
+    },
+    {
       title: 'WhatsApp',
       subtitle: 'Conecte sua conta para envios',
       icon: 'logo-whatsapp',

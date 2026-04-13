@@ -1,4 +1,3 @@
-import { FaqPageModule } from './faq/faq.module';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -30,7 +29,14 @@ const routes: Routes = [
     path: 'plano',
     loadChildren: () => import('./plano-page/plano-page.module').then(m => m.PlanoPageModule)
   },
-
+  {
+    path: 'ecommerce/produtos',
+    loadChildren: () => import('src/app/adm-page/ecommerce/produtos/produtos.module').then(m => m.ProdutosPageModule)
+  },
+  {
+    path: 'ecommerce/pedidos',
+    loadChildren: () => import('src/app/adm-page/ecommerce/pedidos/pedidos.module').then(m => m.PedidosPageModule)
+  },
 ];
 
 @NgModule({
