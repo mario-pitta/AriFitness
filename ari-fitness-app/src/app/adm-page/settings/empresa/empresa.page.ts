@@ -10,6 +10,7 @@ import { EmpresaService } from 'src/core/services/empresa/empresa.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
 
 interface DefaultService {
+  id: string;
   nome: string;
   checked: boolean;
 }
@@ -78,6 +79,7 @@ export class EmpresaPage implements OnInit {
       next: (res) => {
         this.DEFAULT_SERVICES = res;
         this.defaultServices = res.map((s: any) => ({
+          id: s.id,
           nome: s.nome,
           checked: false
         }));
@@ -158,7 +160,10 @@ export class EmpresaPage implements OnInit {
     }
   }
 
+  // #region Services
   syncServices(apiServices: IService[]) {
+    console.log('apiServices = ', apiServices)
+
     // Marcar serviços default que já existem na API
     this.defaultServices.forEach(ds => {
       ds.checked = apiServices.some(as => as.nome.toLowerCase() === ds.nome.toLowerCase() && as.ativo);
@@ -182,7 +187,7 @@ export class EmpresaPage implements OnInit {
     }
 
     if (checked) {
-      this.addServiceToForm({ nome: serviceName, ativo: true });
+      this.addServiceToForm({ default_service_id: this.defaultServices[index].id, nome: serviceName, ativo: true });
     } else {
       this.removeServiceByName(serviceName);
     }
@@ -193,9 +198,11 @@ export class EmpresaPage implements OnInit {
   }
 
   addServiceToForm(service: Partial<IService>) {
+    console.log('service = ', service)
+
     this.servicos.push(
       this.fb.group({
-        id: [service.id || null],
+        default_service_id: [service.default_service_id || null],
         nome: [service.nome || '', Validators.required],
         descricao: [service.descricao || ''],
         ativo: [service.ativo ?? true],
@@ -219,6 +226,7 @@ export class EmpresaPage implements OnInit {
     }
     this.servicos.removeAt(index);
   }
+  //#endregion
 
   //#region Planos
   addPlano(plano?: Plano) {

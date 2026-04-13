@@ -24,6 +24,20 @@ export class SettingsPage implements OnInit {
       color: 'alunos'
     },
     {
+      title: 'Meu Plano',
+      subtitle: 'Visualize e gerencie seu plano',
+      icon: 'card-outline',
+      path: 'plano',
+      color: 'instrutores'
+    },
+    {
+      title: 'WhatsApp',
+      subtitle: 'Conecte sua conta para envios',
+      icon: 'logo-whatsapp',
+      path: 'whatsapp',
+      color: 'receita'
+    },
+    {
       title: 'Configurações',
       subtitle: 'Preferências do sistema',
       icon: 'settings-outline',

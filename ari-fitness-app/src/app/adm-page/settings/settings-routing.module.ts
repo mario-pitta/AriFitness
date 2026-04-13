@@ -26,6 +26,10 @@ const routes: Routes = [
     path: 'meu-perfil',
     loadChildren: () => import('../../meu-perfil/meu-perfil.module').then(m => m.MeuPerfilPageModule)
   },
+  {
+    path: 'plano',
+    loadChildren: () => import('./plano-page/plano-page.module').then(m => m.PlanoPageModule)
+  },
 
 ];
 
