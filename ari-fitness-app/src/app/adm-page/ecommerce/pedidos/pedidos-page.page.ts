@@ -1,28 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-import { AuthService } from 'src/core/services/auth/auth.service';
+import { PedidoService, Pedido, Estatisticas } from 'src/core/services/ecommerce/pedido.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
-import { environment } from 'src/environments/environment';
-
-interface Pedido {
-  id: string;
-  cliente_nome?: string;
-  cliente_telefone?: string;
-  valor_total: number;
-  status: 'pendente' | 'pago' | 'cancelado' | 'entregue';
-  forma_pagamento?: string;
-  created_at: string;
-  itens?: any[];
-}
-
-interface Estatisticas {
-  total: number;
-  pendentes: number;
-  pagos: number;
-  cancelados: number;
-  valorTotal: number;
-}
 
 @Component({
   selector: 'app-pedidos-page',
@@ -35,8 +14,7 @@ export class PedidosPagePage implements OnInit {
   stats: Estatisticas = { total: 0, pendentes: 0, pagos: 0, cancelados: 0, valorTotal: 0 };
 
   constructor(
-    private http: HttpClient,
-    private auth: AuthService,
+    private pedidoService: PedidoService,
     private toastr: ToastrService,
     private alertController: AlertController
   ) {}
@@ -46,13 +24,9 @@ export class PedidosPagePage implements OnInit {
     this.loadEstatisticas();
   }
 
-  get empresaId(): string {
-    return this.auth.getUser?.empresa_id || '';
-  }
-
   loadPedidos() {
     this.loading = true;
-    this.http.get<any>(`${environment.apiUrl}/pedidos/${this.empresaId}`).subscribe({
+    this.pedidoService.getAll().subscribe({
       next: (res) => {
         this.pedidos = res.data || [];
         this.loading = false;
@@ -65,7 +39,7 @@ export class PedidosPagePage implements OnInit {
   }
 
   loadEstatisticas() {
-    this.http.get<any>(`${environment.apiUrl}/pedidos/${this.empresaId}/lista/estatisticas`).subscribe({
+    this.pedidoService.getEstatisticas().subscribe({
       next: (res) => {
         this.stats = res.data || this.stats;
       }
@@ -82,34 +56,21 @@ export class PedidosPagePage implements OnInit {
     }
   }
 
-  async atualizarStatus(pedido: Pedido, novoStatus: string) {
-    const alert = await this.alertController.create({
-      header: 'Atualizar Status',
-      message: `Mudar status para "${novoStatus}"?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Confirmar',
-          handler: () => {
-            this.http.patch<any>(`${environment.apiUrl}/pedidos/${this.empresaId}/${pedido.id}/status`, { status: novoStatus }).subscribe({
-              next: () => {
-                this.toastr.success('Status atualizado!');
-                this.loadPedidos();
-                this.loadEstatisticas();
-              },
-              error: () => this.toastr.error('Erro ao atualizar')
-            });
-          }
-        }
-      ]
+  atualizarStatus(pedido: Pedido, novoStatus: string) {
+    this.pedidoService.updateStatus(pedido.id!, novoStatus).subscribe({
+      next: () => {
+        this.toastr.success('Status atualizado!');
+        this.loadPedidos();
+        this.loadEstatisticas();
+      },
+      error: () => this.toastr.error('Erro ao atualizar')
     });
-    await alert.present();
   }
 
   async mostrarOpcoesStatus(pedido: Pedido) {
     const alert = await this.alertController.create({
       header: 'Alterar Status',
-      message: `Pedido: ${pedido.id.substring(0, 8)}...`,
+      message: `Pedido: ${pedido.id?.substring(0, 8)}...`,
       buttons: [
         { text: 'Pendente', handler: () => this.atualizarStatus(pedido, 'pendente') },
         { text: 'Pago', handler: () => this.atualizarStatus(pedido, 'pago') },

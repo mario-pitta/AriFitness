@@ -1,21 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AlertController, ModalController } from '@ionic/angular';
-import { AuthService } from 'src/core/services/auth/auth.service';
+import { AlertController } from '@ionic/angular';
+import { ProdutoService, Produto } from 'src/core/services/ecommerce/produto.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
-import { environment } from 'src/environments/environment';
-
-interface Produto {
-  id?: string;
-  nome: string;
-  descricao?: string;
-  preco: number;
-  estoque: number;
-  estoque_minimo?: number;
-  imagem_url?: string;
-  ativo: boolean;
-  categoria?: string;
-}
 
 @Component({
   selector: 'app-produtos-page',
@@ -41,8 +27,7 @@ export class ProdutosPagePage implements OnInit {
   };
 
   constructor(
-    private http: HttpClient,
-    private auth: AuthService,
+    private produtoService: ProdutoService,
     private toastr: ToastrService,
     private alertController: AlertController
   ) {}
@@ -52,13 +37,9 @@ export class ProdutosPagePage implements OnInit {
     this.loadCategorias();
   }
 
-  get empresaId(): string {
-    return this.auth.getUser?.empresa_id || '';
-  }
-
   loadProdutos() {
     this.loading = true;
-    this.http.get<any>(`${environment.apiUrl}/produtos/${this.empresaId}`).subscribe({
+    this.produtoService.getAll().subscribe({
       next: (res) => {
         this.produtos = res.data || [];
         this.loading = false;
@@ -71,7 +52,7 @@ export class ProdutosPagePage implements OnInit {
   }
 
   loadCategorias() {
-    this.http.get<any>(`${environment.apiUrl}/produtos/${this.empresaId}/lista/categorias`).subscribe({
+    this.produtoService.getCategorias().subscribe({
       next: (res) => {
         this.categorias = res.data || [];
       }
@@ -116,7 +97,7 @@ export class ProdutosPagePage implements OnInit {
     };
 
     if (this.editingProduto?.id) {
-      this.http.put<any>(`${environment.apiUrl}/produtos/${this.empresaId}/${this.editingProduto.id}`, payload).subscribe({
+      this.produtoService.update(this.editingProduto.id, payload).subscribe({
         next: () => {
           this.toastr.success('Produto atualizado!');
           this.loadProdutos();
@@ -125,7 +106,7 @@ export class ProdutosPagePage implements OnInit {
         error: () => this.toastr.error('Erro ao atualizar')
       });
     } else {
-      this.http.post<any>(`${environment.apiUrl}/produtos/${this.empresaId}`, payload).subscribe({
+      this.produtoService.create(payload).subscribe({
         next: () => {
           this.toastr.success('Produto criado!');
           this.loadProdutos();
@@ -146,7 +127,7 @@ export class ProdutosPagePage implements OnInit {
         {
           text: 'Confirmar',
           handler: () => {
-            this.http.put<any>(`${environment.apiUrl}/produtos/${this.empresaId}/${produto.id}`, { ativo: !produto.ativo }).subscribe({
+            this.produtoService.update(produto.id!, { ativo: !produto.ativo }).subscribe({
               next: () => {
                 this.toastr.success(`Produto ${action}!`);
                 this.loadProdutos();
@@ -169,7 +150,7 @@ export class ProdutosPagePage implements OnInit {
           text: 'Excluir',
           cssClass: 'alert-button-destructive',
           handler: () => {
-            this.http.delete<any>(`${environment.apiUrl}/produtos/${this.empresaId}/${produto.id}`).subscribe({
+            this.produtoService.delete(produto.id!).subscribe({
               next: () => {
                 this.toastr.success('Produto excluído!');
                 this.loadProdutos();
