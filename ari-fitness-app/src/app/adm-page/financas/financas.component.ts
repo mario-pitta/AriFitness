@@ -14,6 +14,7 @@ import { AnaliseIaModalComponent } from './analise-ia-modal/analise-ia-modal/ana
 import { FormTransacaoFinaceiraComponent } from 'src/app/shared/form-transacao-finaceira/form-transacao-finaceira.component';
 import { ExportFinanceiroService } from 'src/core/services/export-financeiro/export-financeiro.service';
 import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/transacao-financeira-dash/transacao-financeira-dash.service';
+import { WhatsAppModalService } from 'src/core/services/whatsapp/whatsapp-modal.service';
 
 declare interface CategoryChart {
   tr_categoria_id: number;
@@ -84,7 +85,8 @@ export class FinancasComponent implements OnInit {
     private pageSize: PageSizeService,
     private modalController: ModalController,
     private exportService: ExportFinanceiroService,
-    private dashService: TransacaoFinanceiraDashService
+    private dashService: TransacaoFinanceiraDashService,
+    private whatsappModalService: WhatsAppModalService
   ) {
     this.pageSize.screenSizeChange$.asObservable().subscribe({
       next: (e) => {
@@ -455,6 +457,39 @@ export class FinancasComponent implements OnInit {
       this.confetti.showConfetti();
     }, 250);
     this.downloadRecibo(transacao);
+    this.askSendReceipt(transacao);
+  }
+
+  async askSendReceipt(transacao: TransacaoFinanceira) {
+    const usuario = {
+      nome: (transacao.membro?.nome) as string,
+      whatsapp: (transacao.membro?.whatsapp) as string
+    };
+
+    if (!usuario.whatsapp) return;
+
+    const alert = await this.alertController.create({
+      header: 'Enviar Comprovante',
+      message: `Deseja enviar o comprovante de pagamento para ${usuario.nome} via WhatsApp?`,
+      buttons: [
+        { text: 'Não', role: 'cancel' },
+        {
+          text: 'Sim, enviar',
+          handler: () => {
+            const valor = transacao.valor_final ? `R$ ${Number(transacao.valor_final).toFixed(2)}` : '';
+            const data = transacao.data_lancamento ? new Date(transacao.data_lancamento as string).toLocaleDateString('pt-BR') : '';
+            const forma = transacao.forma_pagamento || 'PIX';
+
+            this.whatsappModalService.openModal(usuario, 'RECEIPT', {
+              valor,
+              data,
+              forma_pagamento: forma
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
   downloadRecibo(transacao: TransacaoFinanceira) {
     this.buildReciboImage(transacao, (data) => {

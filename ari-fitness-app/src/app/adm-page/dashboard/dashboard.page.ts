@@ -2,11 +2,13 @@ import { TransacaoFinanceiraDashService } from 'src/core/services/dashboard/tran
 
 import { Component, HostListener, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { AlertController } from '@ionic/angular';
 import Constants from 'src/core/Constants';
 import { ITeamMember, ITipoUsuario, IUsuario, Usuario } from 'src/core/models/Usuario';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { UsuarioService } from 'src/core/services/usuario/usuario.service';
 import { DashboardMembersService } from 'src/core/services/dashboard/members/members.service';
+import { WhatsAppModalService } from 'src/core/services/whatsapp/whatsapp-modal.service';
 
 import { forkJoin, map, Observable } from 'rxjs';
 import { IEmpresa } from 'src/core/models/Empresa';
@@ -87,6 +89,8 @@ export class DashboardPage implements OnInit {
     private auth: AuthService,
     private transFinServ: TransacaoFinanceiraDashService,
     private teamMemberService: TeamMemberService,
+    private whatsappModalService: WhatsAppModalService,
+    private alertController: AlertController,
 
   ) {
     this.searchControl.valueChanges.subscribe((value) => {
@@ -254,8 +258,55 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  sendWhatsAppMessage(alerta: any) {
+  async sendWhatsAppMessage(alerta: any, type: 'BILLING' | 'ENGAGEMENT' | 'RECEIPT' | 'UPCOMING' = 'BILLING') {
     console.log('alerta = ', alerta)
+
+    const usuario = {
+      id: alerta.id,
+      nome: alerta?.nome || alerta?.aluno_nome,
+      telefone: alerta?.telefone || alerta?.aluno_telefone,
+      whatsapp: alerta?.whatsapp || alerta?.aluno_whatsapp
+    };
+
+    if (!usuario.telefone && !usuario.whatsapp) {
+      return;
+    }
+
+    let templateType: 'BILLING' | 'ENGAGEMENT' | 'RECEIPT' | 'UPCOMING' = type;
+    let extraData: any = {};
+    let buttonText = 'Enviar';
+
+    if (type === 'BILLING') {
+      if (alerta?.dias_para_vencer < 0) {
+        templateType = 'BILLING';
+        extraData = { mes: alerta?.mes, ano: alerta?.ano };
+        buttonText = 'Enviar Cobrança';
+      } else if (alerta?.dias_para_vencer > 0 && alerta?.dias_para_vencer <= 5) {
+        templateType = 'UPCOMING';
+        extraData = { dias: alerta?.dias_para_vencer };
+        buttonText = 'Enviar Aviso de Vencimento';
+      } else {
+        extraData = { mes: alerta?.mes, ano: alerta?.ano };
+        buttonText = 'Enviar Lembrete';
+      }
+    } else if (type === 'ENGAGEMENT') {
+      buttonText = 'Enviar Mensagem de Engajamento';
+    } else if (type === 'RECEIPT') {
+      buttonText = 'Enviar Comprovante';
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Enviar WhatsApp',
+      message: `Deseja enviar mensagem para ${usuario.nome}?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: buttonText,
+          handler: () => this.whatsappModalService.openModal(usuario, templateType, extraData)
+        }
+      ]
+    });
+    await alert.present();
   }
 
 

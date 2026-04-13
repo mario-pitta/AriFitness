@@ -188,7 +188,7 @@
                                                 <div class="dash-alert-sub">{{ alerta.plano?.descricao }}</div>
                                             </div>
                                             <ion-button *ngIf="alerta.whatsapp" fill="clear" color="primary"
-                                                (click)="sendWhatsAppMessage(alerta)">
+                                                (click)="sendWhatsAppMessage(alerta, 'BILLING')">
                                                 <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
                                             </ion-button>
                                         </div>
@@ -215,7 +215,7 @@
                                                 <div class="dash-alert-sub">{{ inad.plano?.descricao }}</div>
                                             </div>
                                             <ion-button *ngIf="inad.whatsapp" fill="clear" color="primary"
-                                                (click)="sendWhatsAppMessage(inad)">
+                                                (click)="sendWhatsAppMessage(inad, 'BILLING')">
                                                 <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
                                             </ion-button>
                                         </div>
@@ -242,7 +242,7 @@
                                                 <div class="dash-alert-sub">Risco de evasão</div>
                                             </div>
                                             <ion-button *ngIf="churn.whatsapp" fill="clear" color="primary"
-                                                (click)="sendWhatsAppMessage(churn)">
+                                                (click)="sendWhatsAppMessage(churn, 'ENGAGEMENT')">
                                                 <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
                                             </ion-button>
                                         </div>

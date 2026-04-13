@@ -1,6 +1,7 @@
 import { MaskitoOptions } from '@maskito/core';
 
 const Constants = {
+  ADMIN_ID: 1,
   ALUNO_ID: 5,
   INSTRUTOR_ID: 2,
   GERENCIA_ID: 3,
