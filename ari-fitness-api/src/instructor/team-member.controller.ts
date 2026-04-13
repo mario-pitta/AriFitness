@@ -12,7 +12,7 @@ export class TeamMemberController {
     constructor(private readonly teamMemberService: TeamMemberService) { }
 
     @Get()
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     findAll(@Query('empresa_id') empresa_id: string, @Query('filters') filters: string) {
         let filtersParsed = {};
         if (filters) {
@@ -25,19 +25,19 @@ export class TeamMemberController {
     }
 
     @Get('user/:userId')
-    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+    @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
     findByUserId(@Param('userId') userId: string, @Query('empresa_id') empresaId: string) {
         return this.teamMemberService.findByUserId(userId, empresaId);
     }
 
     @Get(':id')
-    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+    @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
     findOne(@Param('id') id: string, @Query('empresa_id') empresaId: string) {
         return this.teamMemberService.findOne(id, empresaId);
     }
 
     @Get('filters')
-    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+    @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
     findByFilters(@Query('filters') filters: string, @Query('empresa_id') empresaId: string) {
         console.log('findByFilters filters = ', filters)
         console.log('empresaId = ', empresaId)
@@ -46,19 +46,19 @@ export class TeamMemberController {
     }
 
     @Post()
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     create(@Body() body: any) {
         return this.teamMemberService.create(body);
     }
 
     @Patch(':id')
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     update(@Param('id') id: string, @Query('empresa_id') empresaId: string, @Body() body: any) {
         return this.teamMemberService.update(id, empresaId, body);
     }
 
     @Delete(':id')
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     remove(@Param('id') id: string, @Query('empresa_id') empresaId: string) {
         return this.teamMemberService.remove(id, empresaId);
     }

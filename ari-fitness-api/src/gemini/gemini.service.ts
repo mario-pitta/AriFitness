@@ -16,7 +16,6 @@ import { TreinoExercicioRelation } from 'src/treino/Treino.interface';
 import { Exercicio } from './../exercicio/exercicio.interface';
 import { UsuarioService } from 'src/usuario/usuario.service';
 import { FichaAlunoService } from 'src/ficha-usuario/ficha-aluno.service';
-import { Usuario } from 'src/usuario/Usuario.interface';
 
 @Injectable()
 export class GeminiService {
@@ -158,8 +157,27 @@ export class GeminiService {
     ${JSON.stringify(empresa)}
 
     Dados Financeiros:
-    ${JSON.stringify(transacoes)}
-    `;
+    ${JSON.stringify(transacoes.map((t: TransacaoFinanceira) => {
+      return {
+        descricao: t.descricao,
+        data_lancamento: t.data_lancamento,
+        valor_real: t.valor_real,
+        tr_tipo_id: t.tr_tipo_id, //receita - despesa
+        tr_categoria_id: t.tr_categoria_id, // fixa, variavel, reparo, mensalidade
+        desconto_perc: t.desconto_perc,
+        desconto_real: t.desconto_real,
+        valor_final: t.valor_final,
+        produto_id: t.produto_id, // em caso de venda de produtos
+        servico_id: t.servico_id, // em caso de prestação de servico
+        quantidade: t.quantidade,
+        mes: t.mes,
+        ano: t.ano,
+        forma_pagamento: t.forma_pagamento,
+        fl_pago: t.fl_pago,
+      }
+    }
+    )
+    )}`;
 
     return await this.runPrompt(prompt);
   }
@@ -167,8 +185,8 @@ export class GeminiService {
   async runPrompt(prompt: string) {
     console.log('runPrompt = ', prompt)
 
-    const result = await this.model.generateContent({
-      model: 'gemini-2.5-flash',
+    const result = await this.model.generateContentStream({
+      model: 'gemini-3-flash-preview',
 
       contents: [
         {
@@ -224,7 +242,7 @@ export class GeminiService {
       return aluno;
     };
 
-    console.log('chegou no geminiService: ', alunoId, empresaId);
+
     const _aluno = await this.usuarioService.findByFilters({
       id: Number(alunoId),
     });
@@ -417,7 +435,7 @@ export class GeminiService {
     this.gen = await new GoogleGenerativeAI(
       process.env.GOOGLE_GEMINI_KEY as string,
     );
-    this.setModel('gemini-2.5-flash');
+    this.setModel('gemini-3-flash-preview');
   }
 
   async setModel(model: string) {

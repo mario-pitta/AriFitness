@@ -44,7 +44,7 @@ export class FichaAlunoController {
    * `fichaAlunoService.findAll` method.
    */
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(@Query() query: IFichaAluno, @Res() res: Response) {
     return this.fichaAlunoService.findAll(query).then((_res) => {
       if (_res.error)
@@ -68,7 +68,7 @@ export class FichaAlunoController {
    * status response with the data object fetched by calling `this.fichaAlunoService.getById(param.id)`.
    */
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getById(@Param() param: { id: number }, @Res() res: Response) {
     return this.fichaAlunoService.getById(param.id).then((_res) => {
       if (_res.error)
@@ -95,7 +95,7 @@ export class FichaAlunoController {
    * and the error message from `_res.error`.
    */
   @Get('aluno/:id')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getByUser(@Param() param: { id: number }, @Query() query: Partial<IFichaAluno>, @Res() res: Response) {
     console.log('getting ficha by user...', param.id);
     return this.fichaAlunoService.getByUser(param.id, query).then((_res) => {
@@ -111,7 +111,7 @@ export class FichaAlunoController {
   }
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   create(@Body() body: IFichaAluno, @Res() res: Response) {
     console.log(body);
     return this.fichaAlunoService.create(body).then((_res) => {
@@ -130,7 +130,7 @@ export class FichaAlunoController {
   }
 
   @Put()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<IFichaAluno>, @Res() res: Response) {
     console.log(body);
     return this.fichaAlunoService.update(body).then((_res) => {
@@ -145,7 +145,7 @@ export class FichaAlunoController {
   }
 
   @Post(':fichaId/apply-template/:treinoId')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   applyTemplate(
     @Param('fichaId') fichaId: number,
     @Param('treinoId') treinoId: number,

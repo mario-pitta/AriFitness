@@ -24,7 +24,7 @@ import { TransacaoFinanceira } from './TransacaoFinanceira.interface';
 
 @Controller('transacao-financeira')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.ADMIN)
+@Roles(UserRole.GERENCIA)
 export class TransacaoFinanceiraController {
   constructor(
     private TransacaoFinanceiraService: TransacaoFinanceiraService,

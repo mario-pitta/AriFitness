@@ -28,7 +28,7 @@ export class ExercicioController {
    * successful, it will send a response with the data of all users.
    */
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(
     @Res() res: Response,
     @Req() req: Request,
@@ -59,7 +59,7 @@ export class ExercicioController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   create(@Body() body: Exercicio, @Res() res: Response, @Req() req: Request) {
     const empresaId = (req as any).user?.empresa_id;
     const usuarioId = (req as any).user?.id;
@@ -92,7 +92,7 @@ export class ExercicioController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Put()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<Exercicio>, @Req() req: Request, @Res() res: Response) {
     const empresaId = (req as any).user?.empresa_id;
     return this.exercicioService.update(body, empresaId).then((_res) => {
@@ -104,7 +104,7 @@ export class ExercicioController {
   }
 
   @Get('niveis')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getNiveis(@Res() res: Response) {
     return this.exercicioService.findNiveis().then((_res) => {
       if (_res.error) {

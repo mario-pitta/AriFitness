@@ -12,7 +12,7 @@ import { UserRole } from 'src/core/Constants/UserRole';
 
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.ADMIN)
+@Roles(UserRole.GERENCIA)
 export class DashboardController {
   constructor(private dashboardService: DashboardService) { }
 

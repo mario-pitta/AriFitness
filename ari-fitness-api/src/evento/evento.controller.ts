@@ -20,7 +20,7 @@ export class EventoController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAllByFilters(@Query() query: Partial<IEvento>, @Res() res: Response) {
     return this.eventoService.findAllByFilters(query).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
@@ -29,7 +29,7 @@ export class EventoController {
   }
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   create(@Body() body: IEvento, @Res() res: Response) {
     console.log('criando evento: ', body);
     return this.eventoService.create(body).then((_res) => {
@@ -39,7 +39,7 @@ export class EventoController {
   }
 
   @Put()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<IEvento>, @Res() res: Response) {
     console.log('atualizando evento: ', body);
 

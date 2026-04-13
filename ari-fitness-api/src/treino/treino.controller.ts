@@ -19,13 +19,13 @@ export class TreinoController {
   ) { }
 
   @Get(':id/completo')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getTreinoCompleto(@Param('id') id: number, @CurrentUser('empresa_id') empresa_id: string) {
     return this.sessaoService.getTreinoCompleto(id, empresa_id);
   }
 
   @Post('sessao')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   postSessao(@Body() body: Partial<TreinoSessao>, @CurrentUser('empresa_id') empresa_id: string) {
     body.empresa_id = empresa_id;
     return this.sessaoService.createSessao(body);
@@ -33,7 +33,7 @@ export class TreinoController {
 
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   findAll(@Query() query: any, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
     // Force filters by user's company
     const filters = { ...query, empresa_id: empresa_id };
@@ -48,7 +48,7 @@ export class TreinoController {
   }
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   create(@Body() body: Treino, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
     // Inject empresa_id from token to ensure isolation
     body.empresa_id = empresa_id;
@@ -61,7 +61,7 @@ export class TreinoController {
 
 
   @Put()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   update(@Body() body: Treino, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
     // Ensure the updated workout belongs to the user's company
 
@@ -77,7 +77,7 @@ export class TreinoController {
 
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   delete(@Param('id') id: number, @Res() res: Response, @CurrentUser('empresa_id') empresa_id: string) {
     console.log("deleting treino: ", id);
     // Passing empresa_id to service to ensure ownership before deletion

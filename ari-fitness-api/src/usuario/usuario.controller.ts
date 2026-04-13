@@ -61,7 +61,7 @@ export class UsuarioController {
    * @memberof UsuarioController
    */
   @Get('/search')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   findByFilters(
     @Res() res: Response,
     @Query() filters: Partial<Usuario> | Usuario,
@@ -92,7 +92,7 @@ export class UsuarioController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Post()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.GERENCIA)
   create(@Body() body: Usuario, @Res() res: Response) {
     return this.usuarioService.create(body).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
@@ -111,7 +111,7 @@ export class UsuarioController {
    * `usuarioService` with the `body` parameter passed to it.
    */
   @Put()
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   update(@Body() body: Partial<Usuario>, @Res() res: Response) {
     return this.usuarioService.update(body).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
@@ -130,7 +130,7 @@ export class UsuarioController {
    * @returns {Promise} Dados atualizados do usuário ou erro 500.
    */
   @Put('meu-perfil')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   updateMeuPerfil(@Req() req: Request & { user: any }, @Body() body: Partial<Usuario>, @Res() res: Response) {
     const userId = req.user?.userId;
     return this.usuarioService.updateMeuPerfil(userId, body).then((_res) => {
@@ -142,7 +142,7 @@ export class UsuarioController {
 
   //#region Instrutor
   @Get('instrutor/:empresaId')
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.GERENCIA)
   findInstrutorByFilters(@Res() res: Response, @Param('empresaId') empresaId: number, @Query() filters: Partial<Usuario> | Usuario) {
     console.log('search instrutor... byFilters', filters);
     return this.usuarioService.findInstrutorByFilters(empresaId, filters).then((_res) => {
@@ -162,7 +162,7 @@ export class UsuarioController {
 
   //#region Check-in
   @Post('check-in')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   registrarCheckIn(@Body() body: { cpf: string; nome: string, empresa_id: string }, @Res() res: Response) {
     console.log('registrando check-in para o CPF:', body.cpf, 'na empresa:', body.empresa_id);
     return this.usuarioService.registrarCheckin(body.cpf, body.nome, body.empresa_id).then((_res) => {
@@ -181,7 +181,7 @@ export class UsuarioController {
 
   /** Obter os registro de checkin dos alunos da empresa */
   @Get('check-in/empresa/:empresaId')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
   getCheckinsByEmpresa(@Res() res: Response, @Param('empresaId') empresaId: string) {
     console.log('Obtendo check-ins para a empresa:', empresaId);
     return this.usuarioService.getCheckinsByEmpresa(empresaId).then((_res: any) => {
@@ -198,7 +198,7 @@ export class UsuarioController {
 
   /** Excluir registro de chekin, apenas o admin da empresa pode fazer isso. */
   @Post('check-in/:checkinId/delete')
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.GERENCIA)
   deleteCheckinById(@Res() res: Response, @Param('checkinId') checkinId: string) {
     console.log('Excluindo check-in com ID:', checkinId);
     return this.usuarioService.deleteCheckinById(checkinId).then((_res: any) => {
@@ -218,7 +218,7 @@ export class UsuarioController {
 
   /** Obter frequencia pelo CPF */
   @Get('frequency-by-cpf')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   async getFrequencyByCPF(@Res() res: Response, @Query('cpf') cpf: string, @Query('empresaId') empresaId: string) {
     console.log('Obtendo frequência para o CPF:', cpf);
     return this.usuarioService.getFrequencyByCPFandEmpresaId(cpf, empresaId).then((_res: any) => {
@@ -234,7 +234,7 @@ export class UsuarioController {
   }
 
   @Post('import/:empresaId')
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.GERENCIA)
   importStudents(@Res() res: Response, @Param('empresaId') empresaId: string, @Body() body: any[]) {
     console.log('importing students for empresa:', empresaId);
     return this.usuarioService.importStudents(empresaId, body).then((_res: any) => {
@@ -247,7 +247,7 @@ export class UsuarioController {
   }
 
   @Get('treino-historico/:id')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   getTreinoHistorico(@Param('id') id: number, @Res() res: Response) {
     return this.usuarioService.getTreinoHistorico(id).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);
@@ -256,7 +256,7 @@ export class UsuarioController {
   }
 
   @Post('treino-historico')
-  @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR, UserRole.STUDENT)
+  @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   registrarTreinoHistorico(@Body() body: any, @Res() res: Response) {
     return this.usuarioService.registrarTreinoHistorico(body).then((_res) => {
       if (_res.error) res.status(500).send(_res.error);

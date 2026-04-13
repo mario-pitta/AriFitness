@@ -101,7 +101,7 @@ export class FichaAlunoService {
             *,
              cadastrado_por: usuario!ficha_aluno_cadastrado_por_fkey(id, nome),
             instrutor: team_member(id, nome),
-             aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome),
+             aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome, genero, foto_url),
             treinos_cadastrados: ficha_aluno_treino(
                 treino(
                     *,
@@ -149,7 +149,7 @@ export class FichaAlunoService {
             *, 
             cadastrado_por: usuario!ficha_aluno_cadastrado_por_fkey(id, nome),
            instrutor: team_member(id, nome),
-            aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome),
+            aluno: usuario!ficha_aluno_usuario_id_fkey(id, nome, genero, foto_url),
             treinos_cadastrados: ficha_aluno_treino(
                 treino(
                     *,

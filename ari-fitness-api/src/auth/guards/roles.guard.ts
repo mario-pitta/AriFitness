@@ -17,6 +17,7 @@ export class RolesGuard implements CanActivate {
         }
         const { user } = context.switchToHttp().getRequest();
 
+
         // Suportando tanto tipo_usuario quanto role do payload JWT
         const userRole = user.tipo_usuario.id || user.tipo_usuario || user.role;
         console.log('userRole = ', userRole)

@@ -12,13 +12,13 @@ export class InstructorController {
     constructor(private readonly instructorService: InstructorService) { }
 
     @Get()
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     async findAll(@Query('empresa_id') empresa_id: string): Promise<any[]> {
         return this.instructorService.findAll(empresa_id);
     }
 
     @Get(':id')
-    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+    @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
     async findOne(
         @Param('id') id: string,
         @Query('empresa_id') empresa_id: string,
@@ -27,7 +27,7 @@ export class InstructorController {
     }
 
     @Get('user/:userId')
-    @Roles(UserRole.ADMIN, UserRole.INSTRUCTOR)
+    @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR)
     async findByUserId(
         @Param('userId') userId: string,
         @Query('empresa_id') empresa_id: string,
@@ -36,13 +36,13 @@ export class InstructorController {
     }
 
     @Post()
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     async create(@Body() data: any): Promise<any> {
         return this.instructorService.create(data);
     }
 
     @Patch(':id')
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     async update(
         @Param('id') id: string,
         @Query('empresa_id') empresa_id: string,
@@ -52,7 +52,7 @@ export class InstructorController {
     }
 
     @Delete(':id')
-    @Roles(UserRole.ADMIN)
+    @Roles(UserRole.GERENCIA)
     async remove(
         @Param('id') id: string,
         @Query('empresa_id') empresa_id: string,

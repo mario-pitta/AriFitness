@@ -18,7 +18,7 @@ export class AuthService {
   ) { }
 
   async login(cpf: string, senha: string, type: 'STUDENT' | 'TEAM' = 'STUDENT') {
-    console.log(`logando (${type})...`, cpf, senha);
+
 
     let user = null;
 
@@ -34,7 +34,7 @@ export class AuthService {
       const token = this.jwtService.sign(payload)
 
 
-      console.log('token = ', token)
+
 
       // Sanitize
       if (user.senha) delete user.senha;
@@ -44,7 +44,7 @@ export class AuthService {
     }
 
     // if (type === 'STUDENT') {
-    console.log("buscando usuario...")
+
     const res = await this.supabase.supabase
       .from('usuario')
       .select(`
@@ -58,7 +58,7 @@ export class AuthService {
 
 
     if (res.error) {
-      console.log('res.error = ', res)
+
 
       return { error: { message: 'Erro ao fazer login. Contate o administrador da sua empresa ou tente mais tarde.' } };
     }
@@ -71,7 +71,7 @@ export class AuthService {
         access_token: buildJWT(user)
       };
     } else {
-      console.log("buscando team_member...")
+
       const teamRes = await this.supabase.supabase
         .from('team_member')
         .select(`
@@ -93,7 +93,7 @@ export class AuthService {
       user = teamRes.data;
     }
 
-    console.log('user logado = ', user);
+
 
     const userNormalized = {
       ...user,
@@ -155,7 +155,7 @@ export class AuthService {
 
   async requestPasswordReset(email: string, type: 'STUDENT' | 'TEAM' = 'STUDENT') {
 
-    console.log(`inicianto solicitacao de reset de senha para (${type}) : `, email)
+
 
     let userId: number | null = null;
     let teamMemberId: string | null = null;
@@ -205,23 +205,22 @@ export class AuthService {
       .single();
 
     if (tokenError) {
-      console.log('tokenError = ', tokenError)
+
 
       throw tokenError
     };
 
     // 3. Generate HTML content for email
     const isProdEnv = Boolean(this.configService.get<string>('PROD_ENV'));
-    console.log('isProdEnv = ', isProdEnv)
 
-    const frontendUrl = isProdEnv ? 'https://mvkgymm.vercel.app' : 'http://localhost:8100';
+
+    const frontendUrl = isProdEnv ? 'https://mvkgym.vercel.app' : 'http://localhost:8100';
 
     const html = resetPasswordTemplate({
       name: userName,
-      redirectUrl: `${frontendUrl}/#/reset-password?token=${token}`,
+      redirectUrl: `${frontendUrl}/reset-password?token=${token}`,
     })
 
-    console.log("html = ", html)
 
     // 4. Send email via EmailService
     await this.emailService.sendEmail({
@@ -231,13 +230,13 @@ export class AuthService {
       systemName: 'MvK Gym Manager'
     })
 
-    console.log("email enviado com sucesso")
+
     return { success: true };
   }
 
   async resetPassword(token: string, novaSenha: string) {
     try {
-      console.log("iniciando reset de senha")
+
       // 1. Verify token and get user (Mock logic)
       const { data: tokenData, error: tokenError } = await this.supabase.supabase
         .from('reset_tokens')
@@ -248,29 +247,27 @@ export class AuthService {
       if (tokenError || !tokenData) throw new Error('Token inválido');
 
 
-      console.log("tokenData: ", tokenData)
+
       // 2. Update password
-      if (tokenData.team_member_id) {
-        const { error } = await this.supabase.supabase
-          .from('team_member')
-          .update({ password: md5(novaSenha) })
-          .eq('id', tokenData.team_member_id);
-        if (error) throw error;
-      } else if (tokenData.user_id) {
-        const { error } = await this.supabase.supabase
-          .from('usuario')
-          .update({ senha: md5(novaSenha) })
-          .eq('id', tokenData.user_id);
-        if (error) throw error;
-      }
+
+
+      const tableTarget = tokenData.team_member_id ? 'team_member' : 'usuario';
+      const idTarget = tokenData.team_member_id || tokenData.user_id;
+
+      const { error } = await this.supabase.supabase
+        .from(tableTarget)
+        .update(tableTarget === 'usuario' ? { senha: md5(novaSenha) } : { password: md5(novaSenha) })
+        .eq('id', idTarget);
+      if (error) throw error;
+
       // 3. Delete the token
       await this.supabase.supabase.from('reset_tokens').delete().eq('token', token);
 
 
-      console.log("senha resetada com sucesso")
+
       return { success: true };
     } catch (error) {
-      console.log("erro ao resetar senha: ", error)
+
       return { success: false, error: error.message };
     }
   }
