@@ -60,6 +60,16 @@ export const NAV_ITEMS: NavigationItem[] = [
         adminOnly: true,
     },
     {
+        label: 'Ponto de Venda',
+        sidebarIcon: 'pos-outline',
+        route: '/admin/pdv',
+        roles: [Constants.GERENCIA_ID],
+        showInSidebar: true,
+        showInMobile: true,
+        group: 'Gestão',
+        adminOnly: true
+    },
+    {
         label: 'Fichas / Treinos',
         sidebarIcon: 'clipboard-outline',
         route: '/admin/treinos',
@@ -117,6 +127,16 @@ export const NAV_ITEMS: NavigationItem[] = [
         showInSidebar: true,
         showInMobile: false,
         group: 'Operacional',
+    },
+    {
+        label: 'Minha Loja',
+        sidebarIcon: 'storefront-outline',
+        route: '/admin/configuracoes/ecommerce/produtos',
+        roles: [Constants.GERENCIA_ID],
+        showInSidebar: true,
+        showInMobile: true,
+        group: 'Operacional',
+        adminOnly: true
     },
     {
         label: 'Exercícios',

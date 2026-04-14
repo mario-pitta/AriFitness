@@ -31,9 +31,9 @@ export class SettingsPage implements OnInit {
       color: 'instrutores'
     },
     {
-      title: 'Produtos',
-      subtitle: 'Gerencie produtos da loja',
-      icon: 'cube-outline',
+      title: 'Minha Loja',
+      subtitle: 'Gerencie produtos, pedidos e KPIs',
+      icon: 'storefront-outline',
       path: 'ecommerce/produtos',
       color: 'instrutores'
     },

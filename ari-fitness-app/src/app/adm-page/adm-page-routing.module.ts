@@ -108,6 +108,11 @@ const routes: Routes = [
         loadChildren: () => import('./instrutores/instrutores.module').then(m => m.InstrutoresPageModule)
       },
       {
+        path: 'pdv',
+        loadChildren: () => import('./pdv/pdv.module').then(m => m.PdvPageModule),
+        data: { roles: [Constants.ADMIN_ID, Constants.GERENCIA_ID] }
+      },
+      {
         path: 'qrcode',
         loadChildren: () => import('../check-in/check-in.module').then(m => m.CheckInPageModule)
       },

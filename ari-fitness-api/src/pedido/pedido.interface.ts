@@ -6,7 +6,7 @@ export interface Pedido {
   created_at?: Date;
   updated_at?: Date;
   empresa_id: string;
-  cliente_id?: string;
+  cliente_id?: number;
   cliente_nome?: string;
   cliente_telefone?: string;
   cliente_email?: string;
@@ -38,13 +38,14 @@ export interface PedidoItem {
  * Interface para criar pedido
  */
 export interface PedidoInput {
-  cliente_id?: string;
+  cliente_id?: number;
   cliente_nome?: string;
   cliente_telefone?: string;
   cliente_email?: string;
   itens: PedidoItemInput[];
   forma_pagamento?: string;
   obs?: string;
+  valor_desconto?: number;
 }
 
 /**
