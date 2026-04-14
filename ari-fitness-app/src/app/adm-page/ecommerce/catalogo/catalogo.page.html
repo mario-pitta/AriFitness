@@ -1,0 +1,42 @@
+<ion-content class="catalogo-content">
+
+  <div class="catalogo-container">
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="admin/configuracoes"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Catálogo Público</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <div class="catalogo-icon">
+      <ion-icon name="share-social-outline"></ion-icon>
+    </div>
+
+    <h2>Compartilhe seu catálogo</h2>
+    <p class="catalogo-desc">
+      Envie este link para seus clientes visualizarem seus produtos online.
+    </p>
+
+    <div class="catalogo-link-box">
+      <ion-input [value]="catalogoUrl" readonly type="text" class="link-input">
+      </ion-input>
+      <ion-button (click)="copiarLink()" color="primary">
+        <ion-icon name="copy-outline" slot="start"></ion-icon>
+        Copiar
+      </ion-button>
+    </div>
+
+    <div class="catalogo-actions">
+      <ion-button expand="block" (click)="abrirCatalogo()" fill="outline">
+        <ion-icon name="open-outline" slot="start"></ion-icon>
+        Abrir Catálogo
+      </ion-button>
+    </div>
+
+    <div class="catalogo-info">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>Clientes podem visualizar produtos e preços sem fazer login.</span>
+    </div>
+  </div>
+</ion-content>

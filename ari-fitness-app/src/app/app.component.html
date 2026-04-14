@@ -28,7 +28,7 @@
       </div>
     </div>
   </div>
-  <ion-header [translucent]="true" *ngIf="user">
+  <ion-header [translucent]="true" *ngIf="user && !isPublicRoute">
     <ion-toolbar class="d-flex">
       <!-- <ion-icon *ngIf="(route !== '/home' && route !== '/login')" slot="start"   size="large" class="ion-padding-start"  (click)="navigateBack()" name="arrow-back"></ion-icon> -->
       <div class="d-flex">
@@ -36,7 +36,7 @@
 
         <ion-title class="d-flex ion-align-items-center ion-justify-content-between">
           <div class="ion-align-items-center ion-justify-content-between">
-            MvK Gym Manager
+            {{ pageTitle }}
           </div>
 
         </ion-title>

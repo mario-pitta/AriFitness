@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
+  publicUrl: 'http://localhost:8100',
   apiKey: "AIzaSyCwZDDdzkhjkws6ePnKOsxVqcEua1YhSeQ",
   authDomain: "mvk-gym-manager-c567f.firebaseapp.com",
   projectId: "mvk-gym-manager-c567f",

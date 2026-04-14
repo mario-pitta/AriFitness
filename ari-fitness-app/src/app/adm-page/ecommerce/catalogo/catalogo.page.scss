@@ -1,0 +1,91 @@
+.catalogo-content {
+  --background: var(--ion-background-color);
+}
+
+.catalogo-container {
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .catalogo-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--ion-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+
+    ion-icon {
+      font-size: 40px;
+      color: white;
+    }
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ion-color-step-1000);
+    margin: 0 0 12px;
+  }
+
+  .catalogo-desc {
+    font-size: 15px;
+    color: var(--ion-color-step-600);
+    margin: 0 0 32px;
+    max-width: 320px;
+  }
+
+  .catalogo-link-box {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+
+    .link-input {
+      flex: 1;
+      background: var(--ion-color-step-100);
+      border-radius: 12px;
+      --padding-start: 16px;
+      --padding-end: 16px;
+      font-size: 14px;
+    }
+  }
+
+  .catalogo-actions {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 32px;
+
+    ion-button {
+      --border-radius: 12px;
+      height: 48px;
+    }
+  }
+
+  .catalogo-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background: var(--ion-color-step-50);
+    border-radius: 12px;
+    max-width: 400px;
+
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-step-500);
+      flex-shrink: 0;
+    }
+
+    span {
+      font-size: 13px;
+      color: var(--ion-color-step-600);
+      text-align: left;
+    }
+  }
+}

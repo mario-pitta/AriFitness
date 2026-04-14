@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: 'https://mvkgym.vercel.app/api',
+  publicUrl: 'https://mvk-gym.vercel.app',
   apiKey: "AIzaSyCwZDDdzkhjkws6ePnKOsxVqcEua1YhSeQ",
   authDomain: "mvk-gym-manager-c567f.firebaseapp.com",
   projectId: "mvk-gym-manager-c567f",

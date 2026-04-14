@@ -37,6 +37,14 @@ const routes: Routes = [
     path: 'ecommerce/pedidos',
     loadChildren: () => import('src/app/adm-page/ecommerce/pedidos/pedidos.module').then(m => m.PedidosPageModule)
   },
+  {
+    path: 'ecommerce/catalogo',
+    loadChildren: () => import('src/app/adm-page/ecommerce/catalogo/catalogo.module').then(m => m.CatalogoPageModule)
+  },
+  {
+    path: 'ecommerce/loja',
+    loadChildren: () => import('src/app/adm-page/ecommerce/loja/loja.module').then(m => m.LojaPageModule)
+  },
 ];
 
 @NgModule({

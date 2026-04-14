@@ -1,0 +1,97 @@
+<ion-content class="catalog-content" [fullscreen]="true">
+  <!-- Header como conteúdo scrollável -->
+  <div class="catalog-header" 
+    [style.background-image]="empresa?.banner_url ? 'url(' + empresa?.banner_url + ')' : ''"
+    [style.background-color]="!empresa?.banner_url ? primaryColor : ''">
+    <div class="header-overlay"></div>
+    <div class="header-top">
+      <div class="logo-container" *ngIf="empresa?.logo_url">
+        <img [src]="empresa?.logo_url" [alt]="empresa?.nome_fantasia" class="logo">
+      </div>
+      <div class="logo-container fallback" *ngIf="!empresa?.logo_url">
+        <ion-icon name="storefront"></ion-icon>
+      </div>
+      <div class="header-actions">
+        <ion-button class="cart-btn" fill="clear">
+          <ion-icon name="cart-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+    <div class="header-main">
+      <h1 class="store-name">{{ empresa?.nome_fantasia || empresa?.nome || 'Loja' }}</h1>
+      <p class="store-tagline">Tudo que você precisa em um só lugar</p>
+    </div>
+    <div class="header-bottom">
+      <ion-button *ngIf="empresa?.telefone" (click)="openWhatsapp()" fill="solid" class="whatsapp-btn">
+        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+        Falar com a Loja
+      </ion-button>
+    </div>
+    <div class="header-wave">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path fill="var(--ion-background-color)"
+          d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z">
+        </path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Filtros e Ordenação -->
+  <div class="catalog-filters">
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <ion-input [(ngModel)]="busca" (ionChange)="filtrarProdutos()" placeholder="Buscar produtos..."></ion-input>
+    </div>
+    <div class="filter-row">
+      <ion-select [(ngModel)]="categoriaSelecionada" (ionChange)="filtrarProdutos()" placeholder="Todas as categorias" interface="popover">
+        <ion-select-option value="">Todas</ion-select-option>
+        <ion-select-option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</ion-select-option>
+      </ion-select>
+      <ion-select [(ngModel)]="ordenacao" (ionChange)="filtrarProdutos()" placeholder="Ordenar por" interface="popover">
+        <ion-select-option value="nome">Nome A-Z</ion-select-option>
+        <ion-select-option value="nome-desc">Nome Z-A</ion-select-option>
+        <ion-select-option value="preco-asc">Menor Preço</ion-select-option>
+        <ion-select-option value="preco-desc">Maior Preço</ion-select-option>
+      </ion-select>
+    </div>
+  </div>
+
+  <!-- Resultados -->
+  <div class="catalog-results">
+    <span class="results-count">{{ produtosFiltrados.length }} produtos encontrados</span>
+  </div>
+
+  <!-- Grid de Produtos -->
+  <div class="catalog-grid" *ngIf="!loading && !error">
+    <div class="product-card" *ngFor="let produto of produtosFiltrados" (click)="openProdutoDetail(produto)">
+      <div class="product-image">
+        <img *ngIf="produto?.imagem_url" [src]="produto?.imagem_url" [alt]="produto?.nome">
+        <ion-icon *ngIf="!produto?.imagem_url" name="cube-outline"></ion-icon>
+        <div class="product-badges" *ngIf="produto?.estoque <= 5">
+          <span class="badge-low">Estoque baixo</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category" *ngIf="produto?.categoria">{{ produto?.categoria }}</span>
+        <span class="product-name">{{ produto?.nome }}</span>
+        <span class="product-price">{{ produto?.preco | currency:'BRL' }}</span>
+        <span class="product-stock">{{ produto?.estoque }} disponíveis</span>
+      </div>
+    </div>
+
+    <div class="empty-catalog" *ngIf="produtosFiltrados.length === 0">
+      <ion-icon name="search-outline"></ion-icon>
+      <p>Nenhum produto encontrado</p>
+      <span>Tente buscar por outro termo ou categoria</span>
+    </div>
+  </div>
+
+  <div class="loading-catalog" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div class="error-catalog" *ngIf="error">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <p>{{ error }}</p>
+  </div>
+</ion-content>

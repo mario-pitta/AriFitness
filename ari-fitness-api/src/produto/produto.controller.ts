@@ -5,20 +5,33 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../core/Constants/UserRole';
+import { EmpresaService } from '../empresa/empresa.service';
 
 /**
  * Controller para gestão de produtos do e-commerce
  */
 @Controller('produtos')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProdutoController {
-  constructor(private readonly produtoService: ProdutoService) {}
+  constructor(private readonly produtoService: ProdutoService, private readonly empresaService: EmpresaService) { }
+
+  /**
+   * Listar produtos públicos (sem autenticação)
+   * GET /produtos/publico/:empresaId
+   */
+  @Get('publico/:empresaId')
+  async findAllPublico(@Param('empresaId') empresaId: string) {
+
+
+    const res = await this.produtoService.findByEmpresaId(empresaId);
+    return { success: true, data: res };
+  }
 
   /**
    * Criar novo produto
    * POST /produtos/:empresaId
    */
   @Post(':empresaId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.GERENCIA)
   async create(
     @Param('empresaId') empresaId: string,
@@ -65,6 +78,7 @@ export class ProdutoController {
    * PUT /produtos/:empresaId/:id
    */
   @Put(':empresaId/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.GERENCIA)
   async update(
     @Param('empresaId') empresaId: string,
@@ -80,6 +94,7 @@ export class ProdutoController {
    * DELETE /produtos/:empresaId/:id
    */
   @Delete(':empresaId/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async delete(
     @Param('empresaId') empresaId: string,
@@ -94,6 +109,7 @@ export class ProdutoController {
    * GET /produtos/:empresaId/estoque/baixo
    */
   @Get(':empresaId/estoque/baixo')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.GERENCIA)
   async findEstoqueBaixo(@Param('empresaId') empresaId: string) {
     const produtos = await this.produtoService.findEstoqueBaixo(empresaId);

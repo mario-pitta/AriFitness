@@ -1,0 +1,47 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="admin/configuracoes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Minha Loja</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="loja-content">
+  <!-- Cards de Navegação -->
+  <div class="loja-cards">
+    <div class="loja-card" *ngFor="let card of cards" (click)="navigateTo(card.route)">
+      <div class="card-icon" [ngClass]="'icon-' + card.color">
+        <ion-icon [name]="card.icon"></ion-icon>
+      </div>
+      <div class="card-text">
+        <span class="card-title">{{ card.title }}</span>
+        <span class="card-subtitle">{{ card.subtitle }}</span>
+      </div>
+      <ion-icon name="chevron-forward" class="card-arrow"></ion-icon>
+    </div>
+  </div>
+
+  <!-- Resumo Rápido -->
+  <div class="loja-stats">
+    <h3>Resumo</h3>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-value">{{ stats.produtosAtivos }}</span>
+        <span class="stat-label">Produtos Ativos</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ stats.totalPedidos }}</span>
+        <span class="stat-label">Pedidos Total</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ stats.totalVendas | currency:'BRL' }}</span>
+        <span class="stat-label">Vendas Total</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ stats.vendasHoje | currency:'BRL' }}</span>
+        <span class="stat-label">Vendas Hoje</span>
+      </div>
+    </div>
+  </div>
+</ion-content>

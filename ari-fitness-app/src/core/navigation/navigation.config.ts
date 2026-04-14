@@ -61,8 +61,18 @@ export const NAV_ITEMS: NavigationItem[] = [
     },
     {
         label: 'Ponto de Venda',
-        sidebarIcon: 'pos-outline',
+        sidebarIcon: 'cart-outline',
         route: '/admin/pdv',
+        roles: [Constants.GERENCIA_ID],
+        showInSidebar: true,
+        showInMobile: true,
+        group: 'Gestão',
+        adminOnly: true
+    },
+    {
+        label: 'Catálogo Público',
+        sidebarIcon: 'share-social-outline',
+        route: '/admin/configuracoes/ecommerce/catalogo',
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
         showInMobile: true,
@@ -131,7 +141,7 @@ export const NAV_ITEMS: NavigationItem[] = [
     {
         label: 'Minha Loja',
         sidebarIcon: 'storefront-outline',
-        route: '/admin/configuracoes/ecommerce/produtos',
+        route: '/admin/configuracoes/ecommerce/loja',
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
         showInMobile: true,

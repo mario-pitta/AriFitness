@@ -33,6 +33,10 @@ export class ProdutoService {
     return this.http.get<any>(`${environment.apiUrl}/produtos/${this.empresaId}`);
   }
 
+  getAllByEmpresa(empresaId: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/produtos/publico/${empresaId}`);
+  }
+
   getById(id: string): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/produtos/${this.empresaId}/${id}`);
   }

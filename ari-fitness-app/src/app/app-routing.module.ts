@@ -20,6 +20,14 @@ const routes: Routes = [
     loadChildren: () => import('./auth/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule)
   },
   {
+    path: 'catalogo/:empresaId',
+    loadChildren: () => import('./shared/catalog-public/catalog-public.module').then(m => m.CatalogPublicPageModule)
+  },
+  {
+    path: 'check-in',
+    loadChildren: () => import('./check-in/check-in.module').then(m => m.CheckInPageModule)
+  },
+  {
     path: '*/**/unauthorized',
     loadChildren: () => import('./shared/unauthorized-page/unauthorized-page.module').then(m => m.UnauthorizedPageModule)
   },
@@ -27,16 +35,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule),
-
   },
-  {
-    path: 'check-in',
-    loadChildren: () => import('./check-in/check-in.module').then(m => m.CheckInPageModule)
-  },
-
-
-
-
 ];
 @NgModule({
   imports: [

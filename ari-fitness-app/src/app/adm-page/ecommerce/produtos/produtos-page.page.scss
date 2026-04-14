@@ -21,6 +21,12 @@
   padding: 12px;
   margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: background 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    background: var(--ion-color-step-50);
+  }
 
   .produto-imagem {
     width: 60px;
@@ -62,7 +68,7 @@
 
     .produto-desc {
       font-size: 12px;
-      color: var(--ion-color-step-600);
+      color: var(--ion-color-step-500);
       margin: 4px 0;
       white-space: nowrap;
       overflow: hidden;
@@ -78,26 +84,51 @@
       .produto-preco {
         font-size: 14px;
         font-weight: 700;
-        color: var(--ion-color-primary);
+        color: #10b981;
       }
     }
 
     .produto-categoria {
       font-size: 11px;
-      color: var(--ion-color-step-500);
+      color: var(--ion-color-step-400);
       margin-top: 4px;
       display: block;
     }
   }
 
-  .produto-actions {
+  .produto-actions-wrapper {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    ion-button {
-      --padding-start: 8px;
-      --padding-end: 8px;
+    align-items: center;
+    padding-left: 8px;
+    
+    .produto-actions {
+      display: flex;
+      gap: 2px;
+      
+      ion-button {
+        --padding-start: 6px;
+        --padding-end: 6px;
+        --color: var(--ion-color-step-400);
+        transition: --color 0.2s ease, background 0.2s ease;
+        border-radius: 8px;
+        
+        &:hover {
+          --color: var(--ion-color-step-700);
+          background: var(--ion-color-step-100);
+        }
+        
+        &.action-edit:hover {
+          --color: var(--ion-color-primary);
+        }
+        
+        &.action-toggle:hover {
+          --color: var(--ion-color-success);
+        }
+        
+        &.action-delete:hover {
+          --color: var(--ion-color-danger);
+        }
+      }
     }
   }
 }

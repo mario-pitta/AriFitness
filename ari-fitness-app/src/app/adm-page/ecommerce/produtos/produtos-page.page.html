@@ -35,16 +35,18 @@
         </div>
         <span class="produto-categoria" *ngIf="produto.categoria">{{ produto.categoria }}</span>
       </div>
-      <div class="produto-actions">
-        <ion-button fill="clear" (click)="openForm(produto)">
-          <ion-icon name="pencil"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="toggleAtivo(produto)" [color]="produto.ativo ? 'success' : 'medium'">
-          <ion-icon [name]="produto.ativo ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" color="danger" (click)="deleteProduto(produto)">
-          <ion-icon name="trash"></ion-icon>
-        </ion-button>
+      <div class="produto-actions-wrapper">
+        <div class="produto-actions">
+          <ion-button fill="clear" class="action-edit" (click)="openForm(produto)">
+            <ion-icon name="pencil"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-toggle" (click)="toggleAtivo(produto)" [color]="produto.ativo ? 'success' : 'medium'">
+            <ion-icon [name]="produto.ativo ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-delete" color="danger" (click)="deleteProduto(produto)">
+            <ion-icon name="trash"></ion-icon>
+          </ion-button>
+        </div>
       </div>
     </div>
 

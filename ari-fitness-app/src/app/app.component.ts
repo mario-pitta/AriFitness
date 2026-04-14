@@ -43,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
   pageTitle: string = 'MvK Gym App';
   showOptions: boolean = false;
   isDarkMode: boolean = false;
+  isPublicRoute: boolean = false;
 
   // Update Notification State
   showUpdateNotify: boolean = false;
@@ -88,6 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       if (ev instanceof NavigationEnd) {
         this.route = ev.url;
+        this.isPublicRoute = this.isPublicPage(ev.url);
       }
     });
 
@@ -152,6 +154,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   navigateBack() {
     history.back();
+  }
+
+  isPublicPage(url: string): boolean {
+    const publicRoutes = ['/catalogo/', '/login', '/register', '/forgot-password', '/check-in'];
+    return publicRoutes.some(route => url.includes(route));
   }
 
   ngOnDestroy() {

@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import { Produto, ProdutoInput, ProdutoFilters } from './produto.interface';
+import { Empresa } from 'src/empresa/empresa.interface';
 
 /**
  * Service para gestão de produtos do e-commerce
  */
 @Injectable()
 export class ProdutoService {
-  constructor(private readonly databaseService: DataBaseService) {}
+  constructor(private readonly databaseService: DataBaseService) { }
 
   /**
    * Criar novo produto
@@ -149,5 +150,31 @@ export class ProdutoService {
     if (error) throw error;
     const categorias = new Set<string>(data?.map((p: any) => p.categoria).filter(Boolean) as string[]);
     return Array.from(categorias);
+  }
+
+  async findByEmpresaId(empresaId: string): Promise<{ empresa: Empresa, produtos: Produto[] }> {
+    const { data: empresa, error } = await this.databaseService.supabase
+      .from('empresa')
+      .select('*, produtos(*)')
+      .eq('id', empresaId)
+      .eq('produtos.ativo', true)
+      .single();
+    // .order('produtos.name', { ascending: true });
+
+    if (error) throw error;
+
+    console.log('empresa = ', empresa)
+
+
+    const produtos = empresa?.produtos || [];
+
+    console.log('produtos = ', produtos)
+
+    produtos?.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+
+    return {
+      ...empresa,
+      produtos: produtos
+    };
   }
 }

@@ -7,155 +7,164 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  
+
   <ion-toolbar>
     <ion-searchbar [(ngModel)]="busca" (ionChange)="filtrarProdutos()" placeholder="Buscar produto..."></ion-searchbar>
   </ion-toolbar>
-  
-  <ion-toolbar>
-    <ion-segment [(ngModel)]="categoriaSelecionada" (ionChange)="filtrarProdutos()" scrollable>
-      <ion-segment-button value="">
-        <ion-label>Todos</ion-label>
-      </ion-segment-button>
-      <ion-segment-button *ngFor="let cat of categorias" [value]="cat">
-        <ion-label>{{ cat }}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
+
 </ion-header>
 
 <ion-content class="pdv-content">
-  <!-- Grid de Produtos -->
-  <div class="produtos-grid" *ngIf="!loading">
-    <div class="produto-card" 
-         *ngFor="let produto of produtosFiltrados" 
-         (click)="adicionarAoCarrinho(produto)"
-         [class.produto-indisponivel]="produto.estoque === 0">
-      <div class="produto-imagem">
-        <img *ngIf="produto.imagem_url" [src]="produto.imagem_url" [alt]="produto.nome">
-        <ion-icon *ngIf="!produto.imagem_url" name="cube-outline"></ion-icon>
-      </div>
-      <div class="produto-info">
-        <span class="produto-nome">{{ produto.nome }}</span>
-        <span class="produto-preco">{{ produto.preco | currency:'BRL' }}</span>
-        <ion-badge [ngClass]="getEstoqueClass(produto.estoque)" class="estoque-badge">
-          {{ produto.estoque }}
-        </ion-badge>
-      </div>
-    </div>
-    
-    <div class="empty-produtos" *ngIf="produtosFiltrados.length === 0">
-      <ion-icon name="search-outline"></ion-icon>
-      <p>Nenhum produto encontrado</p>
-    </div>
-  </div>
-  
-  <div class="loading" *ngIf="loading">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
-</ion-content>
-
-<!-- Footer com Carrinho -->
-<ion-footer class="pdv-footer">
-  <div class="carrinho-header">
-    <div class="carrinho-info">
-      <ion-icon name="cart-outline"></ion-icon>
-      <span class="carrinho-count">{{ carrinho.length }} itens</span>
-      <span class="carrinho-total">{{ total | currency:'BRL' }}</span>
-    </div>
-    <ion-icon name="chevron-up"></ion-icon>
-  </div>
-  
-  <div class="carrinho-detalhes" *ngIf="carrinho.length > 0">
-    <div class="carrinho-itens">
-      <div class="carrinho-item" *ngFor="let item of carrinho; let i = index">
-        <div class="item-info">
-          <span class="item-nome">{{ item.produto.nome }}</span>
-          <span class="item-preco">{{ item.produto.preco | currency:'BRL' }}</span>
-        </div>
-        <div class="item-quantidade">
-          <ion-button fill="clear" size="small" (click)="atualizarQuantidade(item, -1)">
-            <ion-icon name="remove-circle"></ion-icon>
-          </ion-button>
-          <span>{{ item.quantidade }}</span>
-          <ion-button fill="clear" size="small" (click)="atualizarQuantidade(item, 1)">
-            <ion-icon name="add-circle"></ion-icon>
-          </ion-button>
-        </div>
-        <ion-button fill="clear" color="danger" size="small" (click)="removerDoCarrinho(i)">
-          <ion-icon name="close"></ion-icon>
-        </ion-button>
-      </div>
-    </div>
-    
-    <!-- Desconto -->
-    <div class="desconto-section">
-      <div class="desconto-toggle">
-        <ion-icon name="pricetag-outline"></ion-icon>
-        <span>Desconto</span>
-      </div>
-      <div class="desconto-inputs">
-        <ion-segment [(ngModel)]="descontoTipo">
-          <ion-segment-button value="percent">
-            <ion-label>%</ion-label>
+  <div class="pdv-layout">
+    <!-- Grid de Produtos (Esquerda) -->
+    <div class="produtos-section">
+      <ion-toolbar>
+        <ion-segment [(ngModel)]="categoriaSelecionada" (ionChange)="filtrarProdutos()" scrollable>
+          <ion-segment-button value="">
+            <ion-label>Todos</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="valor">
-            <ion-label>R$</ion-label>
+          <ion-segment-button *ngFor="let cat of categorias" [value]="cat">
+            <ion-label>{{ cat }}</ion-label>
           </ion-segment-button>
         </ion-segment>
-        <ion-input type="number" [(ngModel)]="descontoValor" placeholder="0" [min]="0"></ion-input>
+      </ion-toolbar>
+      <div class="produtos-grid mt-2" *ngIf="!loading">
+        <div class="produto-card" *ngFor="let produto of produtosFiltrados" (click)="adicionarAoCarrinho(produto)"
+          [class.produto-indisponivel]="produto.estoque === 0">
+          <div class="produto-imagem">
+            <img *ngIf="produto.imagem_url" [src]="produto.imagem_url" [alt]="produto.nome">
+            <ion-icon *ngIf="!produto.imagem_url" name="cube-outline"></ion-icon>
+          </div>
+          <div class="produto-info">
+            <span class="produto-nome">{{ produto.nome }}</span>
+            <span class="produto-preco">{{ produto.preco | currency:'BRL' }}</span>
+            <span class="produto-estoque" [ngClass]="getEstoqueClass(produto.estoque)">
+              {{ produto.estoque }} em estoque
+            </span>
+          </div>
+        </div>
+
+        <div class="empty-produtos" *ngIf="produtosFiltrados.length === 0">
+          <ion-icon name="search-outline"></ion-icon>
+          <p>Nenhum produto encontrado</p>
+        </div>
+      </div>
+
+      <div class="loading" *ngIf="loading">
+        <ion-spinner name="crescent"></ion-spinner>
       </div>
     </div>
-    
-    <!-- Totais -->
-    <div class="totais-section">
-      <div class="total-row">
-        <span>Subtotal</span>
-        <span>{{ subtotal | currency:'BRL' }}</span>
+
+    <!-- Carrinho (Direita) -->
+    <div class="carrinho-section">
+      <div class="carrinho-header">
+        <ion-icon name="cart-outline"></ion-icon>
+        <span>Carrinho</span>
+        <span class="carrinho-count">({{ carrinho.length }})</span>
       </div>
-      <div class="total-row desconto" *ngIf="valorDesconto > 0">
-        <span>Desconto</span>
-        <span>-{{ valorDesconto | currency:'BRL' }}</span>
+
+      <div class="carrinho-vazio" *ngIf="carrinhoVazio">
+        <ion-icon name="cart-outline"></ion-icon>
+        <p>Nenhum item no carrinho</p>
+        <span>Toque em um produto para adicionar</span>
       </div>
-      <div class="total-row grand-total">
-        <span>TOTAL</span>
-        <span>{{ total | currency:'BRL' }}</span>
+
+      <div class="carrinho-detalhes" *ngIf="!carrinhoVazio">
+        <div class="carrinho-itens">
+          <div class="carrinho-item" *ngFor="let item of carrinho; let i = index">
+            <div class="item-info">
+              <span class="item-nome">{{ item.produto.nome }}</span>
+              <span class="item-preco">{{ item.produto.preco | currency:'BRL' }} cada</span>
+            </div>
+            <div class="item-quantidade">
+              <ion-button fill="clear" size="small" (click)="atualizarQuantidade(item, -1)">
+                <ion-icon name="remove-circle-outline"></ion-icon>
+              </ion-button>
+              <span>{{ item.quantidade }}</span>
+              <ion-button fill="clear" size="small" (click)="atualizarQuantidade(item, 1)">
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="item-subtotal">
+              {{ item.produto.preco * item.quantidade | currency:'BRL' }}
+            </div>
+            <ion-button fill="clear" color="danger" size="small" (click)="removerDoCarrinho(i)">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Desconto -->
+        <div class="desconto-section">
+          <div class="desconto-toggle">
+            <ion-icon name="pricetag-outline"></ion-icon>
+            <span>Desconto</span>
+          </div>
+          <div class="desconto-inputs">
+            <ion-segment [(ngModel)]="descontoTipo">
+              <ion-segment-button value="percent">
+                <ion-label>%</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="valor">
+                <ion-label>R$</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+            <ion-input type="number" [(ngModel)]="descontoValor" placeholder="0" [min]="0"></ion-input>
+          </div>
+        </div>
+
+        <!-- Totais -->
+        <div class="totais-section">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>{{ subtotal | currency:'BRL' }}</span>
+          </div>
+          <div class="total-row desconto" *ngIf="valorDesconto > 0">
+            <span>Desconto</span>
+            <span>-{{ valorDesconto | currency:'BRL' }}</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>TOTAL</span>
+            <span>{{ total | currency:'BRL' }}</span>
+          </div>
+        </div>
+
+        <!-- Pagamento -->
+        <div class="pagamento-section">
+          <span class="pagamento-label">Forma de Pagamento</span>
+          <div class="forma-pagamento">
+            <ion-button [color]="formaPagamento === 'pix' ? 'success' : 'medium'" (click)="formaPagamento = 'pix'"
+              fill="outline" size="small">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              PIX
+            </ion-button>
+            <ion-button [color]="formaPagamento === 'dinheiro' ? 'success' : 'medium'"
+              (click)="formaPagamento = 'dinheiro'" fill="outline" size="small">
+              <ion-icon name="cash-outline"></ion-icon>
+              Dinheiro
+            </ion-button>
+            <ion-button [color]="formaPagamento === 'cartao' ? 'success' : 'medium'" (click)="formaPagamento = 'cartao'"
+              fill="outline" size="small">
+              <ion-icon name="card-outline"></ion-icon>
+              Cartão
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Dados do Cliente -->
+        <div class="cliente-section">
+          <ion-input [(ngModel)]="nomeCliente" placeholder="Nome do cliente (opcional)"></ion-input>
+          <ion-input [(ngModel)]="telefoneCliente" placeholder="Telefone (opcional)" type="tel"></ion-input>
+        </div>
+
+        <!-- Finalizar -->
+        <div class="finalizar-section">
+          <ion-button expand="block" color="success" (click)="showResumoVenda()" [disabled]="carrinhoVazio">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Finalizar Venda
+          </ion-button>
+        </div>
       </div>
-    </div>
-    
-    <!-- Pagamento -->
-    <div class="pagamento-section">
-      <div class="forma-pagamento">
-        <ion-button [color]="formaPagamento === 'pix' ? 'success' : 'medium'" 
-                    (click)="formaPagamento = 'pix'" fill="outline">
-          <ion-icon name="qr-code-outline"></ion-icon>
-          PIX
-        </ion-button>
-        <ion-button [color]="formaPagamento === 'dinheiro' ? 'success' : 'medium'" 
-                    (click)="formaPagamento = 'dinheiro'" fill="outline">
-          <ion-icon name="cash-outline"></ion-icon>
-          Dinheiro
-        </ion-button>
-        <ion-button [color]="formaPagamento === 'cartao' ? 'success' : 'medium'" 
-                    (click)="formaPagamento = 'cartao'" fill="outline">
-          <ion-icon name="card-outline"></ion-icon>
-          Cartão
-        </ion-button>
-      </div>
-    </div>
-    
-    <!-- Dados do Cliente -->
-    <div class="cliente-section">
-      <ion-input [(ngModel)]="nomeCliente" placeholder="Nome do cliente (opcional)"></ion-input>
-      <ion-input [(ngModel)]="telefoneCliente" placeholder="Telefone (opcional)" type="tel"></ion-input>
-    </div>
-    
-    <!-- Finalizar -->
-    <div class="finalizar-section">
-      <ion-button expand="block" color="success" (click)="showResumoVenda()" [disabled]="carrinhoVazio">
-        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-        Finalizar Venda
-      </ion-button>
     </div>
   </div>
-</ion-footer>
+</ion-content>
