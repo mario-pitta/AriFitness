@@ -113,7 +113,15 @@ export class CarrinhoModalComponent {
   }
 
   finalizarPedido() {
-    if (!this.empresaId || !this.podeFinalizar) return;
+
+    console.log(this.cliente);
+    console.log(this.itens);
+    console.log(this.empresaId);
+    console.log(this.empresa);
+    console.log(this.podeFinalizar);
+
+
+    if (!this.empresa?.id || !this.podeFinalizar) return;
 
     this.carrinhoService.setDadosCliente(this.cliente);
 
@@ -123,13 +131,15 @@ export class CarrinhoModalComponent {
       cliente_nome: this.cliente.nome,
       cliente_telefone: this.cliente.telefone,
       cliente_email: this.cliente.email,
+      cliente_obs: this.cliente.observacoes,
       valor_total: valorTotal,
       status: 'pendente',
       itens: this.itens.map(item => ({
         produto_id: item.produto_id,
         quantidade: item.quantidade,
         preco_unitario: item.preco
-      }))
+      })),
+      empresa_id: this.empresa.id,
     };
 
     this.pedidoService.create(pedido).subscribe({

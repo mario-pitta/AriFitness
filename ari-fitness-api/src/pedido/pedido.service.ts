@@ -51,7 +51,7 @@ export class PedidoService {
         cliente_telefone: pedidoData.cliente_telefone || null,
         cliente_email: pedidoData.cliente_email || null,
         forma_pagamento: pedidoData.forma_pagamento || null,
-        obs: pedidoData.obs || null,
+        obs: pedidoData.obs || pedidoData.cliente_obs || null,
         valor_total: valorTotal,
         status: 'pendente',
         fl_ativo: true,

@@ -45,6 +45,7 @@ export interface PedidoInput {
   cliente_nome?: string;
   cliente_telefone?: string;
   cliente_email?: string;
+  cliente_obs?: string;
   itens: PedidoItemInput[];
   forma_pagamento?: string;
   obs?: string;

@@ -53,22 +53,25 @@
         <ion-input [(ngModel)]="cliente.nome" label="Nome completo" labelPlacement="floating" fill="solid"
           class="modern-input" type="text" placeholder="Seu nome completo" autocomplete="name" required>
         </ion-input>
-        <ion-input [(ngModel)]="cliente.cpf" label="CPF" labelPlacement="floating" fill="solid"
-          class="modern-input" type="text" placeholder="000.000.000-00" maxlength="14"
-          [maskito]="cpfMask" [maskitoElement]="maskPredicate">
+        <ion-input [(ngModel)]="cliente.cpf" label="CPF" labelPlacement="floating" fill="solid" class="modern-input"
+          type="text" placeholder="000.000.000-00" maxlength="14" [maskito]="cpfMask" [maskitoElement]="maskPredicate">
         </ion-input>
         <ion-input [(ngModel)]="cliente.telefone" label="WhatsApp" labelPlacement="floating" fill="solid"
-          class="modern-input" type="tel" placeholder="(00) 00000-0000" maxlength="15" autocomplete="tel" required
+          class="modern-input" type="tel" placeholder="(00) 00000-0000" maxlength="16" autocomplete="tel" required
           [maskito]="telefoneMask" [maskitoElement]="maskPredicate">
         </ion-input>
-        <ion-input [(ngModel)]="cliente.email" label="Email" labelPlacement="floating" fill="solid"
-          class="modern-input" type="email" placeholder="seu@email.com" autocomplete="email">
+        <ion-input [(ngModel)]="cliente.email" label="Email" labelPlacement="floating" fill="solid" class="modern-input"
+          type="email" placeholder="seu@email.com" autocomplete="email">
         </ion-input>
+        <ion-textarea [(ngModel)]="cliente.observacoes" label="Observações" labelPlacement="floating" fill="solid"
+          class="modern-input" placeholder="Alguma observação para o lojista?" [autoGrow]="true" maxlength="500">
+        </ion-textarea>
       </div>
     </div>
 
     <div class="actions">
-      <ion-button expand="block" color="success" class="btn-finalizar" shape="round" size="large" (click)="finalizarPedido()" [disabled]="!podeFinalizar">
+      <ion-button expand="block" color="success" class="btn-finalizar" shape="round" size="large"
+        (click)="finalizarPedido()" [disabled]="!podeFinalizar">
         <ion-icon name="checkmark-circle" slot="start"></ion-icon>
         Finalizar Pedido
       </ion-button>
