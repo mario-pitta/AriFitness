@@ -54,6 +54,22 @@
             </ion-select>
           </ion-col>
 
+          <!-- Produto (Venda de Produto) -->
+          <ion-col size="12" size-md="6" *ngIf="isVendaProduto">
+            <ion-select fill="solid" class="modern-input" interface="popover" formControlName="produto_id"
+              label="Produto" labelPlacement="floating">
+              <ion-select-option *ngFor="let produto of produtos" [value]="produto.id">
+                {{produto.nome | titlecase}} - R$ {{produto.preco | number:'1.2-2'}}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+
+          <!-- Quantidade (Venda de Produto) -->
+          <ion-col size="12" size-md="6" *ngIf="isVendaProduto">
+            <ion-input fill="solid" class="modern-input" type="number" label="Quantidade" labelPlacement="floating"
+              formControlName="quantidade" min="1" value="1"></ion-input>
+          </ion-col>
+
           <!-- Descrição -->
           <ion-col size="12" size-md="6">
             <ion-input fill="solid" class="modern-input" type="text" formControlName="descricao"

@@ -1,4 +1,5 @@
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
+import { ProdutoService } from 'src/core/services/ecommerce/produto.service';
 import {
   Component,
   EventEmitter,
@@ -55,6 +56,7 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
   tipos: TipoTransacaoFinanceira[] = [];
   membros: IUsuario[] = [];
   formasPagamento: string[] = [];
+  produtos: any[] = [];
   discountType: '%' | 'R$' = '%';
   user!: IUsuario;
   auth = inject(AuthService);
@@ -74,7 +76,8 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
 
   constructor(
     private transFinancService: TransacaoFinanceiraService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private produtoService: ProdutoService
   ) { }
   async ngOnInit() {
     this.user = this.auth.getUser;
@@ -83,6 +86,7 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
     this.getTiposTransacaoFinanceira();
     this.getCategoriasByTipoId(this.tipoTransacaoId);
     this.calculaValorFinal();
+    this.carregarProdutos();
 
     setTimeout(() => {
       this.buildForm(this.transacaoFinanceira);
@@ -227,6 +231,21 @@ export class FormTransacaoFinaceiraComponent implements OnInit, OnDestroy {
         this.categorias = res;
       },
     });
+  }
+
+  carregarProdutos() {
+    const empresaId = this.auth.getUser?.empresa_id;
+    if (empresaId) {
+      this.produtoService.getAllByEmpresa(empresaId).subscribe({
+        next: (res) => {
+          this.produtos = res.filter((p: any) => p.ativo);
+        },
+      });
+    }
+  }
+
+  get isVendaProduto(): boolean {
+    return this.f.get('tr_categoria_id')?.value === 3;
   }
 
   setDiscountType(type: any) {

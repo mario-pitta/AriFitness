@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { ProdutoService, Produto } from 'src/core/services/ecommerce/produto.service';
 import { PedidoService, PedidoItem } from 'src/core/services/ecommerce/pedido.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
+import { AuthService } from 'src/core/services/auth/auth.service';
 
 interface CarrinhoItem {
   produto: Produto;
@@ -56,7 +57,9 @@ export class PdvPagePage implements OnInit {
     private produtoService: ProdutoService,
     private pedidoService: PedidoService,
     private toastr: ToastrService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private navController: NavController,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
@@ -199,5 +202,12 @@ ${this.nomeCliente ? `Cliente: ${this.nomeCliente}` : ''}
       ]
     });
     await alert.present();
+  }
+
+  abrirCatalogo() {
+    const empresaId = this.auth.getUser?.empresa_id;
+    if (empresaId) {
+      this.navController.navigateForward(`/catalogo/${empresaId}`);
+    }
   }
 }

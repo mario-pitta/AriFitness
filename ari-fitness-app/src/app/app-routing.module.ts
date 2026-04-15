@@ -21,7 +21,11 @@ const routes: Routes = [
   },
   {
     path: 'catalogo/:empresaId',
-    loadChildren: () => import('./shared/catalog-public/catalog-public.module').then(m => m.CatalogPublicPageModule)
+    loadChildren: () => import('./shared/catalog-public/catalog-page/catalog-page.module').then(m => m.CatalogPublicPageModule)
+  },
+  {
+    path: 'catalogo/:empresaId/produto/:produtoId',
+    loadComponent: () => import('./shared/catalog-public/produto-detail-page/produto-detail-page').then(m => m.ProdutoDetailPageComponent)
   },
   {
     path: 'check-in',

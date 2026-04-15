@@ -167,4 +167,16 @@
       </div>
     </div>
   </div>
+
+  <!-- FAB Catalogo -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="abrirCatalogo()">
+      <ion-icon name="globe"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-fab-button color="primary" data-desc="Ver Catálogo" (click)="abrirCatalogo()">
+        <ion-icon name="storefront"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
 </ion-content>
