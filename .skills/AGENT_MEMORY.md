@@ -144,7 +144,29 @@ enum UserRole {
   - `whatsapp-modal.service.ts` - Serviço de integração
   - `evolution.service.ts` - Serviço Evolution API
 
-### 3. Controle de Acesso
+### 3. E-commerce Completo (NOVO)
+- **Backend**:
+  - `produto.controller.ts` - CRUD produtos
+    - GET público: `/produtos/publico/:empresaId`
+    - POST/PUT/DELETE protegidos
+  - `pedido.controller.ts` - Gestão de pedidos
+  - `produto.service.ts`, `pedido.service.ts`
+- **Frontend**:
+  - **PDV**: `/admin/pdv` - Ponto de venda com grid + carrinho lateral
+  - **Minha Loja**: `/admin/configuracoes/ecommerce/loja` - Hub com 3 cards
+  - **Produtos**: `/admin/configuracoes/ecommerce/produtos`
+  - **Pedidos**: `/admin/configuracoes/ecommerce/pedidos`
+  - **Catálogo Público**: `/catalogo/:empresaId`
+    - Header com banner/logo
+    - Filtros de busca, categoria, ordenação
+    - Modal de detalhes do produto
+    - Botão WhatsApp para contato
+- **Melhorias UI**:
+  - Cards de produto com hover effects
+  - Estoque com badges semânticos (verde/amarelo/vermelho)
+  - Título dinâmico da aba (Página | Empresa | MvK Gym Manager)
+
+### 4. Controle de Acesso
 - **Unauthorized Page**: `shared/unauthorized-page/`
   - Shield icon + mensagem divertida
 - **RolesGuard**: `core/guards/roles.guard.ts`
@@ -218,22 +240,155 @@ assinatura (
 3. **Build**: Verificar se compila após alterações (`ionic build` + `npm run build`)
 4. **Multi-tenant**: Sempre filtrar por `empresa_id`
 5. **Supabase**: Queries diretas via client (NÃO TypeORM para queries)
+6. **Interfaces/Classes**: Toda declaração deve estar em `src/core/models/`. Nunca declarar interfaces em arquivos de componente. Se não existir, criar no local correto.
 
 ---
 
-## 📝 Próximos Passos
+## 🚫 REGRAS DE ARQUITETURA (OBRIGATÓRIAS)
 
-1. Implementar módulo de E-commerce:
-   - Tabelas: produtos, pedidos, pedido_itens
-   - Backend: produto.service.ts, pedido.service.ts
-   - Frontend: gestão de produtos, listagem de pedidos
-   - Cardápio público para alunos
+### Fluxo de Dados: FRONT -> BACK -> DB
+
+```
+FRONTEND (Angular/Ionic)
+        ↓ (HTTP via Services)
+BACKEND (NestJS)
+        ↓ (Supabase Client)
+BANCO (Supabase/PostgreSQL)
+```
+
+### Regras Críticas
+
+1. **NUNCA chamar banco de dados diretamente do frontend**
+   - ❌ Supabase client no Angular
+   - ❌ Queries diretas no componente
+   - ❌ chamadas externas (APIs) no componente
+
+25. **Segurança**: Nunca exponha chaves ou URLs do Supabase no frontend. Utilize o pattern do Service Injetável.
+6. **PRODUTO**: Sempre valide se o projeto está rodando (compilando) e sem erros após implementações/refatorações.
+
+2. **SEMPRE usar services injetáveis no frontend**
+   - ✅ Services Angular que chamam endpoints do backend
+   - ✅ HttpClient através de services
+
+3. **Backend é responsável por todas as interações com DB**
+   - ✅ Supabase client apenas no NestJS
+   - ✅ Serviços externos (Evolution API, Gemini, etc) apenas no backend
+
+4. **Nunca fazer chamadas externas nos componentes**
+   - ❌ `this.supabase.client.from(...).select()` no .ts do componente
+   - ❌ `window.open()` para APIs externas
+   - ✅ services que encapsulam a lógica
+
+### Padrão de Implementação
+
+```typescript
+// ❌ ERRADO - Chamada direta no componente
+async loadData() {
+  const { data } = await this.supabase.client.from('produtos').select('*');
+}
+
+// ✅ CORRETO - Via service
+// 1. Service (Angular)
+getProdutos(): Observable<any> {
+  return this.http.get(`${environment.apiUrl}/produtos`);
+}
+
+// 2. Component
+async loadData() {
+  this.produtoService.getProdutos().subscribe(res => {
+    this.produtos = res.data;
+  });
+}
+```
+
+### Referências
+
+- Regras detalhadas: [fullstack.md](./fullstack.md)
+- Arquitetura: [.claude/agents/AGENT-FULLSTACK.md](./.claude/agents/AGENT-FULLSTACK.md)
+
+---
+
+## 🤖 USO DE SUBAGENTES (OBRIGATÓRIO)
+
+Para tarefas complexas, usar a ferramenta `Task` com subagentes:
+
+### Agent Explore
+- Buscar arquivos, rotas, componentes
+- Mapear estrutura do projeto
+- Identificar dependências e imports
+- **Exemplo**: "Encontre a página do PDV e me diga sua estrutura"
+
+### Agent General
+- Implementar funcionalidades completas
+- Criar/modificar componentes
+- Escrever specs e testes
+- **Exemplo**: "Adicione um FAB na página do PDV para abrir o catálogo"
+
+### Fluxo Recomendado
+1. **Explore** primeiro - entender contexto
+2. **General** para implementar
+3. Verificar build após implementação
+4. Atualizar memória com resultados
+
+---
+
+## 📝 Próximas Tarefas (TODO)
+
+### E-commerce - Fase 2
+1. **Carrinho de compras no catálogo público** - Concluído ✅
+2. **Checkout com botão comprar no modal de produto** - Concluído ✅
+3. **Footer na página de detalhes do produto** - Concluído ✅
+4. **Modal compartilhar catálogo** - Já existe (página /admin/configuracoes/ecommerce/catalogo)
+5. **Botão acessar catálogo no PDV** - Concluído ✅ (FAB)
+6. **Select de produtos no formulário de transação** - Concluído ✅
+
+### Integrações
+7. **Integração vendas → módulo de finanças** - Concluído (transação automática ao pagar)
+8. **Integração com AbacatePay** - Gateway de pagamento para checkout
 
 ---
 
 ## 📜 Histórico de Alterações
 
-### 13/04/2026 - Sessão Atual
+### 15/04/2026 - Unificação e Header Dinâmico (Sessão Atual)
+- **Unificação de Componentes**: `ProdutoDetailPageComponent` agora é o componente master para exibição de detalhes, eliminando a necessidade do `ProdutoDetailModalComponent`.
+- **Header Dinâmico no Catálogo**: Replicado o padrão de design colapsável (Sticky) no `CatalogPublicPage` para consistência visual.
+- **UI/UX**: Implementado header dinâmico (Collapsible Header) na página de detalhes.
+  - Modo Expandido: Banner + Logo + Nome + Carrinho.
+  - Modo Reduzido (Sticky): Logo Mini + Nome + Carrinho + Compartilhar (com Glassmorphism).
+- **Correção**: Corrigido gap de 300px no header da página de detalhes.
+- **Simplificação**: Removida pasta `produto-detail-modal` redundante.
+- **Integração**: Catálogo público agora abre o componente unificado com `isModal: true`.
+
+### 15/04/2026 - Subagentes + Funcionalidades PDV/Transação
+
+### 14/04/2026 - Correções Arquitetura + E-commerce
+- **Correção crítica**: Implementado padrão FRONT -> BACK -> DB
+  - Removidas chamadas diretas ao Supabase dos componentes
+  - Criado endpoint público `/produtos/publico/:empresaId/produto/:produtoId`
+  - Backend retorna produto + dados públicos da empresa (nome, logo, formas pagamento)
+  - Frontend: ProdutoService com método `getByIdPublic()`
+  - produto-detail-page.component.ts agora usa service
+- Carrinho de compras completo com localStorage
+- Modal carrinho com dados do cliente
+- Página detalhes do produto com rota compartilhável (`/catalogo/:empresaId/produto/:produtoId`)
+- Botão compartilhar produto no modal
+- Transação automática ao pagar pedido (módulo finanças)
+
+### 14/04/2026 - E-commerce Completo
+- Commit 8ea2b08
+- PDV com layout side-by-side (produtos + carrinho)
+- Catálogo público com header banner, filtros e ordenação
+- Modal de detalhes do produto
+- Título dinâmico da aba (Página | Empresa | MvK Gym Manager)
+- Página "Minha Loja" com cards de navegação
+- Sidebar atualizado (PDV, Catálogo Público)
+- Rota GET /produtos/:empresaId pública (POST/PUT/DELETE protegidos)
+- Header global escondido em rotas públicas
+- Melhorias UI nos cards de produto (PDV e Gestão)
+- Regra: sempre usar services injetáveis (nunca HttpClient direto)
+
+### 13/04/2026 - Sessão Anterior
 - Commitados 19 changesets
 - Adicionados 3 novos recursos aos planos (Loja, Pagamento, Cobrança)
 - Corrigido update de serviços da empresa
