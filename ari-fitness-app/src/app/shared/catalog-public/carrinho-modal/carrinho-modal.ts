@@ -3,17 +3,20 @@ import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { MaskitoOptions } from '@maskito/core';
+import { MaskitoDirective } from '@maskito/angular';
 import { CarrinhoService } from 'src/core/services/ecommerce/carrinho.service';
 import { PedidoService } from 'src/core/services/ecommerce/pedido.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
 import { Produto } from 'src/core/models/Produto';
 import { Empresa } from 'src/core/models/Empresa';
 import { ItemCarrinho, DadosCliente } from 'src/core/models/Carrinho';
+import Constants from 'src/core/Constants';
 
 @Component({
   selector: 'app-carrinho-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, MaskitoDirective],
   templateUrl: './carrinho-modal.html',
   styleUrls: ['./carrinho-modal.scss']
 })
@@ -24,12 +27,25 @@ export class CarrinhoModalComponent {
   itens: ItemCarrinho[] = [];
   cliente: DadosCliente = { cpf: '', nome: '', telefone: '', email: '' };
 
+  cpfMask: MaskitoOptions = Constants.cpfMask;
+  telefoneMask: MaskitoOptions = Constants.phoneMask;
+  maskPredicate: (element: HTMLElement) => boolean = () => true;
+
   get total(): number {
     return this.itens.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
   }
 
   get podeFinalizar(): boolean {
-    return !!(this.cliente.nome && this.cliente.telefone && this.itens.length > 0);
+    if (!this.cliente.nome?.trim()) return false;
+    if (!this.cliente.telefone?.trim()) return false;
+    if (this.cliente.email && !this.isValidEmail(this.cliente.email)) return false;
+    if (this.itens.length === 0) return false;
+    return true;
+  }
+
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   constructor(
