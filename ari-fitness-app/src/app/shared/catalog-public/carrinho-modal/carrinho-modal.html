@@ -45,33 +45,33 @@
     </div>
 
     <div class="dados-cliente">
-      <h3>Seus Dados</h3>
+      <div class="section-header">
+        <ion-icon name="person-outline"></ion-icon>
+        <h3>Seus Dados</h3>
+      </div>
       <div class="cliente-grid">
-        <ion-item class="w-100">
-          <ion-label position="stacked">CPF</ion-label>
-          <ion-input [(ngModel)]="cliente.cpf" placeholder="Digite seu CPF" type="text" maxlength="14"></ion-input>
-        </ion-item>
-        <ion-item class="w-100">
-          <ion-label position="stacked">Nome completo *</ion-label>
-          <ion-input [(ngModel)]="cliente.nome" placeholder="Digite seu nome" type="text"></ion-input>
-        </ion-item>
-        <ion-item class="w-100">
-          <ion-label position="stacked">WhatsApp *</ion-label>
-          <ion-input [(ngModel)]="cliente.telefone" placeholder="(00) 00000-0000" type="tel" maxlength="15"></ion-input>
-        </ion-item>
-        <ion-item class="w-100">
-          <ion-label position="stacked">Email</ion-label>
-          <ion-input [(ngModel)]="cliente.email" placeholder="seu@email.com" type="email"></ion-input>
-        </ion-item>
+        <ion-input [(ngModel)]="cliente.nome" label="Nome completo" labelPlacement="floating" fill="solid"
+          class="modern-input" type="text" placeholder="Seu nome completo" autocomplete="name">
+        </ion-input>
+        <ion-input [(ngModel)]="cliente.cpf" label="CPF" labelPlacement="floating" fill="solid"
+          class="modern-input" type="text" placeholder="000.000.000-00" maxlength="14">
+        </ion-input>
+        <ion-input [(ngModel)]="cliente.telefone" label="WhatsApp" labelPlacement="floating" fill="solid"
+          class="modern-input" type="tel" placeholder="(00) 00000-0000" maxlength="15" autocomplete="tel">
+        </ion-input>
+        <ion-input [(ngModel)]="cliente.email" label="Email" labelPlacement="floating" fill="solid"
+          class="modern-input" type="email" placeholder="seu@email.com" autocomplete="email">
+        </ion-input>
       </div>
     </div>
 
     <div class="actions">
-      <ion-button expand="block" color="success" class="btn-finalizar" (click)="finalizarPedido()" [disabled]="!podeFinalizar">
+      <ion-button expand="block" color="success" class="btn-finalizar" shape="round" size="large" (click)="finalizarPedido()" [disabled]="!podeFinalizar">
         <ion-icon name="checkmark-circle" slot="start"></ion-icon>
         Finalizar Pedido
       </ion-button>
       <ion-button expand="block" fill="clear" class="btn-limpar" (click)="limparCarrinho()">
+        <ion-trash-outline slot="start"></ion-trash-outline>
         Limpar Carrinho
       </ion-button>
     </div>
