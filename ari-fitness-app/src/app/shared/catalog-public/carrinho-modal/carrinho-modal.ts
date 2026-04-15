@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { MaskitoOptions } from '@maskito/core';
+import { MaskitoOptions, MaskitoElementPredicate } from '@maskito/core';
 import { MaskitoDirective } from '@maskito/angular';
 import { CarrinhoService } from 'src/core/services/ecommerce/carrinho.service';
 import { PedidoService } from 'src/core/services/ecommerce/pedido.service';
@@ -29,7 +29,8 @@ export class CarrinhoModalComponent {
 
   cpfMask: MaskitoOptions = Constants.cpfMask;
   telefoneMask: MaskitoOptions = Constants.phoneMask;
-  maskPredicate: (element: HTMLElement) => boolean = () => true;
+  maskPredicate: MaskitoElementPredicate = async (el) =>
+    (el as unknown as HTMLIonInputElement).getInputElement();
 
   get total(): number {
     return this.itens.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
@@ -37,7 +38,8 @@ export class CarrinhoModalComponent {
 
   get podeFinalizar(): boolean {
     if (!this.cliente.nome?.trim()) return false;
-    if (!this.cliente.telefone?.trim()) return false;
+    if (!this.isValidTelefone(this.cliente.telefone)) return false;
+    if (this.cliente.cpf && !this.isValidCPF(this.cliente.cpf)) return false;
     if (this.cliente.email && !this.isValidEmail(this.cliente.email)) return false;
     if (this.itens.length === 0) return false;
     return true;
@@ -46,6 +48,33 @@ export class CarrinhoModalComponent {
   isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  isValidCPF(cpf: string): boolean {
+    const cpfDigits = cpf.replace(/\D/g, '');
+    if (cpfDigits.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(cpfDigits)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(cpfDigits[i]) * (10 - i);
+    }
+    let digit1 = sum % 11;
+    digit1 = digit1 < 2 ? 0 : 11 - digit1;
+    if (parseInt(cpfDigits[9]) !== digit1) return false;
+
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+      sum += parseInt(cpfDigits[i]) * (11 - i);
+    }
+    let digit2 = sum % 11;
+    digit2 = digit2 < 2 ? 0 : 11 - digit2;
+    return parseInt(cpfDigits[10]) === digit2;
+  }
+
+  isValidTelefone(telefone: string): boolean {
+    const digits = telefone.replace(/\D/g, '');
+    return digits.length >= 10 && digits.length <= 11;
   }
 
   constructor(
