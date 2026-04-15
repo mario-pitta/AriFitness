@@ -20,10 +20,24 @@ export class ProdutoController {
    */
   @Get('publico/:empresaId')
   async findAllPublico(@Param('empresaId') empresaId: string) {
-
-
     const res = await this.produtoService.findByEmpresaId(empresaId);
     return { success: true, data: res };
+  }
+
+  /**
+   * Buscar produto público por ID (sem autenticação)
+   * GET /produtos/publico/:empresaId/produto/:produtoId
+   */
+  @Get('publico/:empresaId/produto/:produtoId')
+  async findByIdPublico(
+    @Param('empresaId') empresaId: string,
+    @Param('produtoId') produtoId: string,
+  ) {
+    const result = await this.produtoService.findByIdPublico(empresaId, produtoId);
+    if (!result) {
+      return { success: false, message: 'Produto não encontrado' };
+    }
+    return { success: true, data: result };
   }
 
   /**

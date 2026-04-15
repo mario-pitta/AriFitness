@@ -7,6 +7,7 @@ export interface Pedido {
   updated_at?: Date;
   empresa_id: string;
   cliente_id?: number;
+  cliente_cpf?: string;
   cliente_nome?: string;
   cliente_telefone?: string;
   cliente_email?: string;
@@ -17,6 +18,7 @@ export interface Pedido {
   pago_em?: Date;
   obs?: string;
   fl_ativo: boolean;
+  transacao_id?: number;
   itens?: PedidoItem[];
 }
 
@@ -39,6 +41,7 @@ export interface PedidoItem {
  */
 export interface PedidoInput {
   cliente_id?: number;
+  cliente_cpf?: string;
   cliente_nome?: string;
   cliente_telefone?: string;
   cliente_email?: string;

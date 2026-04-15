@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import { Pedido, PedidoInput, PedidoItemInput, PedidoFilters } from './pedido.interface';
+import { TransacaoFinanceiraService } from 'src/transacao_financeira/transacao-financeira.service';
 
 /**
  * Service para gestão de pedidos do e-commerce
  */
 @Injectable()
 export class PedidoService {
-  constructor(private readonly databaseService: DataBaseService) {}
+  constructor(
+    private readonly databaseService: DataBaseService,
+    private readonly transacaoService: TransacaoFinanceiraService
+  ) {}
 
   /**
    * Criar novo pedido (com validação de estoque)
@@ -42,6 +46,7 @@ export class PedidoService {
       .insert({
         empresa_id: empresaId,
         cliente_id: pedidoData.cliente_id || null,
+        cliente_cpf: pedidoData.cliente_cpf || null,
         cliente_nome: pedidoData.cliente_nome || null,
         cliente_telefone: pedidoData.cliente_telefone || null,
         cliente_email: pedidoData.cliente_email || null,
@@ -173,7 +178,61 @@ export class PedidoService {
       .single();
 
     if (error) throw error;
+
+    if (status === 'pago' && data) {
+      try {
+        const transacao = await this.criarTransacaoPorVenda(data, empresaId);
+        if (transacao) {
+          await this.databaseService.supabase
+            .from('pedidos')
+            .update({ transacao_id: transacao.id })
+            .eq('id', id);
+        }
+      } catch (err) {
+        console.error('Erro ao criar transação automática:', err);
+      }
+    }
+
     return data;
+  }
+
+  /**
+   * Criar transação automática quando venda for paga
+   */
+  private async criarTransacaoPorVenda(pedido: any, empresaId: string) {
+    const { data: primeiroItem } = await this.databaseService.supabase
+      .from('pedido_itens')
+      .select('produto_id, quantidade, preco_unitario')
+      .eq('pedido_id', pedido.id)
+      .limit(1)
+      .single();
+
+    const transacaoData = {
+      empresa_id: empresaId,
+      tr_tipo_id: 1,
+      tr_categoria_id: 3,
+      valor_real: pedido.valor_total,
+      valor_final: pedido.valor_total,
+      forma_pagamento: pedido.forma_pagamento || 'dinheiro',
+      fl_pago: true,
+      descricao: `Venda de produtos - Pedido #${pedido.id.slice(0, 8)}`,
+      produto_id: primeiroItem?.produto_id || null,
+      quantidade: primeiroItem?.quantidade || 1,
+      data_lancamento: new Date().toISOString(),
+    };
+
+    const { data: transacao, error } = await this.databaseService.supabase
+      .from('transacao_financeira')
+      .insert(transacaoData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao criar transação:', error);
+      return null;
+    }
+
+    return transacao;
   }
 
   /**

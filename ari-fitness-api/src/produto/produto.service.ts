@@ -177,4 +177,59 @@ export class ProdutoService {
       produtos: produtos
     };
   }
+
+  /**
+   * Buscar produto público por ID com dados públicos da empresa
+   * Retorna produto ativo + dados públicos da empresa (nome, logo, banner, formas pagamento)
+   */
+  async findByIdPublico(empresaId: string, produtoId: string): Promise<{ produto: Produto; empresa: any } | null> {
+    const { data: produto, error: produtoError } = await this.databaseService.supabase
+      .from('produtos')
+      .select('id, nome, descricao, preco, estoque, imagem_url, categoria, empresa_id, ativo')
+      .eq('id', produtoId)
+      .eq('empresa_id', empresaId)
+      .eq('ativo', true)
+      .single();
+
+    if (produtoError || !produto) {
+      return null;
+    }
+
+    const { data: empresa, error: empresaError } = await this.databaseService.supabase
+      .from('empresa')
+      .select(`
+        id,
+        nome_fantasia,
+        telefone,
+        logo_url,
+        banner_url,
+        accept_pix,
+        accept_credit_card,
+        accept_debit_card,
+        accept_money_in_cash,
+        chave_pix
+      `)
+      .eq('id', empresaId)
+      .single();
+
+    if (empresaError || !empresa) {
+      return null;
+    }
+
+    return {
+      produto,
+      empresa: {
+        id: empresa.id,
+        nome_fantasia: empresa.nome_fantasia,
+        telefone: empresa.telefone,
+        logo_url: empresa.logo_url,
+        banner_url: empresa.banner_url,
+        accept_pix: empresa.accept_pix,
+        accept_credit_card: empresa.accept_credit_card,
+        accept_debit_card: empresa.accept_debit_card,
+        accept_money_in_cash: empresa.accept_money_in_cash,
+        chave_pix: empresa.chave_pix
+      }
+    };
+  }
 }
