@@ -25,6 +25,9 @@ export interface IEmpresa {
   chave_pix?: string;
   openai_key?: string;
   meta_key?: string;
+  
+  // Propriedades do catálogo público
+  produtos?: any[];
 }
 
 export interface IService {
@@ -65,6 +68,8 @@ export class Empresa implements IEmpresa {
   chave_pix?: string;
   openai_key?: string;
   meta_key?: string;
+  
+  produtos?: any[];
 
   constructor(data?: Partial<IEmpresa>) {
     this.id = data?.id;
