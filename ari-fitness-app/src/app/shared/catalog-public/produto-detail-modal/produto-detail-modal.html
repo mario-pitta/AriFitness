@@ -1,0 +1,41 @@
+<div class="detail-modal">
+  <div class="modal-header">
+    <div class="share-btn" (click)="shareProduct()">
+      <ion-icon name="share-social-outline"></ion-icon>
+    </div>
+    <div class="close-btn" (click)="close()">
+      <ion-icon name="close"></ion-icon>
+    </div>
+  </div>
+
+  <div class="modal-image">
+    <img *ngIf="produto?.imagem_url" [src]="produto?.imagem_url" [alt]="produto?.nome">
+    <ion-icon *ngIf="!produto?.imagem_url" name="cube-outline"></ion-icon>
+  </div>
+
+  <div class="modal-content">
+    <span class="category" *ngIf="produto?.categoria">{{ produto?.categoria }}</span>
+    <h1 class="name">{{ produto?.nome }}</h1>
+
+    <div class="price-section">
+      <span class="price">{{ produto?.preco | currency:'BRL' }}</span>
+      <span class="stock">{{ produto?.estoque }} disponíveis</span>
+    </div>
+
+    <div class="description" *ngIf="produto?.descricao">
+      <h3>Descrição</h3>
+      <p>{{ produto?.descricao }}</p>
+    </div>
+
+    <div class="actions">
+      <ion-button expand="block" color="success" class="buy-btn" (click)="comprar()">
+        <ion-icon name="cart-outline" slot="start"></ion-icon>
+        Adicionar ao Carrinho
+      </ion-button>
+      <ion-button expand="block" fill="outline" class="whatsapp-btn" (click)="falarWhatsapp()">
+        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+        Tirar dúvidas
+      </ion-button>
+    </div>
+  </div>
+</div>

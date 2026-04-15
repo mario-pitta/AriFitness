@@ -1,0 +1,85 @@
+<div class="carrinho-modal">
+  <div class="modal-header">
+    <h2>Meu Carrinho</h2>
+    <ion-button fill="clear" (click)="close()">
+      <ion-icon name="close"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="modal-content" *ngIf="itens.length > 0">
+    <div class="itens-list">
+      <div class="item" *ngFor="let item of itens">
+        <div class="item-image" *ngIf="item.imagem_url">
+          <img [src]="item.imagem_url" [alt]="item.nome">
+        </div>
+        <div class="item-image fallback" *ngIf="!item.imagem_url">
+          <ion-icon name="cube-outline"></ion-icon>
+        </div>
+        <div class="item-details">
+          <span class="item-nome">{{ item.nome }}</span>
+          <span class="item-preco">{{ item.preco | currency:'BRL' }} un.</span>
+        </div>
+        <div class="item-actions">
+          <div class="quantity-controls">
+            <ion-button fill="clear" size="small" (click)="decrementar(item)">
+              <ion-icon name="remove"></ion-icon>
+            </ion-button>
+            <span class="quantity-value">{{ item.quantidade }}</span>
+            <ion-button fill="clear" size="small" (click)="incrementar(item)">
+              <ion-icon name="add"></ion-icon>
+            </ion-button>
+          </div>
+          <div class="item-total">
+            {{ (item.preco * item.quantidade) | currency:'BRL' }}
+          </div>
+        </div>
+        <ion-button class="remove-btn" fill="clear" color="danger" (click)="remover(item.produto_id)">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <div class="total-section">
+      <span class="total-label">Total do Pedido:</span>
+      <span class="total-value">{{ total | currency:'BRL' }}</span>
+    </div>
+
+    <div class="dados-cliente">
+      <h3>Seus Dados</h3>
+      <div class="cliente-grid">
+        <ion-item class="w-100">
+          <ion-label position="stacked">CPF</ion-label>
+          <ion-input [(ngModel)]="cliente.cpf" placeholder="Digite seu CPF" type="text" maxlength="14"></ion-input>
+        </ion-item>
+        <ion-item class="w-100">
+          <ion-label position="stacked">Nome completo *</ion-label>
+          <ion-input [(ngModel)]="cliente.nome" placeholder="Digite seu nome" type="text"></ion-input>
+        </ion-item>
+        <ion-item class="w-100">
+          <ion-label position="stacked">WhatsApp *</ion-label>
+          <ion-input [(ngModel)]="cliente.telefone" placeholder="(00) 00000-0000" type="tel" maxlength="15"></ion-input>
+        </ion-item>
+        <ion-item class="w-100">
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [(ngModel)]="cliente.email" placeholder="seu@email.com" type="email"></ion-input>
+        </ion-item>
+      </div>
+    </div>
+
+    <div class="actions">
+      <ion-button expand="block" color="success" class="btn-finalizar" (click)="finalizarPedido()" [disabled]="!podeFinalizar">
+        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        Finalizar Pedido
+      </ion-button>
+      <ion-button expand="block" fill="clear" class="btn-limpar" (click)="limparCarrinho()">
+        Limpar Carrinho
+      </ion-button>
+    </div>
+  </div>
+
+  <div class="empty-cart" *ngIf="itens.length === 0">
+    <ion-icon name="cart-outline"></ion-icon>
+    <p>Seu carrinho está vazio</p>
+    <ion-button (click)="close()" fill="outline">Continuar Comprando</ion-button>
+  </div>
+</div>

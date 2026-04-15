@@ -1,40 +1,8 @@
-<ion-content class="catalog-content" [fullscreen]="true">
-  <!-- Header como conteúdo scrollável -->
-  <div class="catalog-header" 
-    [style.background-image]="empresa?.banner_url ? 'url(' + empresa?.banner_url + ')' : ''"
-    [style.background-color]="!empresa?.banner_url ? primaryColor : ''">
-    <div class="header-overlay"></div>
-    <div class="header-top">
-      <div class="logo-container" *ngIf="empresa?.logo_url">
-        <img [src]="empresa?.logo_url" [alt]="empresa?.nome_fantasia" class="logo">
-      </div>
-      <div class="logo-container fallback" *ngIf="!empresa?.logo_url">
-        <ion-icon name="storefront"></ion-icon>
-      </div>
-      <div class="header-actions">
-        <ion-button class="cart-btn" fill="clear">
-          <ion-icon name="cart-outline"></ion-icon>
-        </ion-button>
-      </div>
-    </div>
-    <div class="header-main">
-      <h1 class="store-name">{{ empresa?.nome_fantasia || empresa?.nome || 'Loja' }}</h1>
-      <p class="store-tagline">Tudo que você precisa em um só lugar</p>
-    </div>
-    <div class="header-bottom">
-      <ion-button *ngIf="empresa?.telefone" (click)="openWhatsapp()" fill="solid" class="whatsapp-btn">
-        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-        Falar com a Loja
-      </ion-button>
-    </div>
-    <div class="header-wave">
-      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-        <path fill="var(--ion-background-color)"
-          d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z">
-        </path>
-      </svg>
-    </div>
-  </div>
+<ion-content class="catalog-content" [fullscreen]="true" [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
+
+  <app-ecommerce-header [empresa]="empresa" [showHeaderReduced]="showHeaderReduced"
+    [carrinhoQuantidade]="carrinhoQuantidade" [isCatalog]="true">
+  </app-ecommerce-header>
 
   <!-- Filtros e Ordenação -->
   <div class="catalog-filters">
@@ -43,7 +11,8 @@
       <ion-input [(ngModel)]="busca" (ionChange)="filtrarProdutos()" placeholder="Buscar produtos..."></ion-input>
     </div>
     <div class="filter-row">
-      <ion-select [(ngModel)]="categoriaSelecionada" (ionChange)="filtrarProdutos()" placeholder="Todas as categorias" interface="popover">
+      <ion-select [(ngModel)]="categoriaSelecionada" (ionChange)="filtrarProdutos()" placeholder="Todas as categorias"
+        interface="popover">
         <ion-select-option value="">Todas</ion-select-option>
         <ion-select-option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</ion-select-option>
       </ion-select>
@@ -94,4 +63,6 @@
     <ion-icon name="alert-circle-outline"></ion-icon>
     <p>{{ error }}</p>
   </div>
+
+  <app-ecommerce-footer [empresa]="empresa"></app-ecommerce-footer>
 </ion-content>

@@ -1,0 +1,104 @@
+<ion-content class="produto-detail-content" [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
+
+  <app-ecommerce-header [empresa]="empresa" [isModal]="isModal" [showHeaderReduced]="showHeaderReduced"
+    [carrinhoQuantidade]="carrinhoQuantidade" [produtoNome]="produto?.nome" (onShare)="shareProduct()">
+  </app-ecommerce-header>
+
+  <div class="main-container" [class.is-modal]="isModal">
+
+    <div class="product-layout" *ngIf="produto">
+      <!-- Seção de Imagem -->
+      <div class="image-section">
+        <div class="image-wrapper">
+          <ng-container *ngIf="produto.imagem_url">
+            <img [src]="produto.imagem_url" [alt]="produto.nome">
+          </ng-container>
+          <div class="no-image" *ngIf="!produto.imagem_url">
+            <ion-icon name="cube-outline"></ion-icon>
+          </div>
+        </div>
+        <!-- Botão Compartilhar flutuante apenas em modal ou se preferir no modo expandido -->
+        <div class="share-fab" *ngIf="!isModal && !showHeaderReduced" (click)="shareProduct()">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Seção de Informações -->
+      <div class="info-section">
+        <div class="breadcrumb" *ngIf="!isModal && empresa">
+          <span class="cursor-pointer" (click)="goToCatalog()">{{ empresa.nome_fantasia }}</span>
+          <ion-icon name="chevron-forward"></ion-icon>
+          <span *ngIf="produto.categoria">{{ produto.categoria }}</span>
+        </div>
+
+        <span class="category-tag" *ngIf="produto.categoria">{{ produto.categoria }}</span>
+        <h1 class="product-name">{{ produto.nome }}</h1>
+
+        <div class="price-container">
+          <span class="price">{{ produto.preco | currency:'BRL' }}</span>
+          <span class="stock-badge" [class.low]="produto.estoque <= 5">
+            {{ produto.estoque }} disponíveis
+          </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="description-section" *ngIf="produto.descricao">
+          <h3>Descrição</h3>
+          <p>{{ produto.descricao }}</p>
+        </div>
+
+        <div class="quantity-selector" *ngIf="produto.estoque > 1">
+          <span>Quantidade:</span>
+          <div class="quantity-controls">
+            <ion-button fill="clear" (click)="decrementQuantity()" [disabled]="quantidade <= 1">
+              <ion-icon name="remove-circle-outline"></ion-icon>
+            </ion-button>
+            <span class="qty-number">{{ quantidade }}</span>
+            <ion-button fill="clear" (click)="incrementQuantity()" [disabled]="quantidade >= produto.estoque">
+              <ion-icon name="add-circle-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <ion-button expand="block" color="success" class="main-btn buy" (click)="adicionarAoCarrinho()">
+            <ion-icon name="cart-outline" slot="start"></ion-icon>
+            Adicionar ao Carrinho
+          </ion-button>
+          <ion-button expand="block" fill="outline" class="main-btn whatsapp" (click)="falarWhatsapp()">
+            <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+            Tirar dúvidas
+          </ion-button>
+        </div>
+
+        <div class="payment-section" *ngIf="!isModal && empresa">
+          <h4>Formas de Pagamento</h4>
+          <div class="payment-grid">
+            <div class="payment-item" *ngIf="empresa.accept_pix"><ion-icon name="qr-code-outline"></ion-icon> PIX</div>
+            <div class="payment-item" *ngIf="empresa.accept_credit_card"><ion-icon name="card-outline"></ion-icon>
+              Cartão Crédito</div>
+            <div class="payment-item" *ngIf="empresa.accept_debit_card"><ion-icon name="card-outline"></ion-icon> Cartão
+              Débito</div>
+            <div class="payment-item" *ngIf="empresa.accept_money_in_cash"><ion-icon name="cash-outline"></ion-icon>
+              Dinheiro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- State Views -->
+    <div class="center-state" *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Buscando detalhes...</p>
+    </div>
+
+    <div class="center-state" *ngIf="error">
+      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+      <p>{{ error }}</p>
+      <ion-button fill="clear" (click)="goToCatalog()">Voltar ao Catálogo</ion-button>
+    </div>
+
+    <app-ecommerce-footer [empresa]="empresa" [isModal]="isModal"></app-ecommerce-footer>
+  </div>
+</ion-content>
