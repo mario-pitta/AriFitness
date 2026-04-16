@@ -1,31 +1,61 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MaskitoOptions, MaskitoElementPredicate } from '@maskito/core';
 import { MaskitoDirective } from '@maskito/angular';
 import { CarrinhoService } from 'src/core/services/ecommerce/carrinho.service';
 import { PedidoService } from 'src/core/services/ecommerce/pedido.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
-import { Produto } from 'src/core/models/Produto';
 import { Empresa } from 'src/core/models/Empresa';
-import { ItemCarrinho, DadosCliente } from 'src/core/models/Carrinho';
+import { ItemCarrinho } from 'src/core/models/Carrinho';
 import Constants from 'src/core/Constants';
+
+// Validator de CPF
+function cpfValidator(control: AbstractControl) {
+  const value = control.value as string;
+  if (!value) return { cpfInvalido: true };
+
+  const digits = value.replace(/\D/g, '');
+  if (digits.length !== 11) return { cpfInvalido: true };
+  if (/^(\d)\1{10}$/.test(digits)) return { cpfInvalido: true };
+
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
+  let d1 = sum % 11;
+  d1 = d1 < 2 ? 0 : 11 - d1;
+  if (parseInt(digits[9]) !== d1) return { cpfInvalido: true };
+
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
+  let d2 = sum % 11;
+  d2 = d2 < 2 ? 0 : 11 - d2;
+  return parseInt(digits[10]) !== d2 ? { cpfInvalido: true } : null;
+}
+
+// Validator de telefone
+function telefoneValidator(control: AbstractControl) {
+  const value = control.value as string;
+  if (!value) return null;
+  const digits = value.replace(/\D/g, '');
+  return digits.length >= 10 && digits.length <= 11 ? null : { telefoneInvalido: true };
+}
 
 @Component({
   selector: 'app-carrinho-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, MaskitoDirective],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, MaskitoDirective],
   templateUrl: './carrinho-modal.html',
   styleUrls: ['./carrinho-modal.scss']
 })
-export class CarrinhoModalComponent {
+export class CarrinhoModalComponent implements OnInit {
   @Input() empresaId: string | null = null;
   @Input() empresa: Empresa | null = null;
 
   itens: ItemCarrinho[] = [];
-  cliente: DadosCliente = { cpf: '', nome: '', telefone: '', email: '' };
+  form!: FormGroup;
+  loading = false;
 
   cpfMask: MaskitoOptions = Constants.cpfMask;
   telefoneMask: MaskitoOptions = Constants.phoneMask;
@@ -37,60 +67,36 @@ export class CarrinhoModalComponent {
   }
 
   get podeFinalizar(): boolean {
-    if (!this.cliente.nome?.trim()) return false;
-    if (!this.isValidTelefone(this.cliente.telefone)) return false;
-    if (this.cliente.cpf && !this.isValidCPF(this.cliente.cpf)) return false;
-    if (this.cliente.email && !this.isValidEmail(this.cliente.email)) return false;
-    if (this.itens.length === 0) return false;
-    return true;
-  }
-
-  isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  isValidCPF(cpf: string): boolean {
-    const cpfDigits = cpf.replace(/\D/g, '');
-    if (cpfDigits.length !== 11) return false;
-    if (/^(\d)\1{10}$/.test(cpfDigits)) return false;
-
-    let sum = 0;
-    for (let i = 0; i < 9; i++) {
-      sum += parseInt(cpfDigits[i]) * (10 - i);
-    }
-    let digit1 = sum % 11;
-    digit1 = digit1 < 2 ? 0 : 11 - digit1;
-    if (parseInt(cpfDigits[9]) !== digit1) return false;
-
-    sum = 0;
-    for (let i = 0; i < 10; i++) {
-      sum += parseInt(cpfDigits[i]) * (11 - i);
-    }
-    let digit2 = sum % 11;
-    digit2 = digit2 < 2 ? 0 : 11 - digit2;
-    return parseInt(cpfDigits[10]) === digit2;
-  }
-
-  isValidTelefone(telefone: string): boolean {
-    const digits = telefone.replace(/\D/g, '');
-    return digits.length >= 10 && digits.length <= 11;
+    return this.form.valid && this.itens.length > 0 && !this.loading;
   }
 
   constructor(
+    private fb: FormBuilder,
     private modalController: ModalController,
     private carrinhoService: CarrinhoService,
     private pedidoService: PedidoService,
     private toastr: ToastrService
-  ) {
+  ) { }
+
+  ngOnInit() {
     this.itens = this.carrinhoService.getAll();
+
     const dadosSalvos = this.carrinhoService.getDadosCliente();
-    if (dadosSalvos) {
-      this.cliente = dadosSalvos;
-    }
+
+    this.form = this.fb.group({
+      nome: [dadosSalvos?.nome || '', [Validators.required, Validators.minLength(3)]],
+      cpf: [dadosSalvos?.cpf || '', [Validators.required, cpfValidator]],
+      telefone: [dadosSalvos?.telefone || '', [Validators.required, telefoneValidator]],
+      email: [dadosSalvos?.email || '', [Validators.email]],
+      observacoes: [dadosSalvos?.observacoes || '', [Validators.maxLength(500)]],
+    });
   }
 
   incrementar(item: ItemCarrinho) {
+    if (!this.carrinhoService.canIncrement(item)) {
+      this.toastr.warning(`Quantidade máxima em estoque para "${item.nome}": ${item.estoque}`);
+      return;
+    }
     this.carrinhoService.updateQuantity(item.produto_id, item.quantidade + 1);
     this.itens = this.carrinhoService.getAll();
   }
@@ -113,25 +119,22 @@ export class CarrinhoModalComponent {
   }
 
   finalizarPedido() {
-
-    console.log(this.cliente);
-    console.log(this.itens);
-    console.log(this.empresaId);
-    console.log(this.empresa);
-    console.log(this.podeFinalizar);
-
-
     if (!this.empresa?.id || !this.podeFinalizar) return;
 
-    this.carrinhoService.setDadosCliente(this.cliente);
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+
+    const { nome, cpf, telefone, email, observacoes } = this.form.value;
+
+    this.carrinhoService.setDadosCliente({ nome, cpf, telefone, email, observacoes });
 
     const valorTotal = this.itens.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
 
     const pedido = {
-      cliente_nome: this.cliente.nome,
-      cliente_telefone: this.cliente.telefone,
-      cliente_email: this.cliente.email,
-      cliente_obs: this.cliente.observacoes,
+      cliente_nome: nome,
+      cliente_telefone: telefone,
+      cliente_email: email || null,
+      cliente_obs: observacoes || null,
       valor_total: valorTotal,
       status: 'pendente',
       itens: this.itens.map(item => ({
@@ -142,20 +145,67 @@ export class CarrinhoModalComponent {
       empresa_id: this.empresa.id,
     };
 
+    this.loading = true;
     this.pedidoService.create(pedido).subscribe({
       next: () => {
-        this.toastr.success('Pedido realizado com sucesso!');
+        this.toastr.success('Pedido realizado com sucesso! Em breve entraremos em contato. 🛍️');
         this.carrinhoService.clear();
+        this.loading = false;
         this.close();
       },
       error: (err) => {
-        this.toastr.error('Erro ao criar pedido: ' + (err.message || 'Tente novamente'));
+        this.loading = false;
+        const mensagem = this.extrairMensagemErro(err);
+        this.toastr.error(mensagem);
       }
     });
+  }
+
+  // Helpers para template
+  isInvalid(field: string): boolean {
+    const ctrl = this.form.get(field);
+    return !!(ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched));
+  }
+
+  getError(field: string): string {
+
+    const ctrl = this.form.get(field);
+    if (!ctrl || !ctrl.errors) return '';
+    if (ctrl.errors['required']) return 'Campo obrigatório';
+    if (ctrl.errors['minlength']) return `Mínimo ${ctrl.errors['minlength'].requiredLength} caracteres`;
+    if (ctrl.errors['email']) return 'Email inválido';
+    if (ctrl.errors['cpfInvalido']) return 'CPF inválido';
+    if (ctrl.errors['telefoneInvalido']) return 'Telefone inválido';
+    if (ctrl.errors['maxlength']) return `Máximo ${ctrl.errors['maxlength'].requiredLength} caracteres`;
+    return 'Campo inválido';
+  }
+
+  // Extrai mensagem de erro amigável da resposta da API
+  private extrairMensagemErro(err: any): string {
+    // NestJS retorna o erro no campo err.error
+    const backendMsg: string =
+      err?.error?.message ||
+      err?.error?.error?.message ||
+      err?.message ||
+      '';
+
+    if (!backendMsg) return 'Erro ao criar pedido. Tente novamente.';
+
+    // Mapeia mensagens técnicas do backend para mensagens amigáveis
+    if (backendMsg.includes('Estoque insuficiente')) {
+      return '⚠️ Estoque insuficiente para um ou mais produtos do seu carrinho. Verifique as quantidades e tente novamente.';
+    }
+    if (backendMsg.includes('não encontrado') || backendMsg.includes('not found')) {
+      return '⚠️ Um dos produtos do carrinho não está mais disponível.';
+    }
+    if (backendMsg.includes('ativo') || backendMsg.includes('inactive')) {
+      return '⚠️ Um dos produtos foi desativado. Remova-o do carrinho para continuar.';
+    }
+
+    return `Erro ao criar pedido: ${backendMsg}`;
   }
 
   close() {
     this.modalController.dismiss();
   }
 }
-

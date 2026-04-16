@@ -13,9 +13,10 @@
   display: flex;
   gap: 8px;
 
-  .share-btn, .close-btn {
+  .share-btn,
+  .close-btn {
     --color: white;
-    --background: rgba(0,0,0,0.5);
+    --background: rgba(0, 0, 0, 0.5);
     --border-radius: 50%;
     width: 36px;
     height: 36px;
@@ -146,38 +147,38 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .detail-modal {
-    flex-direction: row;
+// @media (min-width: 1024px) {
+//   .detail-modal {
+//     flex-direction: row;
 
-    .modal-image {
-      width: 50%;
-      height: 100%;
-    }
+//     .modal-image {
+//       width: 50%;
+//       height: 100%;
+//     }
 
-    .modal-content {
-      width: 50%;
-      padding: 32px 40px;
-      overflow-y: auto;
+//     .modal-content {
+//       width: 50%;
+//       padding: 32px 40px;
+//       overflow-y: auto;
 
-      .name {
-        font-size: 32px;
-      }
+//       .name {
+//         font-size: 32px;
+//       }
 
-      .price-section {
-        .price {
-          font-size: 36px;
-        }
-      }
+//       .price-section {
+//         .price {
+//           font-size: 36px;
+//         }
+//       }
 
-      .actions {
-        flex-direction: row;
+//       .actions {
+//         flex-direction: row;
 
-        .buy-btn,
-        .whatsapp-btn {
-          flex: 1;
-        }
-      }
-    }
-  }
-}
+//         .buy-btn,
+//         .whatsapp-btn {
+//           flex: 1;
+//         }
+//       }
+//     }
+//   }
+// }

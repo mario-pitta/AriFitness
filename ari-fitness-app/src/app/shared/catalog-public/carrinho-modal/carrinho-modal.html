@@ -49,34 +49,63 @@
         <ion-icon name="person-outline"></ion-icon>
         <h3>Seus Dados</h3>
       </div>
-      <div class="cliente-grid">
-        <ion-input [(ngModel)]="cliente.nome" label="Nome completo" labelPlacement="floating" fill="solid"
-          class="modern-input" type="text" placeholder="Seu nome completo" autocomplete="name" required>
-        </ion-input>
-        <ion-input [(ngModel)]="cliente.cpf" label="CPF" labelPlacement="floating" fill="solid" class="modern-input"
-          type="text" placeholder="000.000.000-00" maxlength="14" [maskito]="cpfMask" [maskitoElement]="maskPredicate">
-        </ion-input>
-        <ion-input [(ngModel)]="cliente.telefone" label="WhatsApp" labelPlacement="floating" fill="solid"
-          class="modern-input" type="tel" placeholder="(00) 00000-0000" maxlength="16" autocomplete="tel" required
-          [maskito]="telefoneMask" [maskitoElement]="maskPredicate">
-        </ion-input>
-        <ion-input [(ngModel)]="cliente.email" label="Email" labelPlacement="floating" fill="solid" class="modern-input"
-          type="email" placeholder="seu@email.com" autocomplete="email">
-        </ion-input>
-        <ion-textarea [(ngModel)]="cliente.observacoes" label="Observações" labelPlacement="floating" fill="solid"
-          class="modern-input" placeholder="Alguma observação para o lojista?" [autoGrow]="true" maxlength="500">
-        </ion-textarea>
-      </div>
+
+      <form [formGroup]="form" class="cliente-grid">
+
+        <!-- Nome -->
+        <div class="field-wrapper">
+          <ion-input formControlName="nome" label="Nome completo *" labelPlacement="floating" fill="solid"
+            class="modern-input" type="text" placeholder="Seu nome completo" autocomplete="name">
+          </ion-input>
+          <span class="field-error" *ngIf="isInvalid('nome')">{{ getError('nome') }}</span>
+        </div>
+
+        <!-- CPF -->
+        <div class="field-wrapper">
+          <ion-input formControlName="cpf" label="CPF" labelPlacement="floating" fill="solid" class="modern-input"
+            type="text" placeholder="000.000.000-00" maxlength="14" [maskito]="cpfMask"
+            [maskitoElement]="maskPredicate">
+          </ion-input>
+          <span class="field-error" *ngIf="isInvalid('cpf')">{{ getError('cpf') }}</span>
+        </div>
+
+        <!-- Telefone -->
+        <div class="field-wrapper">
+          <ion-input formControlName="telefone" label="WhatsApp *" labelPlacement="floating" fill="solid"
+            class="modern-input" type="tel" placeholder="(00) 00000-0000" maxlength="16" autocomplete="tel"
+            [maskito]="telefoneMask" [maskitoElement]="maskPredicate">
+          </ion-input>
+          <span class="field-error" *ngIf="isInvalid('telefone')">{{ getError('telefone') }}</span>
+        </div>
+
+        <!-- Email -->
+        <div class="field-wrapper">
+          <ion-input formControlName="email" label="Email" labelPlacement="floating" fill="solid" class="modern-input"
+            type="email" placeholder="seu@email.com" autocomplete="email">
+          </ion-input>
+          <span class="field-error" *ngIf="isInvalid('email')">{{ getError('email') }}</span>
+        </div>
+
+        <!-- Observações -->
+        <div class="field-wrapper col-12">
+          <ion-textarea formControlName="observacoes" label="Observações" labelPlacement="floating" fill="solid"
+            class="modern-input" placeholder="Alguma observação para o lojista?" [autoGrow]="true" maxlength="500">
+          </ion-textarea>
+          <span class="field-error" *ngIf="isInvalid('observacoes')">{{ getError('observacoes') }}</span>
+        </div>
+
+      </form>
     </div>
 
     <div class="actions">
       <ion-button expand="block" color="success" class="btn-finalizar" shape="round" size="large"
         (click)="finalizarPedido()" [disabled]="!podeFinalizar">
-        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-        Finalizar Pedido
+        <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
+        <ion-icon *ngIf="!loading" name="checkmark-circle" slot="start"></ion-icon>
+        {{ loading ? 'Enviando...' : 'Finalizar Pedido' }}
       </ion-button>
-      <ion-button expand="block" fill="clear" class="btn-limpar" (click)="limparCarrinho()">
-        <ion-trash-outline slot="start"></ion-trash-outline>
+      <ion-button expand="block" fill="clear" class="btn-limpar" (click)="limparCarrinho()" [disabled]="loading">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
         Limpar Carrinho
       </ion-button>
     </div>

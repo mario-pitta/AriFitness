@@ -47,10 +47,16 @@ export class CarrinhoService {
       if (quantidade <= 0) {
         items.splice(index, 1);
       } else {
-        items[index].quantidade = quantidade;
+        // Respeita o limite de estoque
+        const estoqueMax = items[index].estoque ?? Infinity;
+        items[index].quantidade = Math.min(quantidade, estoqueMax);
       }
       this.saveItems(items);
     }
+  }
+
+  canIncrement(item: ItemCarrinho): boolean {
+    return item.quantidade < item.estoque;
   }
 
 

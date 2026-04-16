@@ -6,10 +6,10 @@ import { Empresa } from 'src/core/models/Empresa';
 import { CarrinhoModalComponent } from '../../carrinho-modal/carrinho-modal';
 
 @Component({
-    selector: 'app-ecommerce-header',
-    standalone: true,
-    imports: [CommonModule, IonicModule],
-    template: `
+  selector: 'app-ecommerce-header',
+  standalone: true,
+  imports: [CommonModule, IonicModule],
+  template: `
     <!-- 1. Header Reduzido (Sticky) -->
     <div class="sticky-header" [class.visible]="showHeaderReduced">
       <div class="sticky-content">
@@ -62,7 +62,7 @@ import { CarrinhoModalComponent } from '../../carrinho-modal/carrinho-modal';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .sticky-header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -181,45 +181,45 @@ import { CarrinhoModalComponent } from '../../carrinho-modal/carrinho-modal';
   `]
 })
 export class EcommerceHeaderComponent {
-    @Input() empresa: Empresa | null = null;
-    @Input() isModal = false;
-    @Input() isCatalog = false;
-    @Input() showHeaderReduced = false;
-    @Input() carrinhoQuantidade = 0;
-    @Input() produtoNome: string | null = null;
+  @Input() empresa: Empresa | null = null;
+  @Input() isModal = false;
+  @Input() isCatalog = false;
+  @Input() showHeaderReduced = false;
+  @Input() carrinhoQuantidade = 0;
+  @Input() produtoNome: string | null = null;
 
-    @Output() onShare = new EventEmitter<void>();
+  @Output() onShare = new EventEmitter<void>();
 
-    constructor(
-        private modalController: ModalController,
-        private router: Router
-    ) { }
+  constructor(
+    private modalController: ModalController,
+    private router: Router
+  ) { }
 
-    goToCatalog() {
-        if (this.isModal) {
-            this.modalController.dismiss();
-        }
-        if (this.empresa?.id) {
-            this.router.navigate(['/catalogo', this.empresa.id]);
-        }
+  goToCatalog() {
+    if (this.isModal) {
+      this.modalController.dismiss();
     }
-
-    async openCarrinho() {
-        const modal = await this.modalController.create({
-            component: CarrinhoModalComponent,
-            componentProps: {
-                empresa: this.empresa
-            },
-            cssClass: 'carrinho-modal'
-        });
-        await modal.present();
+    if (this.empresa?.id) {
+      this.router.navigate(['/catalogo', this.empresa.id]);
     }
+  }
 
-    shareProduct() {
-        this.onShare.emit();
-    }
+  async openCarrinho() {
+    const modal = await this.modalController.create({
+      component: CarrinhoModalComponent,
+      componentProps: {
+        empresa: this.empresa
+      },
+      cssClass: 'carrinho-modal'
+    });
+    await modal.present();
+  }
 
-    close() {
-        this.modalController.dismiss();
-    }
+  shareProduct() {
+    this.onShare.emit();
+  }
+
+  close() {
+    this.modalController.dismiss();
+  }
 }

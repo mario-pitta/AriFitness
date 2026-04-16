@@ -3,6 +3,7 @@ export interface ItemCarrinho {
   nome: string;
   preco: number;
   quantidade: number;
+  estoque: number;
   imagem_url?: string;
 }
 

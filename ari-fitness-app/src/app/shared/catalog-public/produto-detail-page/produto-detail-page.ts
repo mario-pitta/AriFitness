@@ -126,7 +126,8 @@ export class ProdutoDetailPageComponent implements OnInit, OnDestroy {
       nome: this.produto.nome,
       preco: this.produto.preco,
       quantidade: this.quantidade,
-      imagem_url: this.produto.imagem_url
+      imagem_url: this.produto.imagem_url,
+      estoque: this.produto.estoque
     };
 
     this.carrinhoService.addItem(item);

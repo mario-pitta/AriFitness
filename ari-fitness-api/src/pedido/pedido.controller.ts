@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { PedidoService } from './pedido.service';
 import { PedidoInput, PedidoFilters } from './pedido.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -12,7 +12,7 @@ import { UserRole } from '../core/Constants/UserRole';
 @Controller('pedidos')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PedidoController {
-  constructor(private readonly pedidoService: PedidoService) {}
+  constructor(private readonly pedidoService: PedidoService) { }
 
   /**
    * Criar novo pedido
@@ -28,7 +28,10 @@ export class PedidoController {
       const pedido = await this.pedidoService.create(empresaId, input);
       return { success: true, data: pedido };
     } catch (error: any) {
-      return { success: false, message: error.message };
+      console.log('error = ', error)
+
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+      // return { status: 400, success: false, message: error.message };
     }
   }
 

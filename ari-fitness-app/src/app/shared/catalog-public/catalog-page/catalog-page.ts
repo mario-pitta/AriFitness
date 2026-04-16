@@ -134,7 +134,8 @@ export class CatalogPublicPage implements OnInit {
       componentProps: {
         isModal: true,
         produtoInput: produto,
-        empresaInput: this.empresa
+        empresaInput: this.empresa,
+        size: 'full'
       },
       cssClass: 'produto-detail-modal'
     });

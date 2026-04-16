@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import { Pedido, PedidoInput, PedidoItemInput, PedidoFilters } from './pedido.interface';
 import { TransacaoFinanceiraService } from 'src/transacao_financeira/transacao-financeira.service';
+import Constants from 'src/core/Constants/Constants';
 
 /**
  * Service para gestão de pedidos do e-commerce
@@ -11,7 +12,7 @@ export class PedidoService {
   constructor(
     private readonly databaseService: DataBaseService,
     private readonly transacaoService: TransacaoFinanceiraService
-  ) {}
+  ) { }
 
   /**
    * Criar novo pedido (com validação de estoque)
@@ -21,16 +22,23 @@ export class PedidoService {
     let valorTotal = 0;
 
     for (const item of itens) {
-      const { data: produto } = await this.databaseService.supabase
+      const { data: produto, error: produtoError } = await this.databaseService.supabase
         .from('produtos')
-        .select('estoque, preco')
+        .select('estoque, preco, nome')
         .eq('id', item.produto_id)
         .eq('empresa_id', empresaId)
         .eq('ativo', true)
         .single();
 
-      if (!produto || !produto.estoque || produto.estoque < item.quantidade) {
-        throw new Error(`Estoque insuficiente para produto ${item.produto_id}`);
+      if (produtoError || !produto) {
+        throw new Error(`Produto não encontrado ou indisponível (id: ${item.produto_id})`);
+      }
+
+      if (produto.estoque == null || produto.estoque < item.quantidade) {
+        const disponivel = produto.estoque ?? 0;
+        throw new Error(
+          `Estoque insuficiente para "${produto.nome}". Disponível: ${disponivel}, solicitado: ${item.quantidade}`
+        );
       }
 
       valorTotal += item.quantidade * (item.preco_unitario || produto.preco);
@@ -82,11 +90,39 @@ export class PedidoService {
         });
     }
 
-    const novoPedido = await this.findById(pedido.id, empresaId);
-    if (!novoPedido) {
-      throw new Error('Erro ao buscar pedido criado');
-    }
-    return novoPedido;
+    //insere a nova transação
+    const { data: transacao, error: transacaoError } = await this.databaseService.supabase
+      .from('transacao_financeira')
+      .insert({
+        empresa_id: empresaId,
+        tr_tipo_id: Constants.TR_TIPO_RECEITA,
+        tr_categoria_id: Constants.TR_CATEGORIA_VENDA_PRODUTO,
+        valor_real: valorTotal,
+        valor_final: valorTotal,
+        forma_pagamento: pedidoData.forma_pagamento || 'dinheiro',
+        fl_pago: false,
+        descricao: `Venda de produtos - Pedido #${pedido.id.slice(0, 8)}`,
+        data_lancamento: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (transacaoError) throw transacaoError;
+
+
+    //atualiza o pedido com o id da transação nova; 
+    const { data: pedidoAtualizado, error: pedidoAtualizadoError } = await this.databaseService.supabase
+      .from('pedidos')
+      .update({
+        transacao_id: transacao.auth_code,
+      })
+      .eq('id', pedido.id)
+      .select()
+      .single();
+
+    if (pedidoAtualizadoError) throw pedidoAtualizadoError;
+
+    return pedidoAtualizado;
   }
 
   /**
