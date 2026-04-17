@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Pedido, PedidoService } from 'src/core/services/ecommerce/pedido.service';
 
 @Component({
@@ -13,7 +13,11 @@ export class PedidoDetailModalComponent implements OnInit {
     public isLoadingItens = false;
     public statusChanging = false;
 
-    constructor(private modalCtrl: ModalController, private pedidoService: PedidoService) { }
+    constructor(
+        private modalCtrl: ModalController,
+        private pedidoService: PedidoService,
+        private alertCtrl: AlertController
+    ) { }
 
     ngOnInit() {
         if (this.pedido.id && !this.pedido.itens?.length) {
@@ -34,12 +38,46 @@ export class PedidoDetailModalComponent implements OnInit {
         this.modalCtrl.dismiss();
     }
 
-    updateStatus(newStatus: string) {
+    async updateStatus(newStatus: string) {
+        const statusLabel = this.getStatusLabel(newStatus);
+        const alert = await this.alertCtrl.create({
+            header: `Marcar como ${statusLabel}?`,
+            message: `Deseja fechar o pedido após esta alteração?`,
+            buttons: [
+                {
+                    text: 'Manter Aberto',
+                    role: 'cancel',
+                    handler: () => {
+                        this.pedido.status = newStatus;
+                    }
+                },
+                {
+                    text: 'Fechar Pedido',
+                    handler: () => {
+                        this.closeWithStatus(newStatus);
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    private closeWithStatus(status: string) {
         this.statusChanging = true;
         setTimeout(() => {
             this.statusChanging = false;
-            this.modalCtrl.dismiss({ status: newStatus });
-        }, 400); // tempo da micro-animação
+            this.modalCtrl.dismiss({ status: status });
+        }, 400);
+    }
+
+    getStatusLabel(status: string): string {
+        const labels: Record<string, string> = {
+            pendente: 'Pendente',
+            pago: 'Pago',
+            entregue: 'Entregue',
+            cancelado: 'Cancelado'
+        };
+        return labels[status] || status;
     }
 
     getStatusColor(status?: string): string {
