@@ -10,25 +10,23 @@ import { Pedido, PedidoService } from 'src/core/services/ecommerce/pedido.servic
 export class PedidoDetailModalComponent implements OnInit {
     @Input() pedido!: Pedido;
 
-    public isLoading = true;
+    public isLoadingItens = false;
     public statusChanging = false;
 
     constructor(private modalCtrl: ModalController, private pedidoService: PedidoService) { }
 
     ngOnInit() {
-        if (this.pedido.id) {
-            this.isLoading = true;
+        if (this.pedido.id && !this.pedido.itens?.length) {
+            this.isLoadingItens = true;
             this.pedidoService.getById(this.pedido.id).subscribe({
                 next: (res) => {
-                    this.pedido = res.data;
-                    this.isLoading = false;
+                    this.pedido.itens = res.data.itens || [];
+                    this.isLoadingItens = false;
                 },
                 error: () => {
-                    this.isLoading = false;
+                    this.isLoadingItens = false;
                 }
             });
-        } else {
-            this.isLoading = false;
         }
     }
 
