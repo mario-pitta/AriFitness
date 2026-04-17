@@ -1,6 +1,6 @@
 # Agent Memory - MvK Gym Manager (AriFitness)
 
-> Última atualização: 13/04/2026
+> Última atualização: 17/04/2026
 > Histórico de alterações no final do documento
 
 ---
@@ -172,6 +172,12 @@ enum UserRole {
 - **RolesGuard**: `core/guards/roles.guard.ts`
   - Proteção de rotas por role
 
+### 6. Push Notifications (NOVO)
+- **Backend**: `push-notification/` no NestJS
+  - Service para envio de alertas
+  - Integração automática no fluxo de pedidos
+- **Realtime**: `SupabaseRealtimeManagerService` no frontend
+
 ### 4. Avatares com Iniciais
 - Sistema removido (dicebear)
 - Placeholders com iniciais + cores dinâmicas
@@ -334,21 +340,33 @@ Para tarefas complexas, usar a ferramenta `Task` com subagentes:
 
 ## 📝 Próximas Tarefas (TODO)
 
-### E-commerce - Fase 2
-1. **Carrinho de compras no catálogo público** - Concluído ✅
-2. **Checkout com botão comprar no modal de produto** - Concluído ✅
-3. **Footer na página de detalhes do produto** - Concluído ✅
-4. **Modal compartilhar catálogo** - Já existe (página /admin/configuracoes/ecommerce/catalogo)
-5. **Botão acessar catálogo no PDV** - Concluído ✅ (FAB)
-6. **Select de produtos no formulário de transação** - Concluído ✅
+### E-commerce - Concluído ✅
+- Carrinho de compras no catálogo público
+- Checkout com botão comprar no modal
+- Footer na página de detalhes
+- Modal compartilhar catálogo
+- Botão acessar catálogo no PDV
+- Select de produtos no formulário de transação
+- Integração vendas → módulo de finanças
+- Push Notifications ao criar pedido
 
-### Integrações
-7. **Integração vendas → módulo de finanças** - Concluído (transação automática ao pagar)
-8. **Integração com AbacatePay** - Gateway de pagamento para checkout
+### Pendente
+- **Integração com AbacatePay** - Gateway de pagamento para checkout
+- **Realtime completos** - WebSocket para updates em tempo real dos pedidos
 
 ---
 
 ## 📜 Histórico de Alterações
+
+### 17/04/2026 - Push Notifications + Correções
+- **Módulo Push Notifications**: Novo módulo `push-notification/` no NestJS
+  - Service + Controller + Testes unitários
+  - Integração automática ao criar pedido
+- **Correção Dashboard Financeiro**: Filtro `fl_pago` considera apenas transações pagas e ativas
+- **Correção JWT**: Guard lança UnauthorizedException, adicionado logging
+- **Melhorias Pedido**: Integração push notification ao criar pedido, melhorias na busca de itens
+- **Rollback Custom JWT**: WebSocket usa Anon Key padrão do Supabase (problemas com secret dinâmico)
+- **Realtime Service**: Implementado `SupabaseRealtimeManagerService` com Leader Election
 
 ### 15/04/2026 - Unificação e Header Dinâmico (Sessão Atual)
 - **Unificação de Componentes**: `ProdutoDetailPageComponent` agora é o componente master para exibição de detalhes, eliminando a necessidade do `ProdutoDetailModalComponent`.
