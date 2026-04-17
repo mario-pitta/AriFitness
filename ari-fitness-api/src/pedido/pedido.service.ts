@@ -229,7 +229,7 @@ export class PedidoService {
 
     if (error) throw error;
 
-    if (status === 'pago' && data) {
+    if (status === 'pago' || status === 'entregue' && data) {
       try {
         const transacao = await this.criarTransacaoPorVenda(data, empresaId);
         if (transacao) {
