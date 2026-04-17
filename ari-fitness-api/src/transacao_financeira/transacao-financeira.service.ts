@@ -248,18 +248,17 @@ export class TransacaoFinanceiraService {
     const transacoes = response.data || [];
 
     const totalReceitas = transacoes
-      .filter((t: any) => t.tr_tipo_id === 1)
+      .filter((t: any) => t.tr_tipo_id === 1 && t.fl_pago && t.fl_ativo)
       .reduce((acc: number, t: any) => acc + (t.valor_final || 0), 0);
 
     const totalDespesas = transacoes
-      .filter((t: any) => t.tr_tipo_id === 2)
+      .filter((t: any) => t.tr_tipo_id === 2 && t.fl_pago && t.fl_ativo)
       .reduce((acc: number, t: any) => acc + (t.valor_final || 0), 0);
 
     const saldoFinal = totalReceitas - totalDespesas;
 
     const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
     const formatDateStr = (dateStr: string) => {
-      console.log('dateStr = ', dateStr)
       const datePart = dateStr.split('T')[0];
       const [year, month, day] = datePart.split('-');
 
@@ -392,7 +391,9 @@ export class TransacaoFinanceiraService {
 
       orderedCatList.forEach(({ catName, catTxs }) => {
         const isReceita = catTxs[0].tr_tipo_id === 1;
-        const totalCat = catTxs.reduce((acc: number, t: any) => acc + (t.valor_final || 0), 0);
+        const totalCat = catTxs
+          .filter((t: any) => t.fl_pago && t.fl_ativo)
+          .reduce((acc: number, t: any) => acc + (t.valor_final || 0), 0);
 
         content.push({ text: `CATEGORIA: ${catName.toUpperCase()}`, style: 'categoryHeader', color: isReceita ? '#28a745' : '#dc3545' });
         content.push({

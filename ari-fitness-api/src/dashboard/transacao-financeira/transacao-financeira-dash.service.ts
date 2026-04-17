@@ -56,7 +56,7 @@ export class TransacaoFinanceiraDashService {
                 const payingMembers = new Set();
                 _res.data.forEach((item: TransacaoFinanceira) => {
                     //receitas
-                    if (item.tr_tipo_id === 1) {
+                    if (item.tr_tipo_id === 1 && item.fl_pago) {
                         dashboardData.totalReceitas += item.valor_final || 0;
                         dashboardData.saldo += item.valor_final || 0;
 
@@ -77,7 +77,7 @@ export class TransacaoFinanceiraDashService {
                     }
 
                     //despesas
-                    if (item.tr_tipo_id === 2) {
+                    if (item.tr_tipo_id === 2 && item.fl_pago) {
                         dashboardData.totalDespesas += item.valor_final || 0;
                         dashboardData.saldo -= item.valor_final || 0;
                         const found = dashboardData.totalDespesasPorCategoria.find(
@@ -130,7 +130,7 @@ export class TransacaoFinanceiraDashService {
         data?.forEach(d => {
             const mesIndex = new Date(d.data_lancamento).getMonth();
 
-            if (mesIndex >= 0 && mesIndex < 12) {
+            if (mesIndex >= 0 && mesIndex < 12 && (d as any).fl_pago && (d as any).fl_ativo) {
                 if (d.tr_tipo_id === 1) {
                     meses[mesIndex].receitas += d.valor_final;
                 } else {

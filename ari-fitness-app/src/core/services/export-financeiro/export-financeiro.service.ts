@@ -39,11 +39,11 @@ export class ExportFinanceiroService {
             console.log('transacoes = ', transacoes)
 
             const totalReceitas = transacoes
-                .filter((t: any) => t.tr_tipo_id === 1)
+                .filter((t: any) => t.tr_tipo_id === 1 && t.fl_pago && t.fl_ativo)
                 .reduce((acc: number, t: any) => acc + (t.valor_final || 0), 0);
 
             const totalDespesas = transacoes
-                .filter((t: any) => t.tr_tipo_id === 2)
+                .filter((t: any) => t.tr_tipo_id === 2 && t.fl_pago && t.fl_ativo)
                 .reduce((acc: number, t: any) => acc + (t.valor_final || 0), 0);
 
             const saldoFinal = totalReceitas - totalDespesas;
@@ -174,9 +174,13 @@ export class ExportFinanceiroService {
                 let total = 0;
                 txs.forEach((t: any) => {
                     const isReceita = t.tr_tipo_id === 1;
+                    const isPago = t.fl_pago && t.fl_ativo;
                     const valor = t.valor_final || 0;
-                    if (isReceita) total += valor;
-                    else total -= valor;
+
+                    if (isPago) {
+                        if (isReceita) total += valor;
+                        else total -= valor;
+                    }
 
                     const row = sheet.addRow([
                         format(new Date(t.data_lancamento), 'dd/MM/yyyy'),
