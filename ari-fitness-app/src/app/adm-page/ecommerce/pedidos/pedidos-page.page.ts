@@ -71,34 +71,24 @@ export class PedidosPagePage implements OnInit {
 
   async mostrarOpcoesStatus(pedido: Pedido) {
     // Agora busca o pedido completo com Itens do backend 
-    this.loading = true;
-    this.pedidoService.getById(pedido.id!).subscribe({
-      next: async (res) => {
-        this.loading = false;
-        const pedidoCompleto = res.data;
-        if (!pedidoCompleto) return;
+    // this.loading = true;
 
-        const modal = await this.modalCtrl.create({
-          component: PedidoDetailModalComponent,
-          componentProps: { pedido: pedidoCompleto },
-          cssClass: 'premium-modal',
-          backdropDismiss: true,
-          mode: 'ios'
-        });
-
-        await modal.present();
-
-        const { data } = await modal.onDidDismiss();
-
-        if (data?.status) {
-          this.atualizarStatus(pedido, data.status);
-        }
-      },
-      error: () => {
-        this.loading = false;
-        this.toastr.error('Erro ao buscar detalhes do pedido');
-      }
+    const modal = await this.modalCtrl.create({
+      component: PedidoDetailModalComponent,
+      componentProps: { pedido: pedido },
+      cssClass: 'premium-modal',
+      backdropDismiss: true,
+      mode: 'ios'
     });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+
+    if (data?.status) {
+      this.atualizarStatus(pedido, data.status);
+    }
+
 
   }
 

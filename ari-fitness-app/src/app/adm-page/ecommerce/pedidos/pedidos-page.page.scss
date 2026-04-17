@@ -110,6 +110,10 @@
       color: var(--ion-color-step-500);
     }
   }
+
+  &.skeleton {
+    min-height: 100px;
+  }
 }
 
 .empty-state {
