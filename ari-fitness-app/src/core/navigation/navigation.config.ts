@@ -36,7 +36,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         functionIds: [Constants.INSTRUTOR_ID],
         showInSidebar: true,
         showInMobile: true,
-        group: 'Gestão',
+        group: 'Operacional',
     },
     {
         label: 'Equipe',
@@ -66,19 +66,19 @@ export const NAV_ITEMS: NavigationItem[] = [
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
         showInMobile: true,
-        group: 'Gestão',
+        group: 'Operacional',
         adminOnly: true
     },
-    {
-        label: 'Catálogo Público',
-        sidebarIcon: 'share-social-outline',
-        route: '/admin/configuracoes/ecommerce/catalogo',
-        roles: [Constants.GERENCIA_ID],
-        showInSidebar: true,
-        showInMobile: true,
-        group: 'Gestão',
-        adminOnly: true
-    },
+    // {
+    //     label: 'Catálogo Público',
+    //     sidebarIcon: 'share-social-outline',
+    //     route: '/admin/configuracoes/ecommerce/catalogo',
+    //     roles: [Constants.GERENCIA_ID],
+    //     showInSidebar: true,
+    //     showInMobile: true,
+    //     group: 'Gestão',
+    //     adminOnly: true
+    // },
     {
         label: 'Fichas / Treinos',
         sidebarIcon: 'clipboard-outline',
@@ -87,7 +87,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
         showInMobile: false,
-        group: 'Gestão',
+        group: 'Operacional',
     },
     {
         label: 'Check-in',
@@ -107,7 +107,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
         showInMobile: true,
-        group: 'Operacional',
+        group: 'Gestão',
     },
     {
         label: 'Calendário',
@@ -118,17 +118,17 @@ export const NAV_ITEMS: NavigationItem[] = [
         functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
         showInMobile: true,
-        group: 'Operacional',
+        group: 'Gestão',
     },
-    {
-        label: 'Contatos',
-        sidebarIcon: 'call-outline',
-        route: '/admin/contatos',
-        roles: [Constants.GERENCIA_ID],
-        showInSidebar: true,
-        showInMobile: true,
-        group: 'Operacional',
-    },
+    // {
+    //     label: 'Contatos',
+    //     sidebarIcon: 'call-outline',
+    //     route: '/admin/contatos',
+    //     roles: [Constants.GERENCIA_ID],
+    //     showInSidebar: true,
+    //     showInMobile: true,
+    //     group: 'Gestão',
+    // },
     {
         label: 'Equipamentos',
         sidebarIcon: 'bicycle-outline',
@@ -136,7 +136,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
         showInMobile: false,
-        group: 'Operacional',
+        group: 'Gestão',
     },
     {
         label: 'Minha Loja',
@@ -145,7 +145,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
         showInMobile: true,
-        group: 'Operacional',
+        group: 'Gestão',
         adminOnly: true
     },
     {
@@ -165,7 +165,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         roles: [Constants.GERENCIA_ID],
         functionIds: [Constants.INSTRUTOR_ID],
         showInSidebar: true,
-        showInMobile: false,
+        showInMobile: true,
         group: 'Sistema',
     },
 
