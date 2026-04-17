@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, Req, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { Usuario } from 'src/usuario/Usuario.interface';
@@ -70,6 +72,5 @@ export class AuthController {
     const result = await this.auth.resetPassword(body.token, body.novaSenha);
     return res.send(result);
   }
-
 
 }
