@@ -1,94 +1,142 @@
 <ion-content class="translucent-bg">
     <div class="modal-wrapper">
 
-        <!-- HEADER -->
-        <div class="header-section">
-            <div class="header-content">
-                <div class="title-block">
-                    <h2>Pedido <span>#{{ pedido.id?.substring(0, 8) }}</span></h2>
-                    <p class="date">{{ pedido.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+        <!-- SKELETON LOADING -->
+        <ng-container *ngIf="isLoading; else loadedContent">
+            <!-- HEADER SKELETON -->
+            <div class="header-section">
+                <div class="header-content">
+                    <div class="title-block">
+                        <ion-skeleton-text animated width="60%"></ion-skeleton-text>
+                        <ion-skeleton-text animated width="40%" style="height: 14px;"></ion-skeleton-text>
+                    </div>
+                    <button class="close-btn">
+                        <ion-skeleton-text animated width="24px" height="24px" style="border-radius: 50%;"></ion-skeleton-text>
+                    </button>
                 </div>
-                <button class="close-btn" (click)="closeModal()">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
+                <ion-skeleton-text animated width="80px" height="24px" style="border-radius: 12px;"></ion-skeleton-text>
             </div>
 
-            <div class="status-pill" [class]="$any(getStatusColor(pedido.status))">
-                <span class="dot"></span>
-                {{ pedido.status | uppercase }}
-            </div>
-        </div>
-
-        <!-- CUSTOMER INFO -->
-        <div class="section-card customer-card">
-            <div class="avatar">
-                {{ getInitials(pedido.cliente_nome) }}
-            </div>
-            <div class="customer-info">
-                <h3>{{ pedido.cliente_nome || 'Cliente não identificado' }}</h3>
-                <p *ngIf="pedido.cliente_telefone"><ion-icon name="logo-whatsapp"></ion-icon> {{ pedido.cliente_telefone
-                    }}</p>
-                <p *ngIf="pedido.cliente_email"><ion-icon name="mail-outline"></ion-icon> {{ pedido.cliente_email }}</p>
-            </div>
-        </div>
-
-        <!-- ITEMS LIST -->
-        <div class="section-title">
-            <ion-icon name="bag-handle-outline"></ion-icon>
-            Itens do Pedido
-        </div>
-
-        <div class="items-container">
-            <div class="item-row" *ngFor="let item of pedido.itens">
-                <div class="item-qty">{{ item.quantidade }}x</div>
-                <div class="item-details">
-                    <!-- Caso tenha join do populate: item.produtos?.nome -->
-                    <span class="item-name">{{ $any(item).produtos?.nome || 'Produto ID: ' +
-                        item.produto_id.substring(0,5) }}</span>
-                    <span class="item-price">{{ item.preco_unitario | currency:'BRL' }}</span>
+            <!-- CUSTOMER SKELETON -->
+            <div class="section-card customer-card">
+                <ion-skeleton-text animated width="40px" height="40px" style="border-radius: 50%;"></ion-skeleton-text>
+                <div class="customer-info">
+                    <ion-skeleton-text animated width="70%"></ion-skeleton-text>
+                    <ion-skeleton-text animated width="50%"></ion-skeleton-text>
                 </div>
             </div>
-        </div>
 
-        <!-- TOTAL -->
-        <div class="total-section">
-            <span>Total Pago</span>
-            <h2>{{ pedido.valor_total | currency:'BRL' }}</h2>
-        </div>
-
-        <!-- OBS -->
-        <div class="section-card obs-card" *ngIf="pedido.obs">
-            <div class="obs-header">
-                <ion-icon name="document-text-outline"></ion-icon>
-                <span>Observações</span>
+            <!-- ITEMS SKELETON -->
+            <div class="section-title">
+                <ion-skeleton-text animated width="30%"></ion-skeleton-text>
             </div>
-            <p>{{ pedido.obs }}</p>
-        </div>
-
-        <!-- ACTIONS -->
-        <div class="actions-section" [class.animating]="statusChanging">
-            <h3>Alterar Status</h3>
-            <div class="action-grid">
-                <button *ngIf="pedido.status !== 'pendente'" class="btn-action pendente"
-                    (click)="updateStatus('pendente')">
-                    <ion-icon name="time-outline"></ion-icon> Mover p/ Pendente
-                </button>
-
-                <button *ngIf="pedido.status !== 'pago'" class="btn-action pago" (click)="updateStatus('pago')">
-                    <ion-icon name="checkmark-circle-outline"></ion-icon> Confirmar Pagamento
-                </button>
-
-                <button *ngIf="pedido.status !== 'entregue'" class="btn-action entregue"
-                    (click)="updateStatus('entregue')">
-                    <ion-icon name="cube-outline"></ion-icon> Marcar como Entregue
-                </button>
-
-                <button *ngIf="pedido.status !== 'cancelado'" class="btn-action cancelado"
-                    (click)="updateStatus('cancelado')">
-                    <ion-icon name="close-circle-outline"></ion-icon> Cancelar Pedido
-                </button>
+            <div class="items-container">
+                <div class="item-row" *ngFor="let i of [1,2,3]">
+                    <ion-skeleton-text animated width="24px"></ion-skeleton-text>
+                    <div class="item-details">
+                        <ion-skeleton-text animated width="70%"></ion-skeleton-text>
+                        <ion-skeleton-text animated width="30%"></ion-skeleton-text>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- TOTAL SKELETON -->
+            <div class="total-section">
+                <ion-skeleton-text animated width="30%"></ion-skeleton-text>
+                <ion-skeleton-text animated width="40%" style="height: 32px;"></ion-skeleton-text>
+            </div>
+        </ng-container>
+
+        <!-- CONTENT LOADED -->
+        <ng-template #loadedContent>
+            <!-- HEADER -->
+            <div class="header-section">
+                <div class="header-content">
+                    <div class="title-block">
+                        <h2>Pedido <span>#{{ pedido.id?.substring(0, 8) }}</span></h2>
+                        <p class="date">{{ pedido.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+                    </div>
+                    <button class="close-btn" (click)="closeModal()">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                </div>
+
+                <div class="status-pill" [class]="$any(getStatusColor(pedido.status))">
+                    <span class="dot"></span>
+                    {{ pedido.status | uppercase }}
+                </div>
+            </div>
+
+            <!-- CUSTOMER INFO -->
+            <div class="section-card customer-card">
+                <div class="avatar">
+                    {{ getInitials(pedido.cliente_nome) }}
+                </div>
+                <div class="customer-info">
+                    <h3>{{ pedido.cliente_nome || 'Cliente não identificado' }}</h3>
+                    <p *ngIf="pedido.cliente_telefone"><ion-icon name="logo-whatsapp"></ion-icon> {{ pedido.cliente_telefone
+                        }}</p>
+                    <p *ngIf="pedido.cliente_email"><ion-icon name="mail-outline"></ion-icon> {{ pedido.cliente_email }}</p>
+                </div>
+            </div>
+
+            <!-- ITEMS LIST -->
+            <div class="section-title">
+                <ion-icon name="bag-handle-outline"></ion-icon>
+                Itens do Pedido
+            </div>
+
+            <div class="items-container">
+                <div class="item-row" *ngFor="let item of pedido.itens">
+                    <div class="item-qty">{{ item.quantidade }}x</div>
+                    <div class="item-details">
+                        <span class="item-name">{{ $any(item).produtos?.nome || 'Produto ID: ' +
+                            item.produto_id.substring(0,5) }}</span>
+                        <span class="item-price">{{ item.preco_unitario | currency:'BRL' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOTAL -->
+            <div class="total-section">
+                <span>Total Pago</span>
+                <h2>{{ pedido.valor_total | currency:'BRL' }}</h2>
+            </div>
+
+            <!-- OBS -->
+            <div class="section-card obs-card" *ngIf="pedido.obs">
+                <div class="obs-header">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                    <span>Observações</span>
+                </div>
+                <p>{{ pedido.obs }}</p>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="actions-section" [class.animating]="statusChanging">
+                <h3>Alterar Status</h3>
+                <div class="action-grid">
+                    <button *ngIf="pedido.status !== 'pendente'" class="btn-action pendente"
+                        (click)="updateStatus('pendente')">
+                        <ion-icon name="time-outline"></ion-icon> Mover p/ Pendente
+                    </button>
+
+                    <button *ngIf="pedido.status !== 'pago'" class="btn-action pago" (click)="updateStatus('pago')">
+                        <ion-icon name="checkmark-circle-outline"></ion-icon> Confirmar Pagamento
+                    </button>
+
+                    <button *ngIf="pedido.status !== 'entregue'" class="btn-action entregue"
+                        (click)="updateStatus('entregue')">
+                        <ion-icon name="cube-outline"></ion-icon> Marcar como Entregue
+                    </button>
+
+                    <button *ngIf="pedido.status !== 'cancelado'" class="btn-action cancelado"
+                        (click)="updateStatus('cancelado')">
+                        <ion-icon name="close-circle-outline"></ion-icon> Cancelar Pedido
+                    </button>
+                </div>
+            </div>
+        </ng-template>
 
     </div>
 </ion-content>

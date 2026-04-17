@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { Pedido } from 'src/core/services/ecommerce/pedido.service';
+import { Pedido, PedidoService } from 'src/core/services/ecommerce/pedido.service';
 
 @Component({
     selector: 'app-pedido-detail-modal',
@@ -10,13 +10,26 @@ import { Pedido } from 'src/core/services/ecommerce/pedido.service';
 export class PedidoDetailModalComponent implements OnInit {
     @Input() pedido!: Pedido;
 
-    // Variável para lidar com micro-animações de status
+    public isLoading = true;
     public statusChanging = false;
 
-    constructor(private modalCtrl: ModalController) { }
+    constructor(private modalCtrl: ModalController, private pedidoService: PedidoService) { }
 
     ngOnInit() {
-        console.log(this.pedido);
+        if (this.pedido.id) {
+            this.isLoading = true;
+            this.pedidoService.getById(this.pedido.id).subscribe({
+                next: (res) => {
+                    this.pedido = res.data;
+                    this.isLoading = false;
+                },
+                error: () => {
+                    this.isLoading = false;
+                }
+            });
+        } else {
+            this.isLoading = false;
+        }
     }
 
     closeModal() {
