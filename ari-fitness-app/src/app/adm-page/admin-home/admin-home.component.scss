@@ -238,10 +238,11 @@ ion-menu {
       position: absolute;
       top: 0;
       left: 0;
+      // padding: 10px;
 
       /* Apply padding internally to ion-content so the scrollbar stays at the absolute edge */
       ion-content {
-        @media (min-width: 768px) {
+        @media (max-width: 768px) {
           --padding-start: 1rem;
           --padding-end: 1rem;
         }

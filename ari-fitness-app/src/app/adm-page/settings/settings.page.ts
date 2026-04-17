@@ -34,16 +34,16 @@ export class SettingsPage implements OnInit {
       title: 'Minha Loja',
       subtitle: 'Gerencie produtos, pedidos e KPIs',
       icon: 'storefront-outline',
-      path: 'ecommerce/produtos',
+      path: 'ecommerce/loja',
       color: 'instrutores'
     },
-    {
-      title: 'Pedidos',
-      subtitle: 'Visualize vendas realizadas',
-      icon: 'receipt-outline',
-      path: 'ecommerce/pedidos',
-      color: 'alunos'
-    },
+    // {
+    //   title: 'Pedidos',
+    //   subtitle: 'Visualize vendas realizadas',
+    //   icon: 'receipt-outline',
+    //   path: 'ecommerce/pedidos',
+    //   color: 'alunos'
+    // },
     {
       title: 'WhatsApp',
       subtitle: 'Conecte sua conta para envios',

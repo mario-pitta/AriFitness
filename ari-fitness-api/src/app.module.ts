@@ -34,16 +34,20 @@ import { AutomationsModule } from './automations/automations.module';
 import { EvolutionModule } from './evolution/evolution.module';
 import { ProdutoModule } from './produto/produto.module';
 import { PedidoModule } from './pedido/pedido.module';
+import { PushNotificationModule } from './push-notification/push-notification.module';
 
 
 @Module({
   imports: [
-    EvolutionModule,
-    ProdutoModule,
+    DataBaseModule,
+    PushNotificationModule,
+    AuthModule,
     PedidoModule,
     GeminiModule,
     DashboardModule,
     FichaAlunoModule,
+    ProdutoModule,
+    EvolutionModule,
     ConfigModule.forRoot({ isGlobal: true }), // <-- Add this to load .env globally
     ServeStaticModule.forRoot({
       // rootPath: join(__dirname, '..', 'client'),

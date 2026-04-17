@@ -27,10 +27,18 @@
 
 /**
  * Ionic Dark Mode (Controlled via body.dark)
- * -----------------------------------------------------
- */
+ * -----------------------------------------------------/* CUSTOM PREMIUM MODAL */
+.premium-modal {
+  --background: transparent;
+  --width: 90%;
+  --max-width: 500px;
+  --height: 85%;
+  --border-radius: 24px;
 
-
+  ion-content {
+    --background: transparent;
+  }
+}
 
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'prismjs/themes/prism-okaidia.css';
