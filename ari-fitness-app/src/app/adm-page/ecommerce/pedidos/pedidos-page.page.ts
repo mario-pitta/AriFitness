@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { PedidoService, Pedido, Estatisticas } from 'src/core/services/ecommerce/pedido.service';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
+import { PedidoDetailModalComponent } from './pedido-detail-modal/pedido-detail-modal.component';
 
 @Component({
   selector: 'app-pedidos-page',
@@ -16,8 +17,9 @@ export class PedidosPagePage implements OnInit {
   constructor(
     private pedidoService: PedidoService,
     private toastr: ToastrService,
-    private alertController: AlertController
-  ) {}
+    private alertController: AlertController,
+    private modalCtrl: ModalController
+  ) { }
 
   ngOnInit() {
     this.loadPedidos();
@@ -68,18 +70,36 @@ export class PedidosPagePage implements OnInit {
   }
 
   async mostrarOpcoesStatus(pedido: Pedido) {
-    const alert = await this.alertController.create({
-      header: 'Alterar Status',
-      message: `Pedido: ${pedido.id?.substring(0, 8)}...`,
-      buttons: [
-        { text: 'Pendente', handler: () => this.atualizarStatus(pedido, 'pendente') },
-        { text: 'Pago', handler: () => this.atualizarStatus(pedido, 'pago') },
-        { text: 'Entregue', handler: () => this.atualizarStatus(pedido, 'entregue') },
-        { text: 'Cancelar Pedido', handler: () => this.atualizarStatus(pedido, 'cancelado') },
-        { text: 'Fechar', role: 'cancel' }
-      ]
+    // Agora busca o pedido completo com Itens do backend 
+    this.loading = true;
+    this.pedidoService.getById(pedido.id!).subscribe({
+      next: async (res) => {
+        this.loading = false;
+        const pedidoCompleto = res.data;
+        if (!pedidoCompleto) return;
+
+        const modal = await this.modalCtrl.create({
+          component: PedidoDetailModalComponent,
+          componentProps: { pedido: pedidoCompleto },
+          cssClass: 'premium-modal',
+          backdropDismiss: true,
+          mode: 'ios'
+        });
+
+        await modal.present();
+
+        const { data } = await modal.onDidDismiss();
+
+        if (data?.status) {
+          this.atualizarStatus(pedido, data.status);
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.toastr.error('Erro ao buscar detalhes do pedido');
+      }
     });
-    await alert.present();
+
   }
 
   formatDate(dateStr: string): string {

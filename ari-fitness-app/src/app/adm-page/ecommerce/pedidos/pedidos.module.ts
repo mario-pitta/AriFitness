@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
 import { PedidosPagePage } from './pedidos-page.page';
+import { PedidoDetailModalComponent } from './pedido-detail-modal/pedido-detail-modal.component';
 
 @NgModule({
   imports: [
@@ -13,6 +14,6 @@ import { PedidosPagePage } from './pedidos-page.page';
     IonicModule,
     RouterModule.forChild([{ path: '', component: PedidosPagePage }])
   ],
-  declarations: [PedidosPagePage]
+  declarations: [PedidosPagePage, PedidoDetailModalComponent]
 })
-export class PedidosPageModule {}
+export class PedidosPageModule { }

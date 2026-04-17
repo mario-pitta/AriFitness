@@ -3,6 +3,7 @@ import { DataBaseService } from 'src/datasource/database.service';
 import { Pedido, PedidoInput, PedidoItemInput, PedidoFilters } from './pedido.interface';
 import { TransacaoFinanceiraService } from 'src/transacao_financeira/transacao-financeira.service';
 import Constants from 'src/core/Constants/Constants';
+import { PushNotificationService } from 'src/push-notification/push-notification.service';
 
 /**
  * Service para gestão de pedidos do e-commerce
@@ -11,7 +12,8 @@ import Constants from 'src/core/Constants/Constants';
 export class PedidoService {
   constructor(
     private readonly databaseService: DataBaseService,
-    private readonly transacaoService: TransacaoFinanceiraService
+    private readonly transacaoService: TransacaoFinanceiraService,
+    private readonly pushNotificationService: PushNotificationService
   ) { }
 
   /**
@@ -122,12 +124,16 @@ export class PedidoService {
 
     if (pedidoAtualizadoError) throw pedidoAtualizadoError;
 
+    // Dispara Push notification para o Lojista informando sobre o novo pedido
+    this.pushNotificationService.sendPushToEmpresa(
+      empresaId,
+      'Novo Pedido Recebido 🛍️',
+      `O pedido #${pedido.id.slice(0, 8)} de R$ ${valorTotal.toFixed(2)} acabou de chegar!`
+    ).catch(err => console.error('Falha ao alertar por push:', err));
+
     return pedidoAtualizado;
   }
 
-  /**
-   * Buscar pedido por ID com itens
-   */
   async findById(id: string, empresaId: string): Promise<Pedido | null> {
     const { data: pedido, error } = await this.databaseService.supabase
       .from('pedidos')
@@ -137,16 +143,24 @@ export class PedidoService {
       .eq('fl_ativo', true)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error;
-    const pedidoData = pedido as Pedido | null;
-    if (!pedidoData) return null;
+    if (error || !pedido) {
+      console.error(error);
+      return null;
+    }
 
-    const { data: itens } = await this.databaseService.supabase
+    const { data: itens, error: itensError } = await this.databaseService.supabase
       .from('pedido_itens')
-      .select('*, produtos:nome(nome)')
+      .select('*, produtos(*)')
       .eq('pedido_id', id);
 
-    return { ...pedidoData, itens: itens || [] };
+    if (itensError) {
+      console.error('Erro ao buscar itens do pedido:', itensError);
+    }
+
+    return {
+      ...pedido,
+      itens: itens || []
+    } as Pedido;
   }
 
   /**
@@ -236,6 +250,18 @@ export class PedidoService {
    * Criar transação automática quando venda for paga
    */
   private async criarTransacaoPorVenda(pedido: any, empresaId: string) {
+
+    const { data: transacaoExistente } = await this.databaseService.supabase
+      .from('transacao_financeira')
+      .select('id')
+      .eq('auth_code', pedido.transacao_id)
+      .single();
+
+    if (transacaoExistente) {
+      return transacaoExistente;
+    }
+
+
     const { data: primeiroItem } = await this.databaseService.supabase
       .from('pedido_itens')
       .select('produto_id, quantidade, preco_unitario')
@@ -245,8 +271,8 @@ export class PedidoService {
 
     const transacaoData = {
       empresa_id: empresaId,
-      tr_tipo_id: 1,
-      tr_categoria_id: 3,
+      tr_tipo_id: Constants.TR_TIPO_RECEITA,
+      tr_categoria_id: Constants.TR_CATEGORIA_VENDA_PRODUTO,
       valor_real: pedido.valor_total,
       valor_final: pedido.valor_total,
       forma_pagamento: pedido.forma_pagamento || 'dinheiro',
