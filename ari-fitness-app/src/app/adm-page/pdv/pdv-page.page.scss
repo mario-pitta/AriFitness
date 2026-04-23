@@ -35,7 +35,7 @@
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  min-height: 200px;
+  height: 200px;
   display: flex;
   flex-direction: column;
 
@@ -408,7 +408,7 @@
 
   .produto-card {
     padding: 8px;
-    min-height: 160px;
+    height: 160px;
 
     .produto-imagem {
       height: 60px;
