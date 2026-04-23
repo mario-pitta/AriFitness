@@ -19,20 +19,26 @@ export class PdvPagePage implements OnInit {
   produtos: Produto[] = [];
   produtosFiltrados: Produto[] = [];
   loading = true;
-  
+
   carrinho: CarrinhoItem[] = [];
   busca = '';
   categoriaSelecionada = '';
   categorias: string[] = [];
-  
+
   // Desconto
   descontoTipo: 'percent' | 'valor' = 'percent';
   descontoValor = 0;
-  
+
   // Pagamento
   formaPagamento = 'pix';
   nomeCliente = '';
   telefoneCliente = '';
+  cpfCliente = '';
+  carrinhoExpandido = false;
+
+  toggleCarrinho() {
+    this.carrinhoExpandido = !this.carrinhoExpandido;
+  }
 
   get subtotal(): number {
     return this.carrinho.reduce((sum, item) => sum + (item.produto.preco * item.quantidade), 0);
@@ -60,7 +66,7 @@ export class PdvPagePage implements OnInit {
     private alertController: AlertController,
     private navController: NavController,
     private auth: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadProdutos();
@@ -89,25 +95,25 @@ export class PdvPagePage implements OnInit {
 
   filtrarProdutos() {
     let filtrados = this.produtos;
-    
+
     if (this.categoriaSelecionada) {
       filtrados = filtrados.filter(p => p.categoria === this.categoriaSelecionada);
     }
-    
+
     if (this.busca) {
       const busca = this.busca.toLowerCase();
-      filtrados = filtrados.filter(p => 
-        p.nome.toLowerCase().includes(busca) || 
+      filtrados = filtrados.filter(p =>
+        p.nome.toLowerCase().includes(busca) ||
         p.descricao?.toLowerCase().includes(busca)
       );
     }
-    
+
     this.produtosFiltrados = filtrados;
   }
 
   adicionarAoCarrinho(produto: Produto) {
     const existente = this.carrinho.find(item => item.produto.id === produto.id);
-    
+
     if (existente) {
       if (existente.quantidade < produto.estoque) {
         existente.quantidade++;
@@ -155,6 +161,7 @@ export class PdvPagePage implements OnInit {
     const pedido = {
       cliente_nome: this.nomeCliente || 'Cliente Balcão',
       cliente_telefone: this.telefoneCliente,
+      cliente_cpf: this.cpfCliente,
       itens,
       forma_pagamento: this.formaPagamento,
       valor_desconto: this.valorDesconto
@@ -176,11 +183,12 @@ export class PdvPagePage implements OnInit {
     this.descontoValor = 0;
     this.nomeCliente = '';
     this.telefoneCliente = '';
+    this.cpfCliente = '';
     this.formaPagamento = 'pix';
   }
 
   async showResumoVenda() {
-    const itensResumo = this.carrinho.map(item => 
+    const itensResumo = this.carrinho.map(item =>
       `${item.quantidade}x ${item.produto.nome}`
     ).join('\n');
 
@@ -195,6 +203,7 @@ TOTAL: R$ ${this.total.toFixed(2)}
 
 Pagamento: ${this.formaPagamento.toUpperCase()}
 ${this.nomeCliente ? `Cliente: ${this.nomeCliente}` : ''}
+${this.cpfCliente ? `CPF: ${this.cpfCliente}` : ''}
       `,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
