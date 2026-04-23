@@ -3,7 +3,7 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import { Empresa } from './empresa.interface';
 import { StorageService } from 'src/datasource/storage.service';
@@ -12,6 +12,23 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 @Injectable()
 export class EmpresaService {
+  async getPublicEmpresa(empresaId: string) {
+    const { data, error } = await this.databaseService.supabase.from('empresa').select(`
+      id, nome, logo_url, banner_url, cnpj
+    `).eq('id', empresaId).single();
+
+    if (error) {
+      console.error('Error getting public empresa: ', error);
+      throw new HttpException('Empresa não encontrada', HttpStatus.NOT_FOUND);
+    }
+
+
+
+    return data;
+
+
+
+  }
   constructor(
     private readonly databaseService: DataBaseService,
     private readonly storageService: StorageService,

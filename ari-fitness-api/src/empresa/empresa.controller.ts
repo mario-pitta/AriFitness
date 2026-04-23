@@ -10,6 +10,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from 'src/core/Constants/UserRole';
+import { Public } from 'src/auth/decorators/public.decorator';
+
 
 @Controller('empresa')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -28,6 +30,12 @@ export class EmpresaController {
     @Get()
     async getAllEmpresas() {
         return await this.empresaService.findAll();
+    }
+
+    @Get('public/:empresaId')
+    @Public()
+    async getPublicEmpresa(@Param('empresaId') empresaId: string) {
+        return await this.empresaService.getPublicEmpresa(empresaId);
     }
 
     @Post()
