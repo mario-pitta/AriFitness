@@ -14,6 +14,8 @@ import { Subscription } from 'rxjs';
 import { ActionSheetController } from '@ionic/angular';
 import { ToastrService } from 'src/core/services/toastr/toastr.service';
 
+// import systemLogo from '../../assets/mvk-gym-manager-logo.png';
+
 @Component({
   selector: 'app-check-in',
   templateUrl: './check-in.page.html',
@@ -42,6 +44,7 @@ export class CheckInPage implements OnInit {
   dataFim: any;
   filtroNome: string = '';
   loadingHistoric: boolean = false;
+  systemLogoPath: string = 'src/assets/assets/mvk-gym-manager-logo.png'
 
   constructor(
     private empresaService: EmpresaService,
@@ -67,7 +70,8 @@ export class CheckInPage implements OnInit {
             this.route.snapshot.queryParamMap.get('empresa_id');
           this.checkinUrl =
             location.origin +
-            '/check-in?empresa_id=' +
+            '?redirect=' +
+            'check-in&empresa_id=' +
             this.auth.getUser?.empresa_id ||
             this.route.snapshot.queryParamMap.get('empresa_id')
 
@@ -115,12 +119,13 @@ export class CheckInPage implements OnInit {
     if (!this.empresaId) {
       return;
     }
-    this.empresaService.getEmpresa(this.empresaId).subscribe({
+    this.empresaService.getPublicEmpresa(this.empresaId).subscribe({
       next: (res: any) => {
         console.log(res);
         this.empresa = new Empresa(res.data || res);
       },
       error: (err) => {
+        this.empresaId = null;
         console.log(err);
       },
     });
@@ -136,19 +141,29 @@ export class CheckInPage implements OnInit {
       nome: this.nome,
       empresaId: this.empresaId
     }
-    this.userService.registrarCheckIn(this.cpf, this.nome, this.empresaId).subscribe({
+
+    const req =
+      this.isAdminPath ?
+        this.userService.registrarCheckIn(this.cpf, this.nome, this.empresaId) :
+        this.userService.registrarCheckInPublic(this.cpf, this.nome, this.empresaId);
+
+
+
+
+    req.subscribe({
       next: (res) => {
         console.log('Check-in registrado com sucesso:', res);
+        this.cpf = '';
+        this.nome = '';
         if (this.saveInfoOnDevice) {
           localStorage.setItem('checkin_data', JSON.stringify(payload));
         }
         this.confettiService.showConfetti();
         this.toastService.success('Check-in registrado com sucesso!', 'top');
-        this.cpf = '';
       },
       error: (err) => {
         console.error('Erro ao registrar check-in:', err);
-        this.toastService.error('Erro ao registrar check-in!');
+        // this.toastService.error('Erro ao registrar check-in!');
       },
     });
   }

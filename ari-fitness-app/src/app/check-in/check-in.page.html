@@ -98,9 +98,10 @@
     <ng-container *ngIf="viewMode === 'checkin'">
         <div *ngIf="empresaId; else noEmpresaId">
             <ion-card>
-                <ion-card-header class="ion-text-center ion-padding-top">
-                    <ion-img *ngIf="!isAdminPath" [src]="empresa?.logo_url"
+                <ion-card-header class="ion-text-center ion-padding-top bg-none">
+                    <ion-img *ngIf="!isAdminPath" [src]="empresa?.logo_url || '/assets/mvk-gym-manager-only-logo.png'"
                         [alt]="'Logo da Empresa' + empresa?.nome"></ion-img>
+                    <h4 class="ion-text-center ion-padding-top">{{empresa?.nome}}</h4>
                     <ion-card-title> {{isAdminPath ?'Check-in de Alunos' : 'Boas Vindas'}}</ion-card-title>
                     <ion-card-subtitle *ngIf="isAdminPath">Solicite que o aluno leia o QR Code abaixo para registrar o
                         check-in.
@@ -114,8 +115,8 @@
                         <qrcode [qrdata]="checkinUrl" [allowEmptyString]="true"
                             [ariaLabel]="'QR Code image with the following content...'" [cssClass]="'center'"
                             [colorDark]="'#000000ff'" [colorLight]="'#ffffffff'" [elementType]="'canvas'"
-                            [errorCorrectionLevel]="'Q'" [imageSrc]="empresa?.logo_url" [imageHeight]="75"
-                            [imageWidth]="70" [margin]="4" [scale]="1" [title]="'Fazer Check-in'"
+                            [errorCorrectionLevel]="'Q'" [imageSrc]="empresa?.logo_url || systemLogoPath"
+                            [imageHeight]="75" [imageWidth]="70" [margin]="4" [scale]="1" [title]="'Fazer Check-in'"
                             [width]="isMobile ? 200 : 400"></qrcode>
                     </div>
                 </ion-col>
@@ -147,14 +148,24 @@
     </ng-container>
 
     <ng-template #noEmpresaId>
-        <ion-card>
-            <ion-card-header>
-                <ion-card-title>Aviso</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-                <p>Não foi possível obter informações da academia/studio. Por favor, verifique se o link está correto ou
-                    entre em contato com o suporte.</p>
-            </ion-card-content>
-        </ion-card>
+        <div class="ion-container h-100 d-flex ion-justify-content-center ion-align-items-center">
+            <ion-card class="ion-margin">
+                <ion-card-header class="d-flex ion-justify-content-center ion-align-items-center ">
+                    <ion-thumbnail class="h-100 d-flex ion-justify-content-center ion-align-items-center">
+                        <ion-icon style="font-size: 48px;" name="close-circle-outline" color="danger"></ion-icon>
+                    </ion-thumbnail>
+                    <ion-card-title>
+                        Erro
+                    </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p>Não foi possível obter informações da academia/studio. Por favor, verifique se o link está
+                        correto ou
+                        entre em contato com o suporte.</p>
+                    <ion-button class="ion-margin-top " color="primary" shape="round" expand="block"
+                        [routerLink]="['/']">Voltar</ion-button>
+                </ion-card-content>
+            </ion-card>
+        </div>
     </ng-template>
 </ion-content>
