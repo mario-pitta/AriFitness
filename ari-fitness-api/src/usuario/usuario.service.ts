@@ -298,14 +298,14 @@ export class UsuarioService {
 
 
     if (ultimoCheckin) {
-      const ultimaHora = new Date(ultimoCheckin.data_hora).getTime();
+      const ultimaCheckinHora = new Date(ultimoCheckin.data_hora).getTime();
       const horaAtual = new Date().getTime();
-      const tempoDecorridoMinutos = (horaAtual - ultimaHora) / (1000 * 60);
+      const tempoDecorridoMinutos = (horaAtual - ultimaCheckinHora) / (1000 * 60);
       console.log('💻🔍🪲 - tempoDecorridoMinutos', tempoDecorridoMinutos);
 
 
       if (tempoDecorridoMinutos < (12 * 60)) { // Ex: Intervalo de 12 horas
-        const message = `Check-in já realizado recentemente. Próximo check-in liberado em ${180 - Math.floor(tempoDecorridoMinutos)} minutos.`;
+        const message = `Check-in já realizado recentemente. Próximo check-in liberado em ${12 - Math.floor(tempoDecorridoMinutos / 60)} horas.`;
         return { success: false, message, error: { message } };
       }
     }

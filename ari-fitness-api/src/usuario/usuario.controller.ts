@@ -18,6 +18,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from 'src/core/Constants/UserRole';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('usuario')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -165,6 +166,23 @@ export class UsuarioController {
   @Roles(UserRole.GERENCIA, UserRole.INSTRUCTOR, UserRole.STUDENT)
   registrarCheckIn(@Body() body: { cpf: string; nome: string, empresa_id: string }, @Res() res: Response) {
     console.log('registrando check-in para o CPF:', body.cpf, 'na empresa:', body.empresa_id);
+    return this.usuarioService.registrarCheckin(body.cpf, body.nome, body.empresa_id).then((_res) => {
+      if (_res.error) {
+        console.error('erro no usuario/check-in', _res.error);
+        res.status(500).send({
+          status: 500,
+          ..._res.error,
+        });
+      }
+      return res.send(_res.data);
+    });
+  }
+
+
+  @Post('public/check-in')
+  @Public()
+  registrarCheckInPublic(@Body() body: { cpf: string; nome: string, empresa_id: string }, @Res() res: Response) {
+    console.log('registrando check-in publico para o CPF:', body.cpf, 'na empresa:', body.empresa_id);
     return this.usuarioService.registrarCheckin(body.cpf, body.nome, body.empresa_id).then((_res) => {
       if (_res.error) {
         console.error('erro no usuario/check-in', _res.error);
