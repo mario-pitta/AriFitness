@@ -6,7 +6,7 @@ import {
   Router,
 } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import { AuthService } from 'src/core/services/auth/auth.service';
 import { OverlayControllerService } from 'src/core/services/overlay-controller.service';
 import { PageSizeService } from 'src/core/services/page-size/page-size.service';
@@ -94,7 +94,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.router.events.subscribe(async (ev: any) => {
 
-      console.log('ev = ', ev)
 
       if (ev instanceof NavigationStart) {
 
@@ -104,7 +103,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
           // this.overlayService.closeAll(ev);
           await this.redirect();
-          console.log('teem redirect: ' + ev.url);
           return;
         }
 
@@ -114,9 +112,6 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       if (ev instanceof NavigationEnd) {
         this.route = ev.url;
-        console.log('this.route = ', this.route)
-        console.log('this.pendingRedirect = ', this.pendingRedirect)
-
 
         if (this.pendingRedirect) {
           this.pendingRedirect = false;
@@ -146,15 +141,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   async redirect() {
-    console.log('this.redirectUrl = ', this.redirectUrl)
+
 
     const base = `${window.location.protocol}//${window.location.host}`;
     const url = new URL(this.redirectUrl, base);   // interpreta corretamente a queryconsole.log('url = ', url)
 
     const redirect = url.searchParams.get('redirect');
     const empresaId = url.searchParams.get('empresa_id');
-    console.log('redirect = ', redirect)
-    console.log('empresaId = ', empresaId)
 
     if (redirect) {
       const query = empresaId ? { empresa_id: empresaId } : undefined;
@@ -162,6 +155,8 @@ export class AppComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.router.navigate([`/${redirect}`], { queryParams: query });
       }, 80);
+
+
     }
 
 
@@ -170,8 +165,17 @@ export class AppComponent implements OnInit, OnDestroy {
   checkUpdate() {
     if (this.swUpdate.isEnabled) {
       this.swUpdate.versionUpdates
-        .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
-        .subscribe(() => {
+        .pipe(
+          tap((evt) => {
+            console.log('evt = ', evt);
+            console.log('evt = ' + JSON.stringify(evt));
+          }),
+          filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
+        .subscribe((evt) => {
+          const newDesc = (evt.latestVersion.appData as any)?.version;
+          console.log('Nova versão disponível: ', newDesc);
+          this.currentVersion = pck.version;
+          this.newVersion = newDesc;
           this.showUpdateNotify = true;
         });
 
