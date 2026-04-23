@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/mario-pitta/AriFitness/compare/v1.14.0...v1.15.0) (2026-04-23)
+
+
+### Features
+
+* :sparkles: Adiciona alerta de confirmação ao alterar status do pedido ([d9b19f9](https://github.com/mario-pitta/AriFitness/commit/d9b19f97e1d1934c3eaacf4dbc6d8d57479514f3))
+* :sparkles: Adiciona campo cliente_cpf ao Pedido ([b099ea9](https://github.com/mario-pitta/AriFitness/commit/b099ea9cb977ca9325f181697e5eecbd39469721))
+* :sparkles: Adiciona campo CPF e expansao do carrinho no PDV ([4bb34c2](https://github.com/mario-pitta/AriFitness/commit/4bb34c2f38d62aa0bffd9009e40dfaceed3b71a5))
+* :sparkles: Adiciona campo de observações ao formulário do pedido ([d1c6d21](https://github.com/mario-pitta/AriFitness/commit/d1c6d2133b89a35cddfd414392a48f5dfab03c43))
+* :sparkles: Adiciona configuração de WhatsApp no painel admin ([5175017](https://github.com/mario-pitta/AriFitness/commit/5175017bc5fbbe3719dbb6130f0ed92f3d38716c))
+* :sparkles: Adiciona decorator para rotas públicas ([90d81a6](https://github.com/mario-pitta/AriFitness/commit/90d81a69a8533fee4483c25532b0a3c2de3b690f))
+* :sparkles: Adiciona frontend do E-commerce - páginas de produtos e pedidos com rotas ([5e290e9](https://github.com/mario-pitta/AriFitness/commit/5e290e9264fbb49100e360339e959b34c8a2e5d9))
+* :sparkles: Adiciona máscaras de CPF/telefone e validador de email no carrinho ([e72a332](https://github.com/mario-pitta/AriFitness/commit/e72a33269e7c3ef170722df7d0d0546ddcb27113))
+* :sparkles: Adiciona modal para envio de mensagens WhatsApp ([af0435e](https://github.com/mario-pitta/AriFitness/commit/af0435e15dbed0b445c0b2a83e25e204580a64fa))
+* :sparkles: Adiciona models e services do carrinho e produto para e-commerce ([e06706d](https://github.com/mario-pitta/AriFitness/commit/e06706d8e51771d27b73232a9e388acef09aaf67))
+* :sparkles: Adiciona módulo de integração com Evolution API para WhatsApp ([64b57b8](https://github.com/mario-pitta/AriFitness/commit/64b57b8cf5ce20dc77c7ce5c302cc7d7c05323cc))
+* :sparkles: Adiciona módulo de Push Notifications para alertas em tempo real ([05cc3cb](https://github.com/mario-pitta/AriFitness/commit/05cc3cb026e6179d44607a3fbe8d7f2d0843bde9))
+* :sparkles: Adiciona módulo E-commerce com produtos e pedidos - backend NestJS ([6d2b523](https://github.com/mario-pitta/AriFitness/commit/6d2b523fc8474b73d7b43bf6c479411adbbc07e5))
+* :sparkles: Adiciona novos recursos aos planos: Loja da Academia, Pagamento Integrado e Regra de Cobrança Personalizada ([ee96387](https://github.com/mario-pitta/AriFitness/commit/ee963877e1650a81904ebfc5eb1a5327c96b6757))
+* :sparkles: Adiciona página de acesso não autorizado e RolesGuard para controle de permissões ([606c183](https://github.com/mario-pitta/AriFitness/commit/606c183d96e743fe61c692d9ccdb39ba1970455d))
+* :sparkles: Adiciona PDV com carrinho, desconto e integração no sidebar - Ponto de Venda (Gestão) e Minha Loja (Operacional) ([f051731](https://github.com/mario-pitta/AriFitness/commit/f0517315bec8e5a75defe86f04795841ebb8a5ea))
+* :sparkles: Adiciona rotas para plano-page, whatsapp-config e unauthorized ([2933728](https://github.com/mario-pitta/AriFitness/commit/29337284fb3f867c619ce2cef9a05b533eebc2ad))
+* :sparkles: Adiciona serviços de integração WhatsApp e Evolution API no frontend ([09d2327](https://github.com/mario-pitta/AriFitness/commit/09d2327660a777e73406b6cf883ad41b4e285947))
+* :sparkles: Adiciona sistema de assinaturas com service e controller para gestão de planos ([7cf0d07](https://github.com/mario-pitta/AriFitness/commit/7cf0d0731a7b9db0e217a2aa1281127ed66e8fb4))
+* :sparkles: Adiciona skeleton loading na tela de pedidos ([d32a1f2](https://github.com/mario-pitta/AriFitness/commit/d32a1f22ea16c1ed308f8f1e3ac8c1e268ba5cdd))
+* :sparkles: Adiciona skeleton loading no modal de detalle do pedido ([2ff841c](https://github.com/mario-pitta/AriFitness/commit/2ff841cf9469cdba6c04a6ec5a5595a262332ca4))
+* :sparkles: Adiciona SupabaseRealtimeManager e PedidoDetailModalComponent ([a071ad7](https://github.com/mario-pitta/AriFitness/commit/a071ad7a08a2b615e1f7e19b26c9c782cf0fb91c))
+* :sparkles: Adiciona tabelas SQL de assinatura e constants do sistema ([67b8f78](https://github.com/mario-pitta/AriFitness/commit/67b8f78cf239bc62a0ce2616f832fc9b0a8d3c3f))
+* :sparkles: Ajusta backend de pedidos com integração Supabase e melhorias no produto ([baa01b2](https://github.com/mario-pitta/AriFitness/commit/baa01b25d3762459eb6d6dc5841abaae9a2ad5ad))
+* :sparkles: Atualiza componente principal da aplicação ([389a431](https://github.com/mario-pitta/AriFitness/commit/389a43145a1f88c64399687b1b3e9330c8c9a1da))
+* :sparkles: Atualiza endpoints e lógica da empresa ([29af8b4](https://github.com/mario-pitta/AriFitness/commit/29af8b46ebb61b3bc5828667186b604c52963639))
+* :sparkles: Atualiza endpoints e lógica do usuário ([eeaea97](https://github.com/mario-pitta/AriFitness/commit/eeaea9777bd3f1875fe4f7e5167ebab9aaef7fc0))
+* :sparkles: Atualiza layout e estilos da página PDV ([c5695a5](https://github.com/mario-pitta/AriFitness/commit/c5695a57ca0397b1a254a2fa5c5e558340f8f674))
+* :sparkles: Atualiza página de check-in ([afb235d](https://github.com/mario-pitta/AriFitness/commit/afb235db4514863590a94bfa4e423c6ce5bcaf12))
+* :sparkles: Atualiza serviços do frontend ([ea4172d](https://github.com/mario-pitta/AriFitness/commit/ea4172dc10926a1b69a1fcf0b95512fc39b83f42))
+* :sparkles: Implementa página de planos com métricas em grid, funcionalidades com IA e assinatura de planos ([d9e25ff](https://github.com/mario-pitta/AriFitness/commit/d9e25ff018680b66416c037ca5439fe64cb2ed71))
+* :sparkles: Refatorar modal de carrinho para ReactiveForms e adicionar validações ([89804f9](https://github.com/mario-pitta/AriFitness/commit/89804f9b1a99426e544493c3fb2210cda2b5aba8))
+* :sparkles: Registra EvolutionModule e AssinaturaModule no app principal ([6355453](https://github.com/mario-pitta/AriFitness/commit/6355453032af8006ef32b5244af5331f12545d70))
+* E-commerce completo com catálogo público e melhorias UI ([8ea2b08](https://github.com/mario-pitta/AriFitness/commit/8ea2b087a0a75db46a59fb235553a9b35de3fc20))
+
+
+### Bug Fixes
+
+* :bug: Ajusta PDV etransação financeira com melhorias no frontend ([aa1c3cb](https://github.com/mario-pitta/AriFitness/commit/aa1c3cb688c41cd28fd5fa4c76695cd236a188c9))
+* :bug: Corrige altura inconsistente dos cards de produtos no PDV ([5c679dd](https://github.com/mario-pitta/AriFitness/commit/5c679dd6cdda6f77c14c78e684454fce88c9867b))
+* :bug: Corrige atualização de serviços da empresa - deleta antigos antes de inserir novos ([b9d946a](https://github.com/mario-pitta/AriFitness/commit/b9d946a63fd74d55dc6862621e79fbea4e89d91f))
+* :bug: Corrige filtro fl_pago no dashboard para considerar apenas transações pagas ([5331102](https://github.com/mario-pitta/AriFitness/commit/5331102863ced90d1ba6b68484862b13fdd4f1c7))
+* :bug: Corrige JWT guard para lançar UnauthorizedException e adiciona logging ([1697d91](https://github.com/mario-pitta/AriFitness/commit/1697d918f45f3ef9f5c4570279d5f6ef208b2b87))
+* :bug: Corrige largura dos cards usando height fixo ([8d0221e](https://github.com/mario-pitta/AriFitness/commit/8d0221e419a2f9170a049237f256bc0e4b5b36c2))
+* :bug: Corrige máscara Maskito para Ionic e adiciona validação de CPF/telefone ([570b5ec](https://github.com/mario-pitta/AriFitness/commit/570b5ecb69de40db187cf8590643504088b1c762))
+* :bug: Corrige skeleton para carregar apenas nos intens do pedido ([b026bf9](https://github.com/mario-pitta/AriFitness/commit/b026bf9ad3ac5626e29014f1d4d554bd00159372))
+* :bug: Habilita Service Worker em localhost e melhora checkUpdate ([497dff5](https://github.com/mario-pitta/AriFitness/commit/497dff5db6da4da7a5003e4914ed6a43a8e0c084))
+* :bug: Habilita Service Worker em localhost para testes ([1c68826](https://github.com/mario-pitta/AriFitness/commit/1c688261cc972c06d9c9e0aebe833ab117c21764))
+
 ## [1.14.0](https://github.com/mario-pitta/AriFitness/compare/v1.13.1...v1.14.0) (2026-04-07)
 
 
