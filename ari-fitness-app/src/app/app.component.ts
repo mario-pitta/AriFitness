@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import {
+  ActivatedRoute,
   NavigationEnd,
   NavigationStart,
   Router,
@@ -15,6 +16,9 @@ import { PagetitleService } from 'src/core/services/pagetitle.service';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { environment } from 'src/environments/environment';
+
+
+import pck from '../../package.json';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -38,6 +42,7 @@ const analytics = getAnalytics(app);
 })
 export class AppComponent implements OnInit, OnDestroy {
   route: string = '';
+
   showToastr: any;
   user: any;
   pageTitle: string = 'MvK Gym App';
@@ -46,8 +51,9 @@ export class AppComponent implements OnInit, OnDestroy {
   isPublicRoute: boolean = false;
 
   // Update Notification State
-  showUpdateNotify: boolean = false;
-  newVersion: string = '1.12.0';
+  showUpdateNotify: boolean = false; // true;
+  newVersion: string = '1.19.0';
+  currentVersion: string = pck.version;
 
   isMobile = false;
   screenSize = 0;
@@ -55,6 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private titleService: PagetitleService,
     private overlayService: OverlayControllerService,
+    private aRoute: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private pageSizeService: PageSizeService,
@@ -71,6 +78,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.pageSizeService.setSize(this.screenSize);
   }
 
+  pendingRedirect: boolean = false;
+  redirectUrl: string = '';
+  redirectQueryParams: any;
+
   ngOnInit() {
     this.initializeTheme();
 
@@ -81,14 +92,38 @@ export class AppComponent implements OnInit, OnDestroy {
       } catch (e) { /* Not running in Electron */ }
     }
 
-    this.router.events.subscribe((ev: any) => {
+    this.router.events.subscribe(async (ev: any) => {
+
+      console.log('ev = ', ev)
+
       if (ev instanceof NavigationStart) {
+
+        if (ev.url.includes('redirect')) {
+          this.pendingRedirect = true;
+          this.redirectUrl = ev.url;
+
+          // this.overlayService.closeAll(ev);
+          await this.redirect();
+          console.log('teem redirect: ' + ev.url);
+          return;
+        }
+
         if (ev.navigationTrigger == 'popstate') {
           this.overlayService.closeAll(ev);
         }
       }
       if (ev instanceof NavigationEnd) {
         this.route = ev.url;
+        console.log('this.route = ', this.route)
+        console.log('this.pendingRedirect = ', this.pendingRedirect)
+
+
+        if (this.pendingRedirect) {
+          this.pendingRedirect = false;
+          await this.redirect();
+          return;
+        }
+
         this.isPublicRoute = this.isPublicPage(ev.url);
       }
     });
@@ -106,6 +141,30 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.checkUpdate();
+  }
+
+
+
+  async redirect() {
+    console.log('this.redirectUrl = ', this.redirectUrl)
+
+    const base = `${window.location.protocol}//${window.location.host}`;
+    const url = new URL(this.redirectUrl, base);   // interpreta corretamente a queryconsole.log('url = ', url)
+
+    const redirect = url.searchParams.get('redirect');
+    const empresaId = url.searchParams.get('empresa_id');
+    console.log('redirect = ', redirect)
+    console.log('empresaId = ', empresaId)
+
+    if (redirect) {
+      const query = empresaId ? { empresa_id: empresaId } : undefined;
+      // Navega de forma assíncrona para não bloquear a renderização inicial
+      setTimeout(() => {
+        this.router.navigate([`/${redirect}`], { queryParams: query });
+      }, 80);
+    }
+
+
   }
 
   checkUpdate() {

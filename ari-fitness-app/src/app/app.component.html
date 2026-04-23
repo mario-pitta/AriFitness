@@ -21,8 +21,15 @@
           <p>Melhorias de performance e novos recursos preparados para você.</p>
         </div>
 
-        <div class="card-footer-section">
-
+        <div class="card-footer-section align-items-center justify-content-between d-flex">
+          <div class="d-block">
+            <p>
+              <small class=" text-secondary">Versão Atual: {{currentVersion}}</small>
+            </p>
+            <p>
+              <small class=" text-secondary">Nova Versão: {{newVersion}}</small>
+            </p>
+          </div>
           <button class="btn-update-pill" (click)="reloadApp()">Atualizar</button>
         </div>
       </div>
