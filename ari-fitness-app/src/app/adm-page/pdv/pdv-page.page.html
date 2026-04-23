@@ -29,8 +29,8 @@
         </ion-segment>
       </ion-toolbar>
       <div class="produtos-grid mt-2" *ngIf="!loading">
-        <div class="produto-card" *ngFor="let produto of produtosFiltrados" (click)="adicionarAoCarrinho(produto)"
-          [class.produto-indisponivel]="produto.estoque === 0">
+        <div class="produto-card ion-activatable ripple-parent" *ngFor="let produto of produtosFiltrados"
+          (click)="adicionarAoCarrinho(produto)" [class.produto-indisponivel]="produto.estoque === 0">
           <div class="produto-imagem">
             <img *ngIf="produto.imagem_url" [src]="produto.imagem_url" [alt]="produto.nome">
             <ion-icon *ngIf="!produto.imagem_url" name="cube-outline"></ion-icon>
