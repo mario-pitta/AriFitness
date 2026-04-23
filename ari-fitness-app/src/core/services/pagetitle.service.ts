@@ -87,7 +87,7 @@ export class PagetitleService {
   }
 
   private updateDocumentTitle() {
-    this.title.next(`${this.currentPage} | MvK Gym Manager`);
+    this.title.next(`MvK Gym Manager`);
     document.title = `${this.currentPage} | MvK Gym Manager`;
 
   }

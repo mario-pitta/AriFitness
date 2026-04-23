@@ -65,6 +65,12 @@ export class UsuarioService {
   registrarCheckIn(cpf: string, nome: string, empresa_id: string) {
     return this.http.post(environment.apiUrl + `/usuario/check-in`, { cpf, nome, empresa_id }).pipe(take(1));
   }
+
+  registrarCheckInPublic(cpf: string, nome: string, empresa_id: string) {
+    return this.http.post(environment.apiUrl + `/usuario/public/check-in`, { cpf, nome, empresa_id }).pipe(take(1));
+  }
+
+
   getCheckinsByEmpresa(empresaId: string, data_inicio: Date, data_fim: Date) {
     return this.http
       .get<any[]>(environment.apiUrl + `/usuario/check-in/empresa/${empresaId}?data_inicio=${data_inicio.toISOString()}&data_fim=${data_fim.toISOString()}`)

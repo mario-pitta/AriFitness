@@ -27,6 +27,10 @@ export class EmpresaService {
     );
   }
 
+  getPublicEmpresa(empresaId: string) {
+    return this.http.get(environment.apiUrl + '/empresa/public/' + empresaId);
+  }
+
   getDefaultServices() {
     return this.http.get<any[]>(environment.apiUrl + '/services/defaults');
   }
