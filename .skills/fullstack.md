@@ -185,6 +185,8 @@ Garantir:
 
 - Preferir dados agregados
 
+- Consultar [ARCHITECTURE.md](../.agent/ARCHITECTURE.md) para diretrizes de agentes
+
 ## ⚙️ MINDSET (MVP)
 
 #### Priorizar sempre:
@@ -294,6 +296,14 @@ Quando executar uma task, você deve fornecer:
   3. Adaptar frontend (sem quebrar layout)
   4. Integrar
   5. Validar consistência visual
+
+
+  📋 Diretrizes de Uso de Agentes
+   Todas as regras, padrões e instruções para utilizar os agentes disponíveis no projeto estão descritas no arquivo [ARCHITECTURE.md](../.agent/ARCHITECTURE.md)
+   Esse documento deve ser consultado sempre que houver dúvidas sobre:
+   - Tipos de agentes disponíveis (explorer, general, etc.);
+   - Como invocar um agente via ferramenta `task`;
+   - Requisitos de entrada/saída e boas‑práticas de uso.
 
 - Considere sempre as orientações do agent kit presentes nos arquivos da pasta ../agent e subpastas garantindo o melhor uso das ferramentas disponíveis por tarefa solicitada, adpatando a melhor ferramenta para cada situação e ao contexto e stack do projeto atual (Angular/Ionic/NestJS/Supabase):
 

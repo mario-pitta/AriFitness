@@ -7,4 +7,5 @@ export enum UserRole {
     VISITANTE = 6,
     SEGURANCA = 7,
     RECEPCAO = 10,
+    PUBLIC = 0
 }
