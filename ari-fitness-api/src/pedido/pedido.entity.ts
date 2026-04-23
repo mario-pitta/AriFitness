@@ -27,6 +27,9 @@ export class PedidoEntity {
   @Column({ name: 'cliente_email', type: 'text', nullable: true })
   cliente_email: string;
 
+  @Column({ name: 'cliente_cpf', type: 'text', nullable: true })
+  cliente_cpf: string;
+
   @Column({ name: 'valor_total', type: 'decimal', precision: 10, scale: 2 })
   valor_total: number;
 

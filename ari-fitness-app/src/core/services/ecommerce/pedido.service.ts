@@ -13,6 +13,7 @@ export interface PedidoItem {
 export interface Pedido {
   id?: string;
   cliente_nome?: string;
+  cliente_cpf?: string;
   cliente_telefone?: string;
   cliente_email?: string;
   valor_total?: number;
@@ -38,7 +39,7 @@ export class PedidoService {
   constructor(
     private http: HttpClient,
     private auth: AuthService
-  ) {}
+  ) { }
 
   private get empresaId(): string {
     return this.auth.getUser?.empresa_id || '';
