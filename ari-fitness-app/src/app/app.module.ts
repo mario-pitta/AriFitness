@@ -47,7 +47,9 @@ const httpProviders = () => provideHttpClient(withInterceptorsFromDi());
     RouterModule,
     MaskitoDirective,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode() && window.location.protocol !== 'file:',
+      // Habilitar em produção OU em desenvolvimento local (http://)
+      // Desabilitar apenas no Electron (file://)
+      enabled: window.location.protocol !== 'file:',
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
