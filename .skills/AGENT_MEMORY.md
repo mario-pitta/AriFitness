@@ -1,6 +1,6 @@
 # Agent Memory - MvK Gym Manager (AriFitness)
 
-> Última atualização: 17/04/2026
+> Última atualização: 23/04/2026
 > Histórico de alterações no final do documento
 
 ---
@@ -177,6 +177,7 @@ enum UserRole {
   - Service para envio de alertas
   - Integração automática no fluxo de pedidos
 - **Realtime**: `SupabaseRealtimeManagerService` no frontend
+- **Campo cliente_cpf**: Adicionado ao Pedido (entity + service)
 
 ### 4. Avatares com Iniciais
 - Sistema removido (dicebear)
@@ -349,14 +350,45 @@ Para tarefas complexas, usar a ferramenta `Task` com subagentes:
 - Select de produtos no formulário de transação
 - Integração vendas → módulo de finanças
 - Push Notifications ao criar pedido
+- **campo cliente_cpf**: Adicionado ao Pedido ✅
+- **Expansão do carrinho no PDV**: Adicionado toggle ✅
 
 ### Pendente
-- **Integração com AbacatePay** - Gateway de pagamento para checkout
-- **Realtime completos** - WebSocket para updates em tempo real dos pedidos
+- **Integração Pedido ↔ Transação Financeira** (PENDENTE - tratar amanhã)
+  - Quando status do pedido muda para "pago", atualizar transação existente (fl_pago: true)
+  - Atualmente cria duplicata ao atualizar status
+  - Método criarTransacaoPorVenda precisa usar transacao_id do pedido, não auth_code
+- **Integração com gateway de pagamento** - Stripe/MercadoPago para checkout
+- **Webhook de notificações** - Receber eventos de pagamento
+- **Relatórios de vendas** - Dashboard de e-commerce
+- **Gestão de estoque** - Controle de inventário
+- **Cupons de desconto** - Sistema de cupons
+- **Frete e entrega** - Cálculo de frete
+- **Rastreamento de pedido** - Status de entrega
+- **Avaliações de produtos** - Sistema de reviews
 
----
+## 🎯 Release Notes
 
-## 📜 Histórico de Alterações
+### v1.15.0 (23/04/2026)
+- **89 commits** desde v1.14.0
+- **+12.973 linhas** líquido
+- **184 arquivos** alterados
+- **10 dias** de desenvolvimento
+
+#### Destaques
+- E-commerce completo (catálogo, carrinho, PDV, pedidos)
+- Push Notifications com Firebase
+- Integração WhatsApp (Evolution API)
+- Sistema de planos e assinaturas
+- Controle de permissões (RolesGuard)
+- Campo CPF no Pedido
+
+### 23/04/2026 - Release v1.15.0
+- **Release Notes**: Criado `docs/RELEASE_NOTES_v1.15.0.md`
+- **Métricas**: 89 commits, +12.973 linhas, 10 dias
+- **campo cliente_cpf**: Adicionado ao Pedido (entity + service)
+- **PDV Improvements**: Expansão do carrinho, toggle visual
+- **Correções UI**: Altura fixas nos cards de produtos
 
 ### 17/04/2026 - Push Notifications + Correções
 - **Módulo Push Notifications**: Novo módulo `push-notification/` no NestJS

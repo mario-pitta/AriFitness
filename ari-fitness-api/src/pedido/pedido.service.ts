@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DataBaseService } from 'src/datasource/database.service';
 import { Pedido, PedidoInput, PedidoItemInput, PedidoFilters } from './pedido.interface';
 import { TransacaoFinanceiraService } from 'src/transacao_financeira/transacao-financeira.service';
-import Constants from 'src/core/Constants/Constants';
+
 import { PushNotificationService } from 'src/push-notification/push-notification.service';
+import Constants from '../core/Constants/Constants';
 
 /**
  * Service para gestão de pedidos do e-commerce

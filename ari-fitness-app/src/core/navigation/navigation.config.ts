@@ -9,6 +9,7 @@ export interface NavigationItem {
     functionIds?: number[]; // Allowed function_id
     showInSidebar: boolean;
     showInMobile: boolean;
+    isBeta?: boolean;
     group?: 'Principal' | 'Gestão' | 'Operacional' | 'Sistema' | 'Aluno';
     adminOnly?: boolean; // Shortcut for GERENCIA_ID
 }
@@ -106,7 +107,7 @@ export const NAV_ITEMS: NavigationItem[] = [
         roles: [Constants.GERENCIA_ID],
         functionIds: [Constants.GERENCIA_ID, Constants.INSTRUTOR_ID],
         showInSidebar: true,
-        showInMobile: true,
+        showInMobile: false,
         group: 'Gestão',
     },
     {
@@ -144,7 +145,8 @@ export const NAV_ITEMS: NavigationItem[] = [
         route: '/admin/configuracoes/ecommerce/loja',
         roles: [Constants.GERENCIA_ID],
         showInSidebar: true,
-        showInMobile: true,
+        showInMobile: false,
+        isBeta: true,
         group: 'Gestão',
         adminOnly: true
     },

@@ -45,6 +45,9 @@
                         routerLinkActive="menu-item-active" detail="false">
                         <ion-icon [name]="item.sidebarIcon" slot="start"></ion-icon>
                         <ion-label>{{ item.label }}</ion-label>
+                        <ion-badge *ngIf="item.isBeta" color="warning" style="font-size: 0.6em; margin-left: 4px;">
+                            BETA
+                        </ion-badge>
                     </ion-item>
                 </ng-container>
             </ion-list>
