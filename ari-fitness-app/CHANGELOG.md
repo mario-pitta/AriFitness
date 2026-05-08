@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.4](https://github.com/mario-pitta/AriFitness/compare/v1.15.3...v1.15.4) (2026-05-08)
+
+
+### Bug Fixes
+
+* :bug:  transaction lauch date fixed to real datehour, fix catalog ecommerce url to share and fix unnable send multiple messages to member whtsapp ([fde069a](https://github.com/mario-pitta/AriFitness/commit/fde069aef4e6884680461f36b698ba9ba326babc))
+
 ### [1.15.3](https://github.com/mario-pitta/AriFitness/compare/v1.15.2...v1.15.3) (2026-04-23)
 
 ### [1.15.2](https://github.com/mario-pitta/AriFitness/compare/v1.15.1...v1.15.2) (2026-04-23)
