@@ -127,6 +127,8 @@ export class EvolutionService {
                 formattedNumber = '55' + formattedNumber;
             }
 
+
+            console.log('formattedNumber = ', formattedNumber)
             // 3. Disparar o envio
             return await this.sendMessage(empresaId, formattedNumber, text);
         } catch (error) {
@@ -145,8 +147,8 @@ export class EvolutionService {
     async sendMessage(empresaId: string, number: string, text: string) {
         try {
             const response = await axios.post(`${this.baseUrl}/send/text`, {
-                id: empresaId,
-                number: '5571983559212',//number,
+                // id: empresaId,
+                number: number,
                 text: text
             }, {
                 headers: {

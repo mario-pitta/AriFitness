@@ -627,7 +627,7 @@ export class UsuariosPage implements OnInit {
               const transacao: Partial<TransacaoFinanceira> = {
                 tr_categoria_id: 1,
                 tr_tipo_id: 1,
-                data_lancamento: p.data,
+                data_lancamento: new Date().toLocaleString(),
                 valor_real: Number(this.selectedUsuario?.planos?.preco_padrao),
                 desconto_real:
                   action === 'isentar'
